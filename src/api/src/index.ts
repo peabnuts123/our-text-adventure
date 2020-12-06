@@ -32,8 +32,9 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
   Logger.log(`Handling request: ${event.rawPath}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
 
   try {
-    const INSERT_MOCK_DATA = true;
+    const INSERT_MOCK_DATA = false;
     if (INSERT_MOCK_DATA) {
+      Logger.log("Inserting mock data");
       await debug_insertMockData();
     }
 
