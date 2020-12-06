@@ -1,5 +1,4 @@
 # Our Text Adventure
-_working title_
 
 It's a text-based adventure. You can play it, but you can also contribute to it.
 
@@ -17,3 +16,5 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [ ] Terraform for Lambda functions
   - [ ] Terraform for API Gateway
   - [ ] Gatsby frontend MVP
+  - [ ] Document each component
+  - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
