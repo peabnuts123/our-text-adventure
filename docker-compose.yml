@@ -9,7 +9,7 @@ services:
       - "4571:4571"
       # - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
     environment:
-      - SERVICES=dynamodb
+      - SERVICES=apigateway,cloudwatchlogs,iam,dynamodb,lambda,sts
       # - DEBUG=${DEBUG- }
       # - DATA_DIR=${DATA_DIR- }
       # - PORT_WEB_UI=${PORT_WEB_UI- }
