@@ -9,12 +9,16 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - Lambda / DynamoDB in same VPC
 
 ## Backlog / @TODO
-  - [ ] Commit something / make a repo
-  - [ ] Give this project a working title
-  - [ ] Terraform local stack for DynamoDB table
+  - [x] ~~Commit something / make a repo~~
+  - [x] ~~Give this project a working title~~
+  - [x] ~~Terraform local stack for DynamoDB table~~
+  - [ ] Extract DynamoDB layer into a repository pattern (for better testing)
+  - [ ] Test project for API
   - [ ] Lambda MVP
-  - [ ] Terraform for Lambda functions
-  - [ ] Terraform for API Gateway
+  - [ ] docker-compose service for running mock API (depends on db)
+  - [x] ~~Terraform for Lambda functions~~
+  - [x] ~~Terraform for API Gateway~~
+  - [ ] Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Gatsby frontend MVP
   - [ ] Document each component
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
