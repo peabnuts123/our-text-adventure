@@ -46,7 +46,7 @@ class Db implements IDatabase {
       throw new Error("Failed to fetch all screens, response was empty. See logs for more details.");
     }
 
-    return result.Items.map((item) => GameScreen.fromAttributeMap(item));
+    return result.Items.map((item) => GameScreen.fromRaw(item));
   }
 
   public async addScreen(screen: GameScreen): Promise<void> {

@@ -1,6 +1,5 @@
-import { AttributeMap } from "aws-sdk/clients/dynamodb";
-
 import Command from "./Command";
+import isArray from '../../util/is-array';
 
 export default class GameScreen {
   public readonly id: string;
@@ -13,31 +12,34 @@ export default class GameScreen {
     this.commands = commands;
   }
 
-  public static fromAttributeMap(attributes: AttributeMap): GameScreen {
+  public static fromRaw(attributes: Record<string, any>): GameScreen {
     // Attributes
-    const id = attributes['id'].S;
-    const body = attributes['body'].L;
-    const commands = attributes['commands'].L;
+    const id: string | unknown = attributes['id'];
+    const body: string[] | unknown = attributes['body'];
+    const commands: Record<string, unknown>[] | unknown = attributes['commands'];
 
     // Validation
-    if (id === undefined) throw new Error("Cannot parse attribute map. Field `id` is empty or invalid type");
-    if (body === undefined) throw new Error("Cannot parse attribute map. Field `body` is empty or invalid type");
-    if (commands === undefined) throw new Error("Cannot parse attribute map. Field `commands` is empty or invalid type");
+    if (id === undefined) throw new Error("Cannot parse attribute map. Field `id` is empty");
+    if (typeof id !== 'string') throw new Error("Cannot parse attribute map. Field `id` must be a string (type 'S')");
+
+    if (body === undefined) throw new Error("Cannot parse attribute map. Field `body` is empty");
+    if (!isArray<string>(body, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `body` must be an array of all strings (type 'L')");
+
+    if (commands === undefined) throw new Error("Cannot parse attribute map. Field `commands` is empty");
+    if (!isArray<Record<string, unknown>>(commands, (command) => typeof command === 'object' && !Array.isArray(command))) throw new Error("Cannot parse attribute map. Field `commands` must be an object (type 'M')");
 
     // Construct object
     return new GameScreen(
       id,
-      body.map((rawItem, index) => {
-        const item = rawItem.S;
-        if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'body' has invalid member: index [${index}] is empty or invalid type`);
+      body.map((item, index) => {
+        if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'body' has invalid member: index [${index}] is empty`);
 
         return item;
       }),
-      commands.map((rawItem, index) => {
-        const item = rawItem.M;
-        if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'commands' has invalid member: index [${index}] is empty or invalid type`);
+      commands.map((item, index) => {
+        if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'commands' has invalid member: index [${index}] is empty`);
 
-        return Command.fromAttributeMap(item);
+        return Command.fromRaw(item);
       }),
     );
   }

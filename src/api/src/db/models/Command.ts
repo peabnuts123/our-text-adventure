@@ -1,5 +1,3 @@
-import { AttributeMap } from "aws-sdk/clients/dynamodb";
-
 export default class Command {
   public readonly id: string;
   public readonly command: string;
@@ -11,16 +9,21 @@ export default class Command {
     this.targetScreenId = targetScreenId;
   }
 
-  public static fromAttributeMap(attributes: AttributeMap): Command {
+  public static fromRaw(attributes: Record<string, any>): Command {
     // Attributes
-    const id = attributes['id'].S;
-    const command = attributes['command'].S;
-    const targetScreenId = attributes['targetScreenId'].S!;
+    const id: string | unknown = attributes['id'];
+    const command: string | unknown = attributes['command'];
+    const targetScreenId: string | unknown = attributes['targetScreenId'];
 
     // Validation
     if (id === undefined) throw new Error("Cannot parse attribute map. Field `id` is empty");
+    if (typeof id !== 'string') throw new Error("Cannot parse attribute map. Field `id` must be a string (type 'S')");
+
     if (command === undefined) throw new Error("Cannot parse attribute map. Field `command` is empty");
+    if (typeof command !== 'string') throw new Error("Cannot parse attribute map. Field `command` must be a string (type 'S')");
+
     if (targetScreenId === undefined) throw new Error("Cannot parse attribute map. Field `targetScreenId` is empty");
+    if (typeof targetScreenId !== 'string') throw new Error("Cannot parse attribute map. Field `targetScreenId` must be a string (type 'S')");
 
     // Construct object
     return new Command(
