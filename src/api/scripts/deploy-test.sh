@@ -29,7 +29,6 @@ function exit_with_message_and_code() {
   exit "$code";
 }
 
-rm -rf build;
 npm install;
 npm run build;
 cp package*.json build
