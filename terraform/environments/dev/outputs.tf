@@ -2,6 +2,6 @@
 output "api_url" {
   value = module.app.api_url
 }
-output "api_lambda_function_name_test" {
-  value = module.app.api_lambda_function_name_test
+output "lambda_function_names" {
+  value = module.app.lambda_function_names
 }

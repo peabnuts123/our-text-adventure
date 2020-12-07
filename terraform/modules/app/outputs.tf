@@ -4,9 +4,8 @@ output "api_url" {
   value = module.api.invoke_url
 }
 
-output "api_lambda_function_name_test" {
-  value = module.api.lambda_function_name_test
-  description = "Lambda function name, for deploying api test component to. Use `aws lambda update-function-code --function-name <LAMBDA_FUNCTION_NAME> --zip-file fileb://<API_CODE_PACKAGE>.zip` to deploy."
+output "lambda_function_names" {
+  value = module.api.lambda_function_names
 }
 
 # @TODO
