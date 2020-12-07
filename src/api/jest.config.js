@@ -14,7 +14,6 @@ module.exports = {
   verbose: true,
   testURL: "http://localhost:8080",
   setupFilesAfterEnv: [
-    '<rootDir>/test/setup/configure-logger.ts',
     '<rootDir>/test/setup/fail-on-no-assertion.ts',
     '<rootDir>/test/setup/mock-fetch.ts',
   ],
@@ -22,6 +21,8 @@ module.exports = {
     "test/.*\\.test.[jt]s?$",
   ],
   moduleNameMapper: {
+    // DB - @NOTE make sure you don't call any mother modules 'db'...
+    "/db$": "<rootDir>/test/mocks/mockDb",
     // === @app
     "^@app/(.*)$": "<rootDir>/src/$1",
     // === @test
