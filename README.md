@@ -12,8 +12,8 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Commit something / make a repo~~
   - [x] ~~Give this project a working title~~
   - [x] ~~Terraform local stack for DynamoDB table~~
-  - [ ] Extract DynamoDB layer into a repository pattern (for better testing)
-  - [ ] Test project for API
+  - [x] ~~Extract DynamoDB layer into a repository pattern (for better testing)~~
+  - [x] ~~Test project for API~~
   - [ ] Lambda MVP
   - [ ] docker-compose service for running mock API (depends on db)
   - [x] ~~Terraform for Lambda functions~~
