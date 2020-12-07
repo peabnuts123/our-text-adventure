@@ -1,33 +1,18 @@
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
-import AWS from 'aws-sdk';
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
+
+import Config from '../config';
+
+import Db from '../db';
+import IDatabase from '../db/IDatabase';
+import GameScreen from '../db/models/GameScreen';
+import Command from '../db/models/Command';
 
 import Logger, { LogLevel } from '../util/Logger';
 import errorResponse from '../util/error-response';
 
-const { ENVIRONMENT_ID } = process.env;
+Logger.setLogLevel(Config.logLevel);
 
-const baseOptions: ServiceConfigurationOptions = {
-  region: 'us-east-1',
-};
-
-// @TODO some kind of config module
-if (ENVIRONMENT_ID === 'local') {
-  Logger.setLogLevel(LogLevel.debug);
-
-  baseOptions.endpoint = `http://localhost:4566`;
-  Logger.log(LogLevel.debug, "Setting AWS endpoint to localstack");
-  process.env['AWS_PROFILE'] = 'our-text-adventure';
-}
-
-// const dbClient = new AWS.DynamoDB({
-//   ...baseOptions,
-// });
-const docClient = new AWS.DynamoDB.DocumentClient({
-  ...baseOptions,
-});
-
-const SCREENS_TABLE_NAME = 'AdventureScreens';
+const db: IDatabase = new Db();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
   Logger.log(`Handling request: ${event.rawPath}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
@@ -39,18 +24,18 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       await debug_insertMockData();
     }
 
-    Logger.log(`Fetching all data from table: '${SCREENS_TABLE_NAME}'`);
+    Logger.log(`Fetching all data from table: '${Config.screensTableName}'`);
 
-    const allData = await debug_getAllScreenData();
+    const allScreenData = await db.getAllScreens();
 
-    Logger.log("Successfully finished processing.");
+    Logger.log("Successfully finished processing.", allScreenData);
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        data: allData,
+        screens: allScreenData,
       }),
     };
 
@@ -60,22 +45,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
   }
 };
 
-async function debug_getAllScreenData(): Promise<AWS.DynamoDB.DocumentClient.ItemList | undefined> {
-  const result = await docClient.scan({
-    TableName: SCREENS_TABLE_NAME,
-  }).promise();
-
-  Logger.log(LogLevel.debug, "All screen data:");
-
-
-  return result.Items;
-}
-
 async function debug_insertMockData(): Promise<void> {
-  const MOCK_DATA: Record<string, any>[] = [
-    {
-      id: '0290922a-59ce-458b-8dbc-1c33f646580a',
-      body: [
+  const MOCK_DATA = [
+    new GameScreen(
+      '0290922a-59ce-458b-8dbc-1c33f646580a',
+      [
         "+---------------+",
         "| This is a     |",
         "| sample dialog |",
@@ -83,31 +57,26 @@ async function debug_insertMockData(): Promise<void> {
         "| something.    |",
         "+---------------+",
       ],
-      commands: [
-        {
-          id: '51e5db90-0587-471f-a281-0b37b7eccb8c',
-          command: `look bone`,
-          target_screen: '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
-        },
+      [
+        new Command(
+          '51e5db90-0587-471f-a281-0b37b7eccb8c',
+          `look bone`,
+          '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+        ),
       ],
-    },
-    {
-      id: '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
-      body: [
+    ),
+    new GameScreen(
+      '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+      [
         "This is a second",
         "screen.",
       ],
-      commands: [
-      ],
-    },
+      [],
+    ),
   ];
 
-  await Promise.all(MOCK_DATA.map((mockItem) => {
-    return docClient.put({
-      TableName: SCREENS_TABLE_NAME,
-      Item: mockItem,
-    }).promise();
-  }));
+  // Insert all records ("in parallel")
+  await Promise.all(MOCK_DATA.map((mockItem) => db.addScreen(mockItem)));
 
   Logger.log(LogLevel.debug, `Successfully inserted ${MOCK_DATA.length} items into table.`);
 }
