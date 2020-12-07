@@ -1,0 +1,220 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2020-12-07T22:31:31.881Z",
+  "__export_source": "insomnia.desktop.app:v2020.4.2",
+  "resources": [
+    {
+      "_id": "req_d61ebc9dc6eb4965b6ed5ed6c1597bbb",
+      "parentId": "fld_5f9cd3c512d64cc4a9b6cbf4aca9b96b",
+      "modified": 1607374805144,
+      "created": 1607374783089,
+      "url": "{{ REQUEST_URL }}",
+      "name": "default",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"message\": \"this is some garbage json\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_a72db8e8911c4a89928eae027790745e"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1607374783089,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_5f9cd3c512d64cc4a9b6cbf4aca9b96b",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607374770918,
+      "created": 1607374741058,
+      "name": "AddPath",
+      "description": "",
+      "environment": {
+        "REQUEST_URL": "{{API_BASE}}/path"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "REQUEST_URL"
+        ]
+      },
+      "metaSortKey": -1607374741058,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "parentId": null,
+      "modified": 1607244667061,
+      "created": 1607244667061,
+      "name": "Our Text Adventure",
+      "description": "",
+      "scope": null,
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_314d783838ea4449bd5583c75cc366a2",
+      "parentId": "fld_bb5681a92bbb43be9a8afd3683e53ce4",
+      "modified": 1607374603602,
+      "created": 1607369629954,
+      "url": "{{ REQUEST_URL }}/0290922a-59ce-458b-8dbc-1c33f646580a",
+      "name": "default",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1607369629954,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_bb5681a92bbb43be9a8afd3683e53ce4",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607374756490,
+      "created": 1607369507506,
+      "name": "GetScreenById",
+      "description": "",
+      "environment": {
+        "REQUEST_URL": "{{API_BASE}}/screen"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "REQUEST_URL"
+        ]
+      },
+      "metaSortKey": -1607369507506,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_53ffe9b3cafb455db0dbf92887e52acf",
+      "parentId": "fld_56de884949fc402ca6546057c2e5db79",
+      "modified": 1607373744516,
+      "created": 1607244704486,
+      "url": "{{ REQUEST_URL }}",
+      "name": "default",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1607244704486,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_56de884949fc402ca6546057c2e5db79",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607374761137,
+      "created": 1607369494123,
+      "name": "Test",
+      "description": "",
+      "environment": {
+        "REQUEST_URL": "{{ API_BASE }}/test/123456"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "REQUEST_URL"
+        ]
+      },
+      "metaSortKey": -1607369494123,
+      "_type": "request_group"
+    },
+    {
+      "_id": "env_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607244667133,
+      "created": 1607244667133,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1607244667133,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607244667135,
+      "created": 1607244667135,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    },
+    {
+      "_id": "spc_98c05f9807144a5fb475d4cf31f03cf0",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607244667067,
+      "created": 1607244667067,
+      "fileName": "Our Text Adventure",
+      "contents": "",
+      "contentType": "yaml",
+      "_type": "api_spec"
+    },
+    {
+      "_id": "env_b4d53cfe709343abbac987590b2027f9",
+      "parentId": "env_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
+      "modified": 1607308668422,
+      "created": 1607308640089,
+      "name": "Local",
+      "data": {
+        "API_BASE": "http://localhost:8000"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "API_BASE"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1607308640089,
+      "_type": "environment"
+    },
+    {
+      "_id": "env_6852d6a7570843a7897c2c14ccaa3b7c",
+      "parentId": "env_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
+      "modified": 1607379373447,
+      "created": 1607308670382,
+      "name": "Dev",
+      "data": {
+        "API_BASE": "https://3sgdkfous5.execute-api.us-east-1.amazonaws.com"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "API_BASE"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1607308640139,
+      "_type": "environment"
+    }
+  ]
+}
