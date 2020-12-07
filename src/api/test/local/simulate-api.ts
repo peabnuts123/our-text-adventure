@@ -7,6 +7,8 @@ import getMockProxyRequest from '@test/local/util/get-mock-proxy-request';
 
 import Logger, { LogLevel } from '@app/util/Logger';
 import { handler as testHandler } from '@app/handlers/test';
+import { handler as getScreenByIdHandler } from '@app/handlers/get-screen-by-id';
+import { handler as addPathHandler } from '@app/handlers/add-path';
 
 // EXPRESS APP
 const app = express();
@@ -19,7 +21,11 @@ app.listen(SERVER_PORT, () => {
 
 
 // ROUTES
-app.all('/test/:something', proxyHandler(testHandler));
+// These need to match the definitions in `terraform/modules/api/api-gateway.tf`
+app.get('/test/*', proxyHandler(testHandler));
+app.get('/screen/:id', proxyHandler(getScreenByIdHandler));
+app.post('/path', proxyHandler(addPathHandler));
+
 
 
 // FUNCTIONS
