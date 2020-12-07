@@ -7,7 +7,7 @@ resource "aws_lambda_function" "test" {
   filename      = var.code_package_file_path
   description   = "Test API component for ${var.project_id}. Just playing around and debugging"
   role          = aws_iam_role.lambda.arn
-  handler       = "index.handler"
+  handler       = "handlers/test.handler"
   runtime       = "nodejs12.x"
   memory_size   = 256
   timeout       = 3

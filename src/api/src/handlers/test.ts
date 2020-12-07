@@ -2,16 +2,17 @@ import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import AWS from 'aws-sdk';
 import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 
-import Logger, { LogLevel } from './util/Logger';
-import errorResponse from './util/error-response';
+import Logger, { LogLevel } from '../util/Logger';
+import errorResponse from '../util/error-response';
 
-const { NODE_ENV } = process.env;
+const { ENVIRONMENT_ID } = process.env;
 
 const baseOptions: ServiceConfigurationOptions = {
   region: 'us-east-1',
 };
 
-if (NODE_ENV !== 'production') {
+// @TODO some kind of config module
+if (ENVIRONMENT_ID === 'local') {
   Logger.setLogLevel(LogLevel.debug);
 
   baseOptions.endpoint = `http://localhost:4566`;
