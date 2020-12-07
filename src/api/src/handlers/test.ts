@@ -15,20 +15,16 @@ Logger.setLogLevel(Config.logLevel);
 const db: IDatabase = new Db();
 
 export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
-  Logger.log(`Handling request: ${event.rawPath}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
+  Logger.log(`Handling request: ${event.requestContext.http.method} ${event.rawPath}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
 
   try {
     const INSERT_MOCK_DATA = false;
     if (INSERT_MOCK_DATA) {
-      Logger.log("Inserting mock data");
       await debug_insertMockData();
     }
 
-    Logger.log(`Fetching all data from table: '${Config.screensTableName}'`);
-
     const allScreenData = await db.getAllScreens();
 
-    Logger.log("Successfully finished processing.", allScreenData);
     return {
       statusCode: 200,
       headers: {
@@ -40,7 +36,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     };
 
   } catch (err) {
-    Logger.logError("An error occurred while processing.", err);
     return errorResponse("An error occurred while processing.", err);
   }
 };

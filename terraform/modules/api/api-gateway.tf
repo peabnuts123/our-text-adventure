@@ -1,6 +1,5 @@
 # API Gateway
 resource "aws_apigatewayv2_api" "api" {
-  count = var.environment_id == "local" ? 0 : 1
   name          = "Our Text Adventure - api (${var.environment_id})"
   protocol_type = "HTTP"
 
@@ -14,17 +13,15 @@ resource "aws_apigatewayv2_api" "api" {
 # @NOTE no need for other stages, as separate environments will be
 #   entirely separate deployments of this whole infrastructure.
 resource "aws_apigatewayv2_stage" "default" {
-  count = var.environment_id == "local" ? 0 : 1
-  api_id      = aws_apigatewayv2_api.api[count.index].id
+  api_id      = aws_apigatewayv2_api.api.id
   name        = "$default"
   auto_deploy = true
 }
 
 # Integrations
-# API / Lambda integration
+# Function - Test
 resource "aws_apigatewayv2_integration" "test" {
-  count = var.environment_id == "local" ? 0 : 1
-  api_id      = aws_apigatewayv2_api.api[count.index].id
+  api_id      = aws_apigatewayv2_api.api.id
   description = "Proxy to Test Lambda"
 
   integration_type       = "AWS_PROXY"
@@ -34,11 +31,47 @@ resource "aws_apigatewayv2_integration" "test" {
   integration_uri        = aws_lambda_function.test.invoke_arn
   payload_format_version = "2.0"
 }
+# Function - GetScreenById
+resource "aws_apigatewayv2_integration" "get_screen_by_id" {
+  api_id      = aws_apigatewayv2_api.api.id
+  description = "Proxy to GetScreenById Lambda"
+
+  integration_type       = "AWS_PROXY"
+  # @TODO VPC probably
+  connection_type        = "INTERNET"
+  integration_method     = "POST"
+  integration_uri        = aws_lambda_function.get_screen_by_id.invoke_arn
+  payload_format_version = "2.0"
+}
+# Function - AddPath
+resource "aws_apigatewayv2_integration" "add_path" {
+  api_id      = aws_apigatewayv2_api.api.id
+  description = "Proxy to AddPath Lambda"
+
+  integration_type       = "AWS_PROXY"
+  # @TODO VPC probably
+  connection_type        = "INTERNET"
+  integration_method     = "POST"
+  integration_uri        = aws_lambda_function.add_path.invoke_arn
+  payload_format_version = "2.0"
+}
 
 # Routes
+# GET /test/*
 resource "aws_apigatewayv2_route" "test" {
-  count = var.environment_id == "local" ? 0 : 1
-  api_id    = aws_apigatewayv2_api.api[count.index].id
-  route_key = "ANY /test/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.test[count.index].id}"
+  api_id    = aws_apigatewayv2_api.api.id
+  route_key = "GET /test/{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.test.id}"
+}
+# GET /screen/:id
+resource "aws_apigatewayv2_route" "get_screen_by_id" {
+  api_id    = aws_apigatewayv2_api.api.id
+  route_key = "GET /screen/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.get_screen_by_id.id}"
+}
+# POST /path
+resource "aws_apigatewayv2_route" "add_path" {
+  api_id    = aws_apigatewayv2_api.api.id
+  route_key = "POST /path"
+  target    = "integrations/${aws_apigatewayv2_integration.add_path.id}"
 }
