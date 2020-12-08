@@ -1,11 +1,13 @@
 import AWS from 'aws-sdk';
 import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
+import { v4 as uuid } from 'uuid';
 
 import Config from '../config';
 import Logger, { LogLevel } from '../util/Logger';
 
 import IDatabase from './IDatabase';
 import GameScreen from './models/GameScreen';
+import Command from './models/Command';
 
 
 class Db implements IDatabase {
@@ -69,6 +71,21 @@ class Db implements IDatabase {
     return screen;
   }
 
+  public async addPath(sourceScreen: GameScreen, command: string, newScreenBody: string[]): Promise<GameScreen> {
+    // Create new screen
+    const newScreen = new GameScreen(uuid(), newScreenBody, []);
+    // Create command that points to new screen
+    const newCommand = new Command(uuid(), command, newScreen.id);
+    // Add command to existing screen
+    sourceScreen.commands.push(newCommand);
+
+    // Save all these changes to the database
+    // @TODO transaction?
+    await this.saveScreen(newScreen);
+    await this.saveScreen(sourceScreen);
+
+    return newScreen;
+  }
 }
 
 export default Db;
