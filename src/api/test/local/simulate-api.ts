@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import express, { Request, RequestHandler, Response } from 'express';
 import morgan from 'morgan';
+import bodyParser from 'body-parser';
 
 import getMockContext from '@test/local/util/get-mock-context';
 import getMockProxyRequest from '@test/local/util/get-mock-proxy-request';
@@ -13,6 +14,9 @@ import { handler as addPathHandler } from '@app/handlers/add-path';
 // EXPRESS APP
 const app = express();
 app.use(morgan('combined'));
+app.use(bodyParser.text({
+  type: [ '*/*' ],
+}));
 
 const SERVER_PORT: number = 8000;
 app.listen(SERVER_PORT, () => {
@@ -25,7 +29,6 @@ app.listen(SERVER_PORT, () => {
 app.get('/test/*', proxyHandler(testHandler));
 app.get('/screen/:id', proxyHandler(getScreenByIdHandler));
 app.post('/path', proxyHandler(addPathHandler));
-
 
 
 // FUNCTIONS
@@ -51,6 +54,7 @@ function proxyHandler(handler: APIGatewayProxyHandlerV2): RequestHandler {
 function convertRequestToApiGatewayPayload(req: Request): APIGatewayProxyEventV2 {
   return getMockProxyRequest({
     path: req.path,
+    body: req.body as (string | undefined),
     queryParams: req.query as Record<string, string>,
     headers: req.headers as Record<string, string>,
     httpMethod: req.method,

@@ -10,6 +10,7 @@ export default function getMockProxyRequest(requestOptions: SimpleRequest): APIG
   return {
     "version": "2.0",
     "routeKey": "ANY /test/{proxy+}",
+    "body": requestOptions.body,
     "rawPath": requestOptions.path,
     "rawQueryString": requestOptions.queryParams === undefined ? "" :
       Object.keys(requestOptions.queryParams)
