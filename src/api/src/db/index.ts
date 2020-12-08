@@ -3,10 +3,9 @@ import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 
 import Config from '../config';
 import Logger, { LogLevel } from '../util/Logger';
-import ScreenNotFoundError from '../errors/screen-not-found-error';
 
-import GameScreen from './models/GameScreen';
 import IDatabase from './IDatabase';
+import GameScreen from './models/GameScreen';
 
 
 class Db implements IDatabase {
@@ -48,24 +47,26 @@ class Db implements IDatabase {
     return result.Items.map((item) => GameScreen.fromRaw(item));
   }
 
-  public async getScreenById(id: string): Promise<GameScreen> {
+  public async getScreenById(id: string): Promise<GameScreen | undefined> {
     const result = await this.docClient.get({
       TableName: Config.screensTableName,
       Key: { id },
     }).promise();
 
     if (result.Item === undefined) {
-      throw new ScreenNotFoundError(`No screen found with id: ${id}`);
+      return undefined;
     } else {
       return GameScreen.fromRaw(result.Item);
     }
   }
 
-  public async addScreen(screen: GameScreen): Promise<void> {
+  public async saveScreen(screen: GameScreen): Promise<GameScreen> {
     await this.docClient.put({
       TableName: Config.screensTableName,
       Item: screen,
     }).promise();
+
+    return screen;
   }
 
 }

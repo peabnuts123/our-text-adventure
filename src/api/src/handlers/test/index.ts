@@ -1,14 +1,14 @@
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 
-import Config from '../config';
+import Config from '../../config';
 
-import Db from '../db';
-import IDatabase from '../db/IDatabase';
-import GameScreen from '../db/models/GameScreen';
-import Command from '../db/models/Command';
+import Db from '../../db';
+import IDatabase from '../../db/IDatabase';
+import GameScreen from '../../db/models/GameScreen';
+import Command from '../../db/models/Command';
 
-import Logger, { LogLevel } from '../util/Logger';
-import errorResponse from '../util/error-response';
+import Logger, { LogLevel } from '../../util/Logger';
+import errorResponse from '../../util/error-response';
 
 Logger.setLogLevel(Config.logLevel);
 
@@ -31,10 +31,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        screens: allScreenData,
+        message: "This is a test endpoint",
+        allScreens: allScreenData,
       }),
     };
-
   } catch (err) {
     return errorResponse("An error occurred while processing.", err);
   }
@@ -71,7 +71,7 @@ async function debug_insertMockData(): Promise<void> {
   ];
 
   // Insert all records ("in parallel")
-  await Promise.all(MOCK_DATA.map((mockItem) => db.addScreen(mockItem)));
+  await Promise.all(MOCK_DATA.map((mockItem) => db.saveScreen(mockItem)));
 
   Logger.log(LogLevel.debug, `Successfully inserted ${MOCK_DATA.length} items into table.`);
 }

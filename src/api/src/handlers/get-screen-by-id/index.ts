@@ -1,14 +1,13 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
-import Config from '../config';
+import Config from '../../config';
 
-import Db from '../db';
-import IDatabase from '../db/IDatabase';
+import Db from '../../db';
+import IDatabase from '../../db/IDatabase';
 
-import Logger from '../util/Logger';
-import errorResponse from '../util/error-response';
-import badRequestResponse from '../util/bad-request-response';
-import ScreenNotFoundError from "../errors/screen-not-found-error";
+import Logger from '../../util/Logger';
+import errorResponse from '../../util/error-response';
+import badRequestResponse from '../../util/bad-request-response';
 
 Logger.setLogLevel(Config.logLevel);
 
@@ -19,14 +18,32 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
   try {
 
+    // Validate path parameter exists
     if (event.pathParameters === undefined || event.pathParameters['id'] === undefined) {
       return badRequestResponse("Missing path parameter: id");
     }
 
+    // Look up screen by id
     const screenId = event.pathParameters['id'];
     const screen = await db.getScreenById(screenId);
 
+    // Validate screen exists with this id
+    if (screen === undefined) {
+      Logger.log("No screen exists with id: ", screenId);
+
+      return {
+        statusCode: 404,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          "message": `No screen exists with id: ${screenId}`,
+        }),
+      };
+    }
+
     Logger.log("Successfully looked up screen with id", screenId);
+
     return {
       statusCode: 200,
       headers: {
@@ -35,10 +52,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       body: JSON.stringify(screen),
     };
   } catch (err) {
-    if (err instanceof ScreenNotFoundError) {
-      return badRequestResponse(err.message);
-    } else {
     return errorResponse("An error occurred while processing.", err);
-    }
   }
 };
