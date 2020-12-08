@@ -20,7 +20,7 @@ describe('MockDB', () => {
     const db: IDatabase = new MockDb();
 
     // Test
-    await db.addScreen(mockScreen);
+    await db.saveScreen(mockScreen);
     const screen = MockDb.screens[0];
 
     // Assert
