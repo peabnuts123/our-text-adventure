@@ -33,7 +33,8 @@ describe('Test Handler', () => {
     expect(response.headers).toBeDefined();
     expect(response.headers && response.headers['Content-Type']).toBe('application/json');
     expect(response.body && JSON.parse(response.body)).toEqual({
-      screens: mockScreens,
+      message: "This is a test endpoint",
+      allScreens: mockScreens,
     });
   });
 });
