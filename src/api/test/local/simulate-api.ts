@@ -1,6 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import express, { Request, RequestHandler, Response } from 'express';
-import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
 import getMockContext from '@test/local/util/get-mock-context';
@@ -13,7 +12,6 @@ import { handler as addPathHandler } from '@app/handlers/add-path';
 
 // EXPRESS APP
 const app = express();
-app.use(morgan('combined'));
 app.use(bodyParser.text({
   type: [ '*/*' ],
 }));
