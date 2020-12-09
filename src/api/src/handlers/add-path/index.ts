@@ -66,10 +66,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        message: "Successfully created new path",
-        screen: newScreen,
-      }),
+      body: JSON.stringify(newScreen),
     };
   } catch (err) {
     return errorResponse("An error occurred while processing.", err);
