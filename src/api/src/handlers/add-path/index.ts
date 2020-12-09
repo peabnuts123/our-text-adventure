@@ -61,6 +61,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
     const newScreen = await db.addPath(sourceScreen, command, screenBody);
 
+    Logger.log(`Successfully added new path. GameScreen(${sourceScreen.id})["${command}"] => GameScreen(${newScreen.id})`);
+
     return {
       statusCode: 201,
       headers: {
