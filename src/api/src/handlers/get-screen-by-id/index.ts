@@ -19,12 +19,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
   try {
 
     // Validate path parameter exists
-    if (event.pathParameters === undefined || event.pathParameters['id'] === undefined) {
+    const screenId: string | unknown = event.pathParameters?.id;
+    if (typeof screenId !== 'string' || screenId.trim() === '') {
       return badRequestResponse("Missing path parameter: id");
     }
 
     // Look up screen by id
-    const screenId = event.pathParameters['id'];
     const screen = await db.getScreenById(screenId);
 
     // Validate screen exists with this id
