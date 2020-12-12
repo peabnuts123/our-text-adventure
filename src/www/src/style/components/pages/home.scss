@@ -1,0 +1,27 @@
+// .home {}
+
+.home--title {
+  .accent {
+    color: $secondary;
+    background: $primary;
+  }
+}
+
+.home--body {
+
+  .code {
+    color: $primary;
+    background-color: $secondary;
+    border-radius: $radius;
+  }
+}
+
+.home--list {
+  list-style-type: none;
+}
+
+.home--list-item {
+  .link {
+    color: $primary;
+  }
+}
