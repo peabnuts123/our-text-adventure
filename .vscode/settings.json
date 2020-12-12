@@ -1,5 +1,6 @@
 {
   "eslint.workingDirectories": [
     "src/api",
+    "src/www",
   ]
 }
