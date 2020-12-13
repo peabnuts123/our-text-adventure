@@ -45,10 +45,10 @@ You need to have a few things before you can create an environment:
     - CloudWatchLogsFullAccess
     - AmazonAPIGatewayAdministrator
     - AWSLambda_FullAccess
+    - AmazonS3FullAccess
+    - CloudFrontFullAccess
 
     <!-- @TODO will probably need these permissions too  -->
-    <!-- - AmazonS3FullAccess -->
-    <!-- - CloudFrontFullAccess -->
     <!-- - AWSCertificateManagerFullAccess -->
   <!-- - A domain set up (and active) in ACM
     - TL;DR:
