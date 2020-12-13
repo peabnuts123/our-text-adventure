@@ -1,0 +1,66 @@
+// ========================
+// HEADER
+// ========================
+// @note: The header / nav at the top of the page
+// ========================
+.header {
+  padding: 0;
+  height: 100px;
+  background-color: $primary;
+    color: $secondary;
+}
+
+.header-desktop {
+  display: none;
+
+  flex-direction: row;
+  align-items: center;
+
+  @include media-query('tablet') {
+    display: flex;
+  }
+
+  // Nav has special links
+  a {
+    color: $secondary;
+    text-decoration: none;
+  }
+}
+
+// ========================
+// ELEMENTS
+// ========================
+.header-desktop__title {
+  @extend %font-heading;
+  display: block;
+  margin-right: $m * 2;
+  font-size: $font-size-h3;
+}
+
+.header-desktop__nav-items {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 100%;
+  font-size: $font-size-h3;
+}
+
+.header-desktop__nav-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 $m;
+
+  &.is-active {
+    background-color: rgba($link, 0.1);
+  };
+}
+
+
+// ========================
+// MODIFIERS
+// ========================
+
+// ========================
+// UI STATES
+// ========================

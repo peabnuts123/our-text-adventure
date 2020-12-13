@@ -1,5 +1,7 @@
 import React, { FunctionComponent } from "react";
 
+import Header from '@app/components/header';
+
 interface Props {
   children?: any;
 }
@@ -7,9 +9,11 @@ interface Props {
 const Index: FunctionComponent = ({ children }: Props) => {
   return (
     <>
-      <h1>I am the layout component</h1>
+      <Header />
 
-      {children}
+      <div className="container page">
+        {children}
+      </div>
     </>
   );
 };
