@@ -9,5 +9,15 @@ module.exports = {
         implementation: require("sass"),
       },
     },
+    // For deploying to S3
+    {
+      resolve: `gatsby-plugin-s3`,
+      options: {
+        // @TODO we might not need this plugin - not sure what it does with these values
+        bucketName: '@TODO', // Will be overridden by deploy script
+        // protocol: "https",
+        // hostname: "our-text-adventure.foo.bar",
+      },
+    },
   ],
 };
