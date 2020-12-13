@@ -31,12 +31,12 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': DISABLED,
     '@typescript-eslint/no-non-null-assertion': DISABLED,
     '@typescript-eslint/restrict-template-expressions': DISABLED,
-    'no-console': DISABLED,
 
     // Rules that are explicitly a warning
     // - none at present -
 
     // Rules that are explicitly an error
+    'no-console': ERROR,
     'eol-last': ERROR,
     'semi': ERROR,
     'comma-dangle': ['error', 'always-multiline'],

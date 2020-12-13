@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 const { _: args, '$0': processName } = require('yargs').argv;
 const { execSync } = require('child_process');
@@ -73,6 +74,8 @@ console.log(`Successfully deployed code to ${lambdaFunctionNames.length} lambda 
  * @param {import('child_process').ExecSyncOptionsWithStringEncoding} options
  */
 function exec(command, options = {}) {
+  console.log(`[exec]: ${command}`);
+
   return execSync(command, {
     stdio: 'inherit',
     encoding: 'utf-8',
