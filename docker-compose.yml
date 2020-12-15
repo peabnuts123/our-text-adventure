@@ -20,3 +20,20 @@ services:
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+  api:
+    image: "ota-api:latest"
+    build: ./src/api
+    user: "1000:1000"
+    container_name: ota_api
+    restart: unless-stopped
+    volumes:
+      # Mount local AWS credentials into container
+      # These aren't needed by the container, it just needs
+      #   _any_ credentials to connect to localstack with
+      - "${HOME}/.aws:/home/node/.aws"
+    environment:
+      NODE_ENV: Production
+      ENVIRONMENT_ID: docker
+      PORT: 8080 # Must match container port mounted in `ports`
+    ports:
+      - '8000:8080/tcp'

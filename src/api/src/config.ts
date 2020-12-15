@@ -3,10 +3,10 @@ import { LogLevel } from "./util/Logger";
 const { ENVIRONMENT_ID } = process.env;
 
 export interface Config {
-  useLocalstack: boolean;
   screensTableName: string;
   environmentId: string;
   logLevel: LogLevel;
+  awsEndpoint?: string;
 }
 
 const baseConfig = {
@@ -22,21 +22,28 @@ switch (ENVIRONMENT_ID) {
 
     config = {
       ...baseConfig,
-      useLocalstack: true,
+      awsEndpoint: 'http://localhost:4566',
       logLevel: LogLevel.debug,
+    };
+    break;
+  case 'docker':
+    process.env['AWS_PROFILE'] = 'our-text-adventure';
+
+    config = {
+      ...baseConfig,
+      awsEndpoint: 'http://localstack:4566',
+      logLevel: LogLevel.normal,
     };
     break;
   case 'dev':
     config = {
       ...baseConfig,
-      useLocalstack: false,
       logLevel: LogLevel.normal,
     };
     break;
   case 'test':
     config = {
       ...baseConfig,
-      useLocalstack: false,
       logLevel: LogLevel.none,
     };
     break;

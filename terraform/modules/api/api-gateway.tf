@@ -60,18 +60,18 @@ resource "aws_apigatewayv2_integration" "add_path" {
 # GET /test/*
 resource "aws_apigatewayv2_route" "test" {
   api_id    = aws_apigatewayv2_api.api.id
-  route_key = "GET /test/{proxy+}"
+  route_key = "GET /api/test/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.test.id}"
 }
 # GET /screen/:id
 resource "aws_apigatewayv2_route" "get_screen_by_id" {
   api_id    = aws_apigatewayv2_api.api.id
-  route_key = "GET /screen/{id}"
+  route_key = "GET /api/screen/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.get_screen_by_id.id}"
 }
 # POST /path
 resource "aws_apigatewayv2_route" "add_path" {
   api_id    = aws_apigatewayv2_api.api.id
-  route_key = "POST /path"
+  route_key = "POST /api/path"
   target    = "integrations/${aws_apigatewayv2_integration.add_path.id}"
 }

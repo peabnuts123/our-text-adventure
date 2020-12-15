@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
-import express, { Request, RequestHandler, Response } from 'express';
+import express, { Request, RequestHandler, Response, Router } from 'express';
 import bodyParser from 'body-parser';
 
 import getMockContext from '@test/local/util/get-mock-context';
@@ -16,7 +16,7 @@ app.use(bodyParser.text({
   type: [ '*/*' ],
 }));
 
-const SERVER_PORT: number = 8000;
+const SERVER_PORT: number = Number(process.env['PORT'] || 8000);
 app.listen(SERVER_PORT, () => {
   Logger.log(`Server listening on http://localhost:${SERVER_PORT}`);
 });
@@ -24,9 +24,12 @@ app.listen(SERVER_PORT, () => {
 
 // ROUTES
 // These need to match the definitions in `terraform/modules/api/api-gateway.tf`
-app.get('/test/*', proxyHandler(testHandler));
-app.get('/screen/:id', proxyHandler(getScreenByIdHandler));
-app.post('/path', proxyHandler(addPathHandler));
+const router = Router();
+router.get('/test/*', proxyHandler(testHandler));
+router.get('/screen/:id', proxyHandler(getScreenByIdHandler));
+router.post('/path', proxyHandler(addPathHandler));
+
+app.use('/api', router);
 
 
 // FUNCTIONS

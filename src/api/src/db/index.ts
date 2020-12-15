@@ -28,8 +28,8 @@ class Db implements IDatabase {
       region: 'us-east-1',
     };
 
-    if (Config.useLocalstack) {
-      options.endpoint = `http://localhost:4566`;
+    if (Config.awsEndpoint) {
+      options.endpoint = Config.awsEndpoint;
       Logger.log(LogLevel.debug, "Setting AWS endpoint to localstack");
     }
 

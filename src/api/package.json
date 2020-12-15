@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "npm run simulate-api",
-    "simulate-api": "nodemon -L --watch src --watch test --ext ts,js --exec 'ts-node  -r tsconfig-paths/register --project test/tsconfig.json test/local/simulate-api.ts'",
+    "simulate-api": "ts-node  -r tsconfig-paths/register --project test/tsconfig.json test/local/simulate-api.ts",
+    "simulate-api:watch": "nodemon -L --watch src --watch test --ext ts,js --exec 'npm run simulate-api'",
     "simulate-build": "npm run test && npm run lint && npm run build && echo 'Build succeeded'",
     "lint": "eslint --max-warnings 0 --no-error-on-unmatched-pattern \"./*.{js,ts}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
     "build": "rm -rf build && tsc --project ./tsconfig.json",
