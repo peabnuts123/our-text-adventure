@@ -8,7 +8,11 @@ import GameScreen from '../../db/models/GameScreen';
 import Command from '../../db/models/Command';
 
 import Logger, { LogLevel } from '../../util/Logger';
-import errorResponse from '../../util/error-response';
+import errorResponse from '../../util/response/error';
+import okResponse from '../../util/response/ok';
+import ApiError from '../../errors/ApiError';
+import ErrorModel from '../../errors/ErrorModel';
+import UnknownError from '../../errors/UnknownError';
 
 Logger.setLogLevel(Config.logLevel);
 
@@ -25,18 +29,22 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
     const allScreenData = await db.getAllScreens();
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: "This is a test endpoint",
-        allScreens: allScreenData,
-      }),
-    };
+    return okResponse({
+      message: "This is a test endpoint",
+      allScreens: allScreenData,
+    });
   } catch (err) {
-    return errorResponse("An error occurred while processing.", err);
+    let error: ErrorModel;
+    if (err instanceof ErrorModel) {
+      error = err;
+    } else {
+      error = new UnknownError(err as (string | Error));
+    }
+
+    return errorResponse(new ApiError({
+      message: "An error occurred while processing.",
+      error,
+    }));
   }
 };
 

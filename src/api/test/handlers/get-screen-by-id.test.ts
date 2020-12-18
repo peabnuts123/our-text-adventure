@@ -1,6 +1,7 @@
 import { handler } from '@app/handlers/get-screen-by-id';
 import Command from '@app/db/models/Command';
 import GameScreen from '@app/db/models/GameScreen';
+import ErrorId from '@app/errors/ErrorId';
 
 import MockDb from '@test/mocks/mockDb';
 import { invokeHandler } from '@test/util/invoke-handler';
@@ -46,7 +47,14 @@ describe("GetScreenById handler", () => {
     const mockScreenId = '51e5db90-0587-471f-a281-0b37b7eccb8c';
 
     const expectedResponse = {
-      "message": `No screen exists with id: ${mockScreenId}`,
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'GenericError',
+        modelVersion: 1,
+        id: ErrorId.GetScreenById_NoScreenExistsWithId,
+        message: `No screen exists with id: ${mockScreenId}`,
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -69,7 +77,14 @@ describe("GetScreenById handler", () => {
     // @NOTE technically this cannot happen, as the id param is a path param, used for routing
     // Setup
     const expectedResponse = {
-      "message": "Missing path parameter: id",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'id',
+        message: "Missing path parameter",
+      }],
     };
 
     const mockRequest: SimpleRequest = {

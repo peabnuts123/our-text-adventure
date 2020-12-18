@@ -1,6 +1,7 @@
 import { handler } from '@app/handlers/add-path';
 import { AddPathDto } from '@app/handlers/add-path/dto';
 import GameScreen from '@app/db/models/GameScreen';
+import ErrorId from '@app/errors/ErrorId';
 
 import MockDb from '@test/mocks/mockDb';
 import { invokeHandler } from '@test/util/invoke-handler';
@@ -55,7 +56,14 @@ describe("AddPath handler", () => {
   test("Request with empty body returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Missing or empty body",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'body',
+        message: "Missing or empty body",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -79,7 +87,14 @@ describe("AddPath handler", () => {
   test("Request without JSON header returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Requests must be JSON with header 'Content-Type: application/json'",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'headers',
+        message: "Requests must be JSON with header 'Content-Type: application/json'",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -98,7 +113,14 @@ describe("AddPath handler", () => {
   test("Request with invalid JSON body returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Could not parse body - likely invalid JSON",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'body',
+        message: "Could not parse body - likely invalid JSON",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -121,8 +143,21 @@ describe("AddPath handler", () => {
   /* VALIDATION TESTS: `command` property */
   test("Missing `command` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `command` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'command',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -131,7 +166,7 @@ describe("AddPath handler", () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
         screenBody: ["This is a ", "mock screen"],
       }),
     };
@@ -146,8 +181,21 @@ describe("AddPath handler", () => {
   });
   test("Empty `command` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `command` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'command',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -157,7 +205,7 @@ describe("AddPath handler", () => {
       },
       body: JSON.stringify({
         command: "   ",
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
         screenBody: ["This is a ", "mock screen"],
       }),
     };
@@ -172,8 +220,21 @@ describe("AddPath handler", () => {
   });
   test("Non-string `command` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `command` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'command',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -183,7 +244,7 @@ describe("AddPath handler", () => {
       },
       body: JSON.stringify({
         command: 2,
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
         screenBody: ["This is a ", "mock screen"],
       }),
     };
@@ -200,8 +261,21 @@ describe("AddPath handler", () => {
   /* VALIDATION TESTS: `screenBody` property */
   test("Missing `screenBody` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `screenBody` must be a non-empty array of strings",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'screenBody',
+        message: "Field must be a non-empty array of strings",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -211,7 +285,7 @@ describe("AddPath handler", () => {
       },
       body: JSON.stringify({
         command: "mock bone",
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
       }),
     };
 
@@ -225,8 +299,21 @@ describe("AddPath handler", () => {
   });
   test("Non-array `screenBody` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `screenBody` must be a non-empty array of strings",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'screenBody',
+        message: "Field must be a non-empty array of strings",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -237,7 +324,7 @@ describe("AddPath handler", () => {
       body: JSON.stringify({
         screenBody: "This is a mock screen",
         command: "mock bone",
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
       }),
     };
 
@@ -251,8 +338,21 @@ describe("AddPath handler", () => {
   });
   test("Array of non-strings for `screenBody` property returns 400", async () => {
     // Setup
+    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
     const expectedResponse = {
-      message: "Validation error - Field `screenBody` must be a non-empty array of strings",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'screenBody',
+        message: "Field must be a non-empty array of strings",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -267,7 +367,7 @@ describe("AddPath handler", () => {
           true,
         ],
         command: "mock bone",
-        sourceScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        sourceScreenId: mockScreen.id,
       }),
     };
 
@@ -284,7 +384,14 @@ describe("AddPath handler", () => {
   test("Missing `sourceScreenId` property returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Validation error - Field `sourceScreenId` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'sourceScreenId',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -309,7 +416,14 @@ describe("AddPath handler", () => {
   test("Empty `sourceScreenId` property returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Validation error - Field `sourceScreenId` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'sourceScreenId',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -335,7 +449,14 @@ describe("AddPath handler", () => {
   test("Non-string `sourceScreenId` property returns 400", async () => {
     // Setup
     const expectedResponse = {
-      message: "Validation error - Field `sourceScreenId` must be a non-empty string",
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'sourceScreenId',
+        message: "Field must be a non-empty string",
+      }],
     };
 
     const mockRequest: SimpleRequest = {
@@ -366,7 +487,14 @@ describe("AddPath handler", () => {
     const mockScreenId = 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4';
 
     const expectedResponse = {
-      message: `Validation error - Field \`sourceScreenId\`: no screen exists with id: ${mockScreenId}`,
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'GenericError',
+        modelVersion: 1,
+        id: ErrorId.AddPath_NoScreenExistsWithId,
+        message: `No screen exists with id: ${mockScreenId}`,
+      }],
     };
 
     const mockRequest: SimpleRequest = {
