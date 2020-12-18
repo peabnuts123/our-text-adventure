@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "[API] Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src/api",
+      "program": "${workspaceFolder}/src/api/node_modules/jest/bin/jest.js",
+      "outputCapture": "std",
+      "args": [
+        "--runInBand",
+        "--config=${workspaceFolder}/src/api/jest.config.js"
+      ],
+    },
+    // ts-node
+    {
+      "name": "[API] Debug Endpoints",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/src/api",
+      "program": "${workspaceFolder}/src/api/node_modules/.bin/ts-node",
+      "outputCapture": "std",
+      "args": [
+        "-r", "tsconfig-paths/register",
+        "--project", "test/tsconfig.json",
+        "test/local/simulate-api.ts"
+      ],
+    },
+  ]
+}
