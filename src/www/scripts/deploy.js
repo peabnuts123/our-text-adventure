@@ -7,12 +7,12 @@ const fs = require('fs');
 const path = require('path');
 
 // Validation
-const environmentName = args[0];
-if (environmentName === undefined || environmentName.trim() === '') {
+const environmentId = args[0];
+if (environmentId === undefined || environmentId.trim() === '') {
   console.error("No environment name specified (e.g. dev)");
   console.error(`Usage: ${processName} (environment_name)`);
   process.exit(1);
-} else if (environmentName === 'local') {
+} else if (environmentId === 'local') {
   console.error("Cannot deploy to local environment - WWW does not run in localstack. Just run it locally instead (e.g. 'npm start')");
   process.exit(5);
 }
@@ -21,10 +21,14 @@ if (!fs.existsSync('package.json')) {
   process.exit(2);
 }
 
+// Environment config
+process.env['ENVIRONMENT_ID'] = environmentId;
+process.env['NODE_ENV'] = 'production';
+
 // Fetch config from terraform
-const terraformEnvironmentPath = `../../terraform/environments/${environmentName}`;
+const terraformEnvironmentPath = `../../terraform/environments/${environmentId}`;
 if (!fs.existsSync(terraformEnvironmentPath)) {
-  console.error(`No terraform environment named '${environmentName}'`);
+  console.error(`No terraform environment with id: '${environmentId}'`);
   process.exit(4);
 }
 const rawTerraformOutput = exec('terraform output --json', {
