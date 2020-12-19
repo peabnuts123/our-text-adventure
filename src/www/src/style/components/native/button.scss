@@ -1,35 +1,35 @@
 $button-height: 40px;
 
 .button {
-  background-color: $primary;
-  color: $secondary;
+  background-color: transparent;
+  color: $primary;
   border-radius: $radius;
   text-decoration: none;
   cursor: pointer;
   height: $button-height;
-  padding-left: $m * 2;
-  padding-right: $m * 2;
+  padding-left: $m;
+  padding-right: $m;
   user-select: none;
-  border: none;
-
-  &:hover {
-    background-color: darken($primary, 5%);
-  }
+  border: 1px solid $primary;
 
   &:active {
-    background-color: darken($primary, 10%);
+    background-color: rgba($primary, 0.2);
+  }
+
+  &:focus {
+    outline: none;
   }
 }
 
-.button--secondary {
-  background-color: $secondary;
-  color: $primary;
+// .button--secondary {
+//   background-color: $secondary;
+//   color: $primary;
 
-  &:hover {
-    background-color: darken($secondary, 5%);
-  }
+//   &:hover {
+//     background-color: darken($secondary, 5%);
+//   }
 
-  &:active {
-    background-color: darken($secondary, 10%);
-  }
-}
+//   &:active {
+//     background-color: darken($secondary, 10%);
+//   }
+// }

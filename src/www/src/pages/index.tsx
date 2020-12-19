@@ -2,6 +2,8 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 
 import GameScreen from "@app/models/GameScreen";
 import { useStores } from "@app/stores";
+import CommandInput from "@app/components/command-input";
+import Logger, { LogLevel } from "@app/util/Logger";
 
 const IndexPage: FunctionComponent = () => {
   const { ScreenStore } = useStores();
@@ -17,9 +19,15 @@ const IndexPage: FunctionComponent = () => {
     void getStore();
   }, [ScreenStore]);
 
+  const onSubmitCommand = async (command: string): Promise<void> => {
+    Logger.log(LogLevel.debug, "Submitting command: ", command);
+  };
+
   return (
     <div className="home">
       <h1>Home Page</h1>
+
+      <CommandInput onSubmit={onSubmitCommand} />
 
       <div className="home__code-test">
         {baseScreen !== undefined ?
@@ -33,6 +41,8 @@ const IndexPage: FunctionComponent = () => {
           )
         }
       </div>
+
+      <CommandInput onSubmit={onSubmitCommand} />
     </div>
   );
 };
