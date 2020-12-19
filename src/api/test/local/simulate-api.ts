@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2, APIGatewayProxyStructuredResultV2 } from 'aws-lambda';
 import express, { Request, RequestHandler, Response, Router } from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 import getMockContext from '@test/local/util/get-mock-context';
 import getMockProxyRequest from '@test/local/util/get-mock-proxy-request';
@@ -12,9 +13,12 @@ import { handler as addPathHandler } from '@app/handlers/add-path';
 
 // EXPRESS APP
 const app = express();
+
+// Configure middleware
 app.use(bodyParser.text({
   type: [ '*/*' ],
 }));
+app.use(cors());
 
 const SERVER_PORT: number = Number(process.env['PORT'] || 8000);
 app.listen(SERVER_PORT, () => {
