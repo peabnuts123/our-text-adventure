@@ -127,7 +127,7 @@ export default class Logger {
 
     // Test whether we can print at all
     if (this.testLevel(logLevel)) {
-      logFunction(`[PET] [${new Date().toLocaleString()}] ${logLevel === LogLevel.debug ? '[DEBUG]' : ''}`, ...values);
+      logFunction(`[${new Date().toLocaleString()}] ${logLevel === LogLevel.debug ? '[DEBUG]' : ''}`, ...values);
     }
   }
 }
