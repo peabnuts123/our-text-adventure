@@ -7,7 +7,7 @@
     "gatsby"
   ],
   "scripts": {
-    "start": "gatsby develop",
+    "start": "gatsby develop --port 8080",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "simulate-build": "npm run lint && npm run test && npm run type-check && npm run build && echo 'Build succeeded'",
