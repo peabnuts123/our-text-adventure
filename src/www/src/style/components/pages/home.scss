@@ -25,3 +25,13 @@
     color: $primary;
   }
 }
+
+.home__code-test {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 4.7vw;
+  white-space: pre-wrap;
+
+  @media (min-width: $breakpoint-text) {
+    font-size: 22px;
+  }
+}

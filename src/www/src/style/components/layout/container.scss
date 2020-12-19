@@ -3,10 +3,14 @@
   height: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: $m;
-  padding-right: $m;
+  padding-left: $m / 2;
+  padding-right: $m / 2;
 
-  @include media-query('tablet') { width: $breakpoint-mobile; }
+  @include media-query('tablet') {
+    width: $breakpoint-mobile;
+    padding-left: $m;
+    padding-right: $m;
+  }
 }
 
 .container--no-padding {

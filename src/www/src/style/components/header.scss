@@ -4,25 +4,26 @@
 // @note: The header / nav at the top of the page
 // ========================
 .header {
-  padding: 0;
-  height: 100px;
-  background-color: $primary;
-    color: $secondary;
+  display: block;
+  position: relative;
 }
 
 .header-desktop {
   display: none;
+  position: absolute;
+  width: $header-width;
+  left: -$header-width;
+  padding: 0;
+  color: $primary;
 
-  flex-direction: row;
-  align-items: center;
 
-  @include media-query('tablet') {
-    display: flex;
+  @include media-query('laptop') {
+    display: block;
   }
 
   // Nav has special links
   a {
-    color: $secondary;
+    color: $primary;
     text-decoration: none;
   }
 }
@@ -31,28 +32,31 @@
 // ELEMENTS
 // ========================
 .header-desktop__title {
-  @extend %font-heading;
+  @extend %h1;
+  font-size: 48px;
   display: block;
-  margin-right: $m * 2;
-  font-size: $font-size-h3;
+  text-decoration: none;
+  color: $primary;
+  padding-left: $m / 2;
+  padding-right: $m / 2;
+
+  @include media-query('tablet') {
+    padding-left: $m;
+    padding-right: $m;
+  }
 }
 
 .header-desktop__nav-items {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  height: 100%;
+  display: block;
   font-size: $font-size-h3;
 }
 
 .header-desktop__nav-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: block;
   padding: 0 $m;
 
   &.is-active {
-    background-color: rgba($link, 0.1);
+    box-shadow: -2px 0 0 $primary;
   };
 }
 

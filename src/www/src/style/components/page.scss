@@ -4,5 +4,29 @@
 // @note: Wrapper around site pages to provide consistent styling
 // ========================
 .page {
-  padding-top: $m * 2;
+  position: relative;
+
+  display: block;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @include media-query('tablet') {
+    width: $breakpoint-mobile;
+  }
+  @include media-query('laptop') {
+    width: $breakpoint-tablet - ($header-width * 2);
+  }
+}
+
+.page__content {
+  padding-top: $m;
+  padding-left: $m / 2;
+  padding-right: $m / 2;
+
+  @include media-query('tablet') {
+    padding-top: $m;
+    padding-left: $m;
+    padding-right: $m;
+  }
 }

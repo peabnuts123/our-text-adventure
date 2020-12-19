@@ -15,7 +15,7 @@ $grey-light: #F3F1F1;
 $white:      #FFFFFF;
 
 // Aliases
-$text: rgba($black, 0.9);
+$text: rgba($tangerine, 0.9);
 $primary: $tangerine;
 $secondary: $rose-sugar;
 $link: $rose;
@@ -23,6 +23,7 @@ $selection: $peach;
 $border: $grey-light;
 
 // Breakpoints
+$breakpoint-text: 486px;
 $breakpoint-mobile: 768px;
 $breakpoint-tablet: 1024px;
 $breakpoint-laptop: 1280px;
@@ -35,4 +36,4 @@ $m: 20px;
 $radius: 5px;
 
 // Header
-$header-height: 70px;
+$header-width: 128px;

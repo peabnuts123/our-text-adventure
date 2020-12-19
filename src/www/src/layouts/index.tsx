@@ -9,10 +9,12 @@ interface Props {
 const Index: FunctionComponent = ({ children }: Props) => {
   return (
     <>
-      <Header />
+      <div className="page">
+        <Header />
 
-      <div className="container page">
-        {children}
+        <div className="page__content">
+          {children}
+        </div>
       </div>
     </>
   );

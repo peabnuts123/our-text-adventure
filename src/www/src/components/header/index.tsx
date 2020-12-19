@@ -4,8 +4,9 @@ import React, { FunctionComponent } from "react";
 const Index: FunctionComponent = () => {
   return (
     <header className="header">
-      <nav className="header-desktop container">
-        <Link to="/" className="header-desktop__title">Our Text Adventure</Link>
+      <Link to="/" className="header-desktop__title">Our Text Adventure</Link>
+
+      <nav className="header-desktop">
 
         <div className="header-desktop__nav-items">
           <Link to="/"
