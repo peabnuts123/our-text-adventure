@@ -3,22 +3,54 @@
 It's a text-based adventure. You can play it, but you can also contribute to it.
 
 ## Questions
-  - Should you have to log in to edit the narrative?
   - Some kind of rate limiting?
   - A maintenance mode for the site?
-  - Lambda / DynamoDB in same VPC
 
 ## Backlog / @TODO
-  - [x] ~~Commit something / make a repo~~
-  - [x] ~~Give this project a working title~~
-  - [x] ~~Terraform local stack for DynamoDB table~~
-  - [x] ~~Extract DynamoDB layer into a repository pattern (for better testing)~~
-  - [x] ~~Test project for API~~
-  - [ ] Lambda MVP
-  - [ ] docker-compose service for running mock API (depends on db)
-  - [x] ~~Terraform for Lambda functions~~
-  - [x] ~~Terraform for API Gateway~~
-  - [ ] Upgrade to v3 AWS SDK (and only included as-needed)
-  - [ ] Gatsby frontend MVP
+  - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
+  - [ ] Mobile nav
+  - [ ] line-wrap on prompt input
+
+  - [x] ~~Make the terminal write text and then prompt you~~
+  - [ ] Implement slash commands e.g. `/path`
+  - [ ] `/path` command opens form for creating pathway
+    - Command
+    - Items taken
+    - Items given
+    - Items required
+    - Target screen (new / existing)
+  - [ ] Create `/api/command` endpoint
+    - Takes:
+      - State
+      - Command
+    - Returns:
+      - Error OR
+      - Screen
+      - Updated State
+  - [ ] (API) Restrict commands to be unique per screen
+  - [ ] Update `/api/path` endpoint to handle item requirements
+  - [ ] Make the terminal submit the command to the API
+  - [ ] Make terminal print command result
+  - [ ] Terminal hydrates state from the URL whenever an command is issued
+  - [ ] Make `/inventory` list your inventory
+  - [ ] Make `/help` list commands and stuff
+
+### Terminal
+  - Shows text
+  - Prompts you
+  - Appends text to the screen and updates the URL when you issue a command
+
+### Commands
+  - Have a command i.e. a string e.g. `look bone`
+    - Might fuzzy match on that later
+  - May have an item requirement
+  - May remove items (which implies requirement)
+  - May give items
+
+### Items
+  - Are just strings
+  - (?) Are not case sensitive (Maybe they are?)
+  - There is no limit to inventory
+  - You can view your inventory with `/inventory` or something
