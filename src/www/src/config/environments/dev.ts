@@ -1,11 +1,10 @@
-import ApplicationConfig from "../Config";
+import { ApplicationConfig, GlobalConfig } from "../Config";
 import { LogLevel } from "@app/util/Logger";
 
 const ProductionConfig: ApplicationConfig = {
-  EnvironmentId: process.env.ENVIRONMENT_ID!,
+  ...GlobalConfig,
   ApiHost: '', // Api on same domain
   LogLevel: LogLevel.none,
-  AppVersion: process.env.PACKAGE_VERSION!,
 };
 
 export default ProductionConfig;

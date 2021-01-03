@@ -1,6 +1,6 @@
 import { LogLevel } from "@app/util/Logger";
 
-interface ApplicationConfig {
+export interface ApplicationConfig {
   // @TODO put EnvironmentId/AppVersion into <head>
   readonly EnvironmentId: string;
   readonly ApiHost: string;
@@ -8,4 +8,7 @@ interface ApplicationConfig {
   readonly AppVersion: string;
 }
 
-export default ApplicationConfig;
+export const GlobalConfig = {
+  EnvironmentId: process.env.ENVIRONMENT_ID!,
+  AppVersion: process.env.PACKAGE_VERSION!,
+};
