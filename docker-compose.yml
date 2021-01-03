@@ -26,6 +26,8 @@ services:
     user: "1000:1000"
     container_name: ota_api
     restart: unless-stopped
+    depends_on:
+      - localstack
     volumes:
       # Mount local AWS credentials into container
       # These aren't needed by the container, it just needs
