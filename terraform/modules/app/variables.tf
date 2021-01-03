@@ -15,11 +15,10 @@ variable "aws_region" {
   type        = string
 }
 
-# @TODO custom domain
-# variable "domain_name" {
-#   description = "URL for HTTPS certificate domain"
-#   type        = string
-# }
+variable "domain_name" {
+  description = "URL for HTTPS certificate domain"
+  type        = string
+}
 
 variable "project_id" {
   description = "Unique simple identifier for project. Must only use A-Z, 0-9, - or _ characters e.g. \"our-text-adventure\""

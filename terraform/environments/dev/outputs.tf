@@ -11,3 +11,6 @@ output "www_bucket_name" {
 output "cloudfront_domain_name" {
   value = module.app.cloudfront_domain_name
 }
+output "domain_name" {
+  value = module.app.domain_name
+}

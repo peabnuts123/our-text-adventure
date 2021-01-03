@@ -5,8 +5,7 @@ resource "aws_cloudfront_distribution" "app" {
 
   # Domain names that will be pointing at this distribution,
   #   other than the auto-generated "______.cloudfront.net"
-  # @TODO custom domain
-  # aliases = ["${var.domain_name}"]
+  aliases = ["${var.domain_name}"]
 
   # Default file to serve when requesting `/`
   default_root_object = "index.html"
@@ -129,10 +128,8 @@ resource "aws_cloudfront_distribution" "app" {
 
   # HTTPS certificate (from ACM)
   viewer_certificate {
-    cloudfront_default_certificate = true
-  # @TODO custom domain
-  #   acm_certificate_arn      = data.aws_acm_certificate.default.arn
-  #   ssl_support_method       = "sni-only"
-  #   minimum_protocol_version = "TLSv1.2_2018"
+    acm_certificate_arn      = data.aws_acm_certificate.default.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2018"
   }
 }

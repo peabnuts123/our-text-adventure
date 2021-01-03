@@ -15,6 +15,11 @@ output "cloudfront_domain_name" {
   description = "CloudFront distribution domain name. Add DNS record `CNAME <DOMAIN_NAME> <CLOUDFRONT_DOMAIN_NAME>` to finish configuration"
 }
 
+output "domain_name" {
+  value = var.domain_name
+  description = "Domain name for accessing this environment"
+}
+
 output "www_bucket_name" {
   value       = module.www.s3_bucket_name
   description = "S3 bucket name, for deploying www project"

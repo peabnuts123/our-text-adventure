@@ -10,7 +10,7 @@ aws_secret_key       = ""
 aws_region = "us-east-1"
 # URL used for this environment.
 # @NOTE will need to be MANUALLY set up in ACM for HTTPS
-# domain_name = ""
+domain_name = ""
 # Unique identifier for this project. All resources will be tagged with this id. Also used for naming resources.
 # Must be a simple A-Z0-9 string with optional dashes (-) or underscores (_)
 # e.g. "our-text-adventure"

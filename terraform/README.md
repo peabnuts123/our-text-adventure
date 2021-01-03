@@ -47,16 +47,15 @@ You need to have a few things before you can create an environment:
     - AWSLambda_FullAccess
     - AmazonS3FullAccess
     - CloudFrontFullAccess
+    - AWSCertificateManagerFullAccess
 
-    <!-- @TODO will probably need these permissions too  -->
-    <!-- - AWSCertificateManagerFullAccess -->
-  <!-- - A domain set up (and active) in ACM
+  - A domain set up (and active) in ACM
     - TL;DR:
-    1. Add your domain to ACM
-    1. Add a CNAME record to your domain with the name/value that ACM gives you
-    1. Wait for it to validate
-    1. Now you are good to go
-    - You will use this domain in the config e.g. `pet-game.winsauce.com` -->
+      1. Add your domain to ACM
+      1. Add a CNAME record to your domain with the name/value that ACM gives you
+      1. Wait for it to validate
+      1. Now you are good to go
+    - You will use this domain in the config e.g. `dev.ourtextadventure.com`
 
 ### Deploying
 
