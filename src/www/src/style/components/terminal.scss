@@ -10,6 +10,7 @@
 // ========================
 .terminal__code {
   @extend %terminal-text;
+  @extend %font-terminal;
   max-height: 60vh;
   overflow-y: scroll;
   white-space: pre-wrap;

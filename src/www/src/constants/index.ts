@@ -1,0 +1,1 @@
+export const TERMINAL_CHARACTER_WIDTH = 30;

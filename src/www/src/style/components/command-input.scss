@@ -23,6 +23,7 @@
 
 .command-input__input-prompt {
   @extend %terminal-text;
+  @extend %font-terminal;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -32,6 +33,7 @@
 
 .command-input__input {
   @extend %terminal-text;
+  @extend %font-terminal;
   border: 0 none;
   height: 100%;
   background-color: transparent;

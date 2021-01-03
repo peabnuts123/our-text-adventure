@@ -8,8 +8,10 @@ $font-weight-regular: normal;
 $font-weight-bold: bold;
 
 // Font names
-$font-style-heading: sans-serif;
-$font-style-body: sans-serif;
+/* @TODO load these fonts properly */
+$font-style-heading: 'Raleway', sans-serif;
+$font-style-body: 'Lora', serif;
+$font-style-terminal: 'JetBrains Mono', monospace;
 
 // Font style placeholders
 %font-heading {
@@ -20,6 +22,12 @@ $font-style-body: sans-serif;
 %font-body {
   font-family: $font-style-body;
   font-weight: $font-weight-regular;
+}
+
+%font-terminal {
+  font-family: $font-style-terminal;
+  line-height: 1;
+  font-weight: normal;
 }
 
 
@@ -85,7 +93,7 @@ a, .link {
 code {
   background-color: $grey-light;
   color: $text;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: $font-style-terminal;
   white-space: pre;
   border-radius: $radius;
   padding: $m / 2;

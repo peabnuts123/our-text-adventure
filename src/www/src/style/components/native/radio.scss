@@ -1,0 +1,54 @@
+// ========================
+// RADIO
+// ========================
+// @note: A radio button. The actual radio button is intended to be hidden, and represented
+//  by .radio__indicator instead. See `u
+// ========================
+// @example:
+// <div class="radio">
+//   <input type="radio" name="my-radio" id="option-a" class="radio__input u-screen-reader-only" />
+//   <span class="radio__indicator"></span>
+//   <label for="option-a" class="radio__label">Option A</label>
+// </div>
+//
+
+.radio {
+  display: block;
+}
+
+// ========================
+// ELEMENTS
+// ========================
+.radio__input {
+  &:checked + .radio__indicator::before {
+    content: '[x]';
+  }
+
+  &:focus + .radio__indicator {
+    outline: 1px solid $focus;
+  }
+}
+
+.radio__indicator {
+  padding-right: $m;
+  padding-left: $m;
+
+  &::before {
+    @extend %font-terminal;
+    display: inline-block;
+    content: '[ ] '
+  }
+}
+
+.radio__label {
+  @extend %font-terminal;
+}
+
+
+// ========================
+// MODIFIERS
+// ========================
+
+// ========================
+// UI STATES
+// ========================

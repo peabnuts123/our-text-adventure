@@ -26,6 +26,11 @@ const Html: FunctionComponent<Props> = (props) => {
         <meta name="app-environment" content={Config.EnvironmentId} />
         <meta name="app-version" content={Config.AppVersion} />
 
+        {/* Fonts */}
+        <link href="//fonts.googleapis.com/css?family=Lora" rel="stylesheet" type="text/css" />
+        <link href="//fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css" />
+        <link href="//fonts.googleapis.com/css?family=JetBrains+Mono" rel="stylesheet" type="text/css" />
+
         {props.headComponents}
       </head>
       <body {...props.bodyAttributes}>

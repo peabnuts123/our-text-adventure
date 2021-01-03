@@ -20,7 +20,6 @@
  * of the viewport.
  */
 %terminal-text {
-  font-family: 'Courier New', Courier, monospace;
   font-size: #{100/$terminal-text-size-ratio}vw;
 
   @media (min-width: $breakpoint-max-terminal-text-size) {

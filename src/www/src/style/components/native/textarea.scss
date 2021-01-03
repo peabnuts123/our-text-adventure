@@ -1,9 +1,25 @@
 .textarea {
+  @extend %font-terminal;
   display: block;
+  color: $primary;
   width: 100%;
-  background-color: $white;
-  border: 1px solid $grey-medium;
+  background-color: unset;
+  border: 1px solid $primary;
   border-radius: $radius;
-  padding: $m;
+  padding: $m $m / 2 ;
   min-height: 100px;
+  font-size: 16px;
+
+  &:focus {
+    outline: none;
+    border: 1px solid $focus;
+  }
+
+  &::placeholder {
+    color: rgba($primary, 0.35);
+  }
+
+  @include media-query('tablet') {
+    font-size: 20px;
+  }
 }

@@ -52,6 +52,7 @@
 }
 
 .header-desktop__nav-item {
+  @extend %font-heading;
   display: block;
   padding: 0 $m;
 

@@ -3,9 +3,25 @@
 }
 
 .input--text {
+  @extend %font-terminal;
+  color: $primary;
   display: block;
-  background-color: $white;
-  border: 1px solid $grey-medium;
+  background-color: unset;
   border-radius: $radius;
-  padding: $m;
+  padding: $m / 2;
+  border: 1px solid $primary;
+  font-size: 16px;
+
+  &:focus {
+    outline: none;
+    border: 1px solid $focus;
+  }
+
+  &::placeholder {
+    color: rgba($primary, 0.35);
+  }
+
+  @include media-query('tablet') {
+    font-size: 20px;
+  }
 }

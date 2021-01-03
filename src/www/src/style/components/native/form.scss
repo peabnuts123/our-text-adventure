@@ -4,10 +4,11 @@
 
 .form__input {
   display: block;
-  margin-bottom: 2 * $m;
+  margin-top: 2 * $m;
 }
 
 .form__input-label {
+  @extend %h3;
   display: block;
   margin-bottom: $m;
 }

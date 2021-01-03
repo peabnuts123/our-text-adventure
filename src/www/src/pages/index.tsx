@@ -22,7 +22,7 @@ const IndexPage: FunctionComponent = () => {
     <div className="home">
       <h1>Home Page</h1>
 
-      <Terminal initialScreen={baseScreen}/>
+      <Terminal initialScreen={baseScreen} />
     </div>
   );
 };
