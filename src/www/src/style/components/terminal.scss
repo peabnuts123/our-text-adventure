@@ -1,0 +1,32 @@
+// ========================
+// TERMINAL
+// ========================
+// @note: The terminal that the user reads from and types into
+// ========================
+// .terminal { }
+
+// ========================
+// ELEMENTS
+// ========================
+.terminal__code {
+  @extend %terminal-text;
+  max-height: 60vh;
+  overflow-y: scroll;
+  white-space: pre-wrap;
+
+  /* @NOTE hide scrollbars */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  &::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
+}
+
+// ========================
+// MODIFIERS
+// ========================
+
+// ========================
+// UI STATES
+// ========================

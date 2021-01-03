@@ -16,66 +16,34 @@
 }
 
 .command-input__input-container {
-  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
 .command-input__input-prompt {
-  &::before {
-    content: ">";
-    position: absolute;
-    display: block;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    top: 0;
-    left: 0;
-    color: $primary;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 4.7vw;
-
-    @media (min-width: $breakpoint-text) {
-      font-size: 22px;
-    }
-  }
+  @extend %terminal-text;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: $primary;
 }
 
 .command-input__input {
+  @extend %terminal-text;
   border: 0 none;
   height: 100%;
   background-color: transparent;
   border-radius: $radius;
   color: $primary;
-  padding-left: $m;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 4.7vw;
-
-  @media (min-width: $breakpoint-text) {
-    font-size: 22px;
-  }
+  padding: 0;
 
   &:focus {
     outline: none;
-    box-shadow: inset 0 0 0 1px rgba($primary, 0.3);
   }
 }
 
-.command-input__submit {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 4.7vw;
-  height: 30px;
-  padding-left: $m / 2;
-  padding-right: $m / 2;
-  border: 1px solid rgba($primary, 0.7);
-
-  @media (min-width: $breakpoint-text) {
-    font-size: 22px;
-    height: 40px;
-  }
-
-  @include media-query('tablet') {
-  }
-}
 
 // ========================
 // ELEMENTS

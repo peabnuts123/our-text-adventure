@@ -1,5 +1,5 @@
 import Logger, { LogLevel } from "@app/util/Logger";
-import React, { FormEventHandler, FunctionComponent, useState } from "react";
+import React, { FormEventHandler, FunctionComponent, useEffect, useRef, useState } from "react";
 
 interface Props {
   onSubmit: (command: string) => Promise<void>;
@@ -7,6 +7,7 @@ interface Props {
 
 const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
   const [inputCommand, setInputCommand] = useState<string>("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit: FormEventHandler<Element> = (e) => {
     e.preventDefault();
@@ -23,14 +24,25 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
     }
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current!.focus();
+    });
+  }, []);
+
   return (
     <div className="command-input">
       <form action="#" onSubmit={handleSubmit} className="command-input__form">
         <div className="command-input__input-container">
-          <div className="command-input__input-prompt" />
-          <input className="command-input__input input" type="text" value={inputCommand} onChange={(e) => setInputCommand(e.target.value)} />
+          <span className="command-input__input-prompt">&gt;&nbsp;</span>
+          <input className="command-input__input input"
+            type="text"
+            value={inputCommand}
+            onChange={(e) => setInputCommand(e.target.value)}
+            ref={inputRef}
+          />
         </div>
-        <button className="command-input__submit button" type="submit">Submit</button>
+        <button className="button u-screen-reader-only" type="submit">Submit</button>
       </form>
     </div>
   );
