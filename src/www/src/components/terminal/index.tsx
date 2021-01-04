@@ -119,15 +119,18 @@ erat ut turpis.
   };
 
   const handleCancelCreatePath = (): void => {
+    setIsCreatingNewPath(false);
+
     appendTerminalLinesToBuffer(['Cancelled creating path.']);
     flushTerminalBuffer();
-    setIsCreatingNewPath(false);
   };
 
   // Detect when initialScreen has loaded
   if (!hasLoaded && initialScreen !== undefined) {
     setHasLoaded(true);
+
     appendTerminalLinesToBuffer(initialScreen.body);
+    flushTerminalBuffer();
   }
 
   return (
