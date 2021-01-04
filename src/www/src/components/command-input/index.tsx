@@ -1,4 +1,3 @@
-import Logger, { LogLevel } from "@app/util/Logger";
 import React, { FormEventHandler, FunctionComponent, useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -13,15 +12,8 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const command = inputCommand && inputCommand.trim();
-
-    if (command === undefined || command.length === 0) {
-      // @TODO what to do here?
-      Logger.logError(LogLevel.debug, "Cannot submit. Command is empty");
-    } else {
-      void onSubmit(command);
-      setInputCommand("");
-    }
+    void onSubmit(inputCommand);
+    setInputCommand("");
   };
 
   useEffect(() => {

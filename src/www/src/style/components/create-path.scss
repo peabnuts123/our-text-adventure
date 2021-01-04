@@ -4,7 +4,11 @@
 // @note: Form for creating a new path
 // ========================
 .create-path {
-  margin-top: $m;
+  margin-top: $m * 2;
+
+  @include media-query('tablet') {
+    margin-top: $m * 3;
+  }
 }
 
 // ========================

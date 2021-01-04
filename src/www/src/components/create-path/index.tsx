@@ -10,7 +10,11 @@ enum DestinationType {
   Existing = 'DestinationType_Existing',
 }
 
-const CreatePath: FunctionComponent = () => {
+interface Props {
+  onCancel: () => void;
+}
+
+const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
   // State
   const [commandInput, setCommandInput] = useState<string>("");
   const [itemsTakenInput, setItemsTakenInput] = useState<string>("");
@@ -204,6 +208,7 @@ const CreatePath: FunctionComponent = () => {
         </ul> */}
 
         <button type="submit" className="button form__button u-margin-top-md">Create pathway</button>
+        <button type="button" className="button form__button u-md-margin-left-md u-margin-top-md" onClick={onCancel}>Cancel</button>
       </form>
     </div>
   );
