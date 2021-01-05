@@ -44,7 +44,14 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
    * Write the terminal buffer to the terminal.
    */
   const flushTerminalBuffer = (): void => {
-    setTerminalLines(terminalLines.concat(terminalBuffer, '\n'));
+    setTerminalLines(terminalLines.concat(terminalBuffer, ''));
+
+    // Scroll terminal to bottom
+    setTimeout(() => {
+      if (terminalCodeRef.current !== null) {
+        terminalCodeRef.current.scrollTop = terminalCodeRef.current.scrollHeight;
+      }
+    });
   };
 
   /** Callback for submitting a command in the prompt */
@@ -89,30 +96,19 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
     } else {
       // Regular commands
       Logger.log(LogLevel.debug, "Regular command: ", command);
-      appendTerminalLinesToBuffer(
-        // @TODO remove eslint override
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        `
-Lorem ipsum dolor sit amet,
-consectetuer adipiscing elit.
-Donec odio. Quisque volutpat
-mattis eros. Nullam malesuada
-erat ut turpis.
-Lorem ipsum dolor sit amet,
-consectetuer adipiscing elit.
-Donec odio. Quisque volutpat
-mattis eros. Nullam malesuada
-erat ut turpis.
-      `.trim().split('\n'));
+      appendTerminalLinesToBuffer(heredocToStringArray(`
+        Lorem ipsum dolor sit amet,
+        consectetuer adipiscing elit.
+        Donec odio. Quisque volutpat
+        mattis eros. Nullam malesuada
+        erat ut turpis.
+        Lorem ipsum dolor sit amet,
+        consectetuer adipiscing elit.
+        Donec odio. Quisque volutpat
+        mattis eros. Nullam malesuada
+        erat ut turpis.`));
 
       flushTerminalBuffer();
-
-      // Scroll terminal to bottom
-      setTimeout(() => {
-        if (terminalCodeRef.current !== null) {
-          terminalCodeRef.current.scrollTop = terminalCodeRef.current.scrollHeight;
-        }
-      });
 
       return Promise.resolve();
     }
@@ -144,7 +140,7 @@ erat ut turpis.
             (
               <span>Loading&hellip;</span>
             )
-          }
+          }&nbsp;
         </div>
 
         {isNotCreatingNewPath && (
