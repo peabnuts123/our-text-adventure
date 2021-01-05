@@ -10,13 +10,14 @@ import Logger, { LogLevel } from '@app/util/Logger';
 import { handler as testHandler } from '@app/handlers/test';
 import { handler as getScreenByIdHandler } from '@app/handlers/get-screen-by-id';
 import { handler as addPathHandler } from '@app/handlers/add-path';
+import { handler as mockDataHandler } from '@app/handlers/mock-data';
 
 // EXPRESS APP
 const app = express();
 
 // Configure middleware
 app.use(bodyParser.text({
-  type: [ '*/*' ],
+  type: ['*/*'],
 }));
 app.use(cors());
 
@@ -29,9 +30,12 @@ app.listen(SERVER_PORT, () => {
 // ROUTES
 // These need to match the definitions in `terraform/modules/api/api-gateway.tf`
 const router = Router();
-router.get('/test/*', proxyHandler(testHandler));
 router.get('/screen/:id', proxyHandler(getScreenByIdHandler));
 router.post('/path', proxyHandler(addPathHandler));
+
+// DEBUG ROUTES
+router.get('/test/*', proxyHandler(testHandler));
+router.get('/mock-data', proxyHandler(mockDataHandler));
 
 app.use('/api', router);
 

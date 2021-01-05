@@ -4,13 +4,44 @@ import Config from '../../config';
 
 import Db from '../../db';
 import IDatabase from '../../db/IDatabase';
+import GameScreen from '../../db/models/GameScreen';
+import Command from '../../db/models/Command';
 
-import Logger from '../../util/Logger';
+import Logger, { LogLevel } from '../../util/Logger';
 import errorResponse from '../../util/response/error';
 import okResponse from '../../util/response/ok';
 import ApiError from '../../errors/ApiError';
 import ErrorModel from '../../errors/ErrorModel';
 import UnknownError from '../../errors/UnknownError';
+
+const MOCK_DATA = [
+  new GameScreen(
+    '0290922a-59ce-458b-8dbc-1c33f646580a',
+    [
+      "+---------------+",
+      "| This is a     |",
+      "| sample dialog |",
+      "| showing       |",
+      "| something.    |",
+      "+---------------+",
+    ],
+    [
+      new Command(
+        '51e5db90-0587-471f-a281-0b37b7eccb8c',
+        `look bone`,
+        '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+      ),
+    ],
+  ),
+  new GameScreen(
+    '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+    [
+      "This is a second",
+      "screen.",
+    ],
+    [],
+  ),
+];
 
 Logger.setLogLevel(Config.logLevel);
 
@@ -20,11 +51,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
   Logger.log(`Handling request: ${event.requestContext.http.method} ${event.rawPath}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
 
   try {
-    const allScreenData = await db.getAllScreens();
+    // Save all mock records to DB "in parallel"
+    await Promise.all(MOCK_DATA.map((mockItem) => db.saveScreen(mockItem)));
+
+    Logger.log(LogLevel.debug, `Successfully inserted ${MOCK_DATA.length} items into table.`);
 
     return okResponse({
-      message: "[DEBUG] All screens",
-      allScreens: allScreenData,
+      message: `Successfully inserted ${MOCK_DATA.length} items into table.`,
     });
   } catch (err) {
     let error: ErrorModel;

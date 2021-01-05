@@ -1,16 +1,16 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2020-12-15T18:48:03.380Z",
+  "__export_date": "2021-01-05T21:51:09.004Z",
   "__export_source": "insomnia.desktop.app:v2020.5.2",
   "resources": [
     {
-      "_id": "req_60a0f6e70a8548ed9a6a95736fdf7d65",
+      "_id": "req_50fc7cc801e34ee583739a6c92a009e0",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420163767,
-      "created": 1607420126095,
+      "modified": 1608329612770,
+      "created": 1608329610912,
       "url": "{{ REQUEST_URL }}",
-      "name": "400 - Invalid `command` (Missing)",
+      "name": "400 - Missing all fields",
       "description": "",
       "method": "POST",
       "body": {
@@ -26,7 +26,7 @@
         }
       ],
       "authentication": {},
-      "metaSortKey": -1607372206521.5,
+      "metaSortKey": -1607372206571.5,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -77,9 +77,41 @@
       "_type": "workspace"
     },
     {
+      "_id": "req_60a0f6e70a8548ed9a6a95736fdf7d65",
+      "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
+      "modified": 1608329625370,
+      "created": 1607420126095,
+      "url": "{{ REQUEST_URL }}",
+      "name": "400 - Invalid `command` (Missing)",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_a72db8e8911c4a89928eae027790745e"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1607372206521.5,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
       "_id": "req_0d4b9e903523491180bdaf63cc2d9a8e",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420183569,
+      "modified": 1608329592404,
       "created": 1607420172357,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `command` (Empty)",
@@ -87,7 +119,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"  \"\n}"
+        "text": "{\n\t\"command\": \"  \",\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -111,7 +143,7 @@
     {
       "_id": "req_7da2fc255412463eac97fd0f3b431521",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420249648,
+      "modified": 1608329633238,
       "created": 1607420247877,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `command` (Wrong type)",
@@ -119,7 +151,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": 2\n}"
+        "text": "{\n\t\"command\": 2,\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -143,7 +175,7 @@
     {
       "_id": "req_d30a15401a254c73b0a1b3745ae71da3",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420207440,
+      "modified": 1608329651616,
       "created": 1607420201544,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `screenBody` (Missing)",
@@ -151,7 +183,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\"\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -175,7 +207,7 @@
     {
       "_id": "req_c5238b505449407591a198e73ec8702c",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420223616,
+      "modified": 1608329669000,
       "created": 1607420216621,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `screenBody` (Empty)",
@@ -183,7 +215,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": \"   \"\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\",\n\t\"screenBody\": \"   \"\n}"
       },
       "parameters": [],
       "headers": [
@@ -207,7 +239,7 @@
     {
       "_id": "req_0648775189f2477e8c4d18da43bb11fd",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420276449,
+      "modified": 1608329685310,
       "created": 1607420256773,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `screenBody` (Wrong type)",
@@ -215,7 +247,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\n\t\t\"This is my screen\",\n\t\t2\n\t]\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\",\n\t\"screenBody\": [\n\t\t\"This is my screen\",\n\t\t2\n\t]\n}"
       },
       "parameters": [],
       "headers": [
@@ -239,7 +271,7 @@
     {
       "_id": "req_aab803a50a3c463f8ec5a180bfa4ba0c",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420292545,
+      "modified": 1608329693388,
       "created": 1607420236675,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `sourceScreenId` (Missing)",
@@ -247,7 +279,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\n\t\t\"This is\",\n\t\t\"my screen.\"\n\t]\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\"a\", \"b\"]\n}"
       },
       "parameters": [],
       "headers": [
@@ -271,7 +303,7 @@
     {
       "_id": "req_b0ab3a8e31bf465eb00b33b2558494f7",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420308393,
+      "modified": 1608329700904,
       "created": 1607420300503,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `sourceScreenId` (Empty)",
@@ -279,7 +311,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\n\t\t\"This is\",\n\t\t\"my screen.\"\n\t],\n\t\"sourceScreenId\": \"   \"\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": \"   \"\n}"
       },
       "parameters": [],
       "headers": [
@@ -303,7 +335,7 @@
     {
       "_id": "req_2b28ee832eca4412895ecd202d55b859",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420316979,
+      "modified": 1608329709792,
       "created": 1607420313917,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `sourceScreenId` (Wrong type)",
@@ -311,7 +343,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\n\t\t\"This is\",\n\t\t\"my screen.\"\n\t],\n\t\"sourceScreenId\": 2\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": 2\n}"
       },
       "parameters": [],
       "headers": [
@@ -335,7 +367,7 @@
     {
       "_id": "req_1dc9cc09da794558869c2586cc0fbceb",
       "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
-      "modified": 1607420348412,
+      "modified": 1608329717447,
       "created": 1607420332404,
       "url": "{{ REQUEST_URL }}",
       "name": "400 - Invalid `sourceScreenId` (No screen with this id)",
@@ -343,7 +375,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\n\t\t\"This is\",\n\t\t\"my screen.\"\n\t],\n\t\"sourceScreenId\": \"b227d8b8-8205-4a2d-abee-d41f91c1b5c4\"\n}"
+        "text": "{\n\t\"command\": \"look bone\",\n\t\"screenBody\": [\"a\", \"b\"],\n\t\"sourceScreenId\": \"b227d8b8-8205-4a2d-abee-d41f91c1b5c4\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -365,9 +397,41 @@
       "_type": "request"
     },
     {
+      "_id": "req_7030b7387e7145a98040fc645bd5c1c4",
+      "parentId": "fld_d3c30817840f4053a4c70eb9be2bfbd0",
+      "modified": 1608330047686,
+      "created": 1608330043758,
+      "url": "{{ REQUEST_URL }}",
+      "name": "400 - Invalid everything (No screen with this id, missing others)",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"sourceScreenId\": \"b227d8b8-8205-4a2d-abee-d41f91c1b5c4\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_a72db8e8911c4a89928eae027790745e"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1607369640018.7168,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
       "_id": "req_d61ebc9dc6eb4965b6ed5ed6c1597bbb",
       "parentId": "fld_5f9cd3c512d64cc4a9b6cbf4aca9b96b",
-      "modified": 1607494066507,
+      "modified": 1608329733004,
       "created": 1607374783089,
       "url": "{{ REQUEST_URL }}",
       "name": "default",
@@ -375,7 +439,7 @@
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"command\": \"rambotan01\",\n\t\"screenBody\": [\n\t\t\"Welcome to SECRET RAMBOTAN LEVEL\",\n\t\t\"Everybody is welcome here.\",\n\t\t\"Please have a good time.\"\n\t],\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
+        "text": "{\n\t\"command\": \"rambotan02\",\n\t\"screenBody\": [\n\t\t\"Welcome to SECRET RAMBOTAN LEVEL\",\n\t\t\"Everybody is welcome here.\",\n\t\t\"Please have a good time.\"\n\t],\n\t\"sourceScreenId\": \"0290922a-59ce-458b-8dbc-1c33f646580a\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -395,6 +459,59 @@
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
       "_type": "request"
+    },
+    {
+      "_id": "req_818512c6bf1b4c90956c5d9be1ff1796",
+      "parentId": "fld_1cda34bc4fd640cf99d65179adfc0cd5",
+      "modified": 1608147387614,
+      "created": 1608147377923,
+      "url": "{{ REQUEST_URL }}/0290922a-59ce-458b-8dbc-1c33f6465fff",
+      "name": "400 - Invalid `id` (No screen with this id)",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1607307167220,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_1cda34bc4fd640cf99d65179adfc0cd5",
+      "parentId": "fld_bb5681a92bbb43be9a8afd3683e53ce4",
+      "modified": 1608147352772,
+      "created": 1608147352772,
+      "name": "_exceptions",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1608147352772,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_bb5681a92bbb43be9a8afd3683e53ce4",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1607374756490,
+      "created": 1607369507506,
+      "name": "GetScreenById",
+      "description": "",
+      "environment": {
+        "REQUEST_URL": "{{API_BASE}}/screen"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "REQUEST_URL"
+        ]
+      },
+      "metaSortKey": -1607369507506,
+      "_type": "request_group"
     },
     {
       "_id": "req_314d783838ea4449bd5583c75cc366a2",
@@ -418,24 +535,6 @@
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
       "_type": "request"
-    },
-    {
-      "_id": "fld_bb5681a92bbb43be9a8afd3683e53ce4",
-      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
-      "modified": 1607374756490,
-      "created": 1607369507506,
-      "name": "GetScreenById",
-      "description": "",
-      "environment": {
-        "REQUEST_URL": "{{API_BASE}}/screen"
-      },
-      "environmentPropertyOrder": {
-        "&": [
-          "REQUEST_URL"
-        ]
-      },
-      "metaSortKey": -1607369507506,
-      "_type": "request_group"
     },
     {
       "_id": "req_53ffe9b3cafb455db0dbf92887e52acf",
@@ -479,6 +578,47 @@
       "_type": "request_group"
     },
     {
+      "_id": "req_379ee3657bc445f585370c44b8962528",
+      "parentId": "fld_1a6f0c8283ac4bc195b740ea042402bc",
+      "modified": 1609883385563,
+      "created": 1609883385563,
+      "url": "{{ REQUEST_URL }}",
+      "name": "default",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1607244704486,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_1a6f0c8283ac4bc195b740ea042402bc",
+      "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
+      "modified": 1609883392537,
+      "created": 1609883385555,
+      "name": "Mock Data",
+      "description": "",
+      "environment": {
+        "REQUEST_URL": "{{ API_BASE }}/mock-data"
+      },
+      "environmentPropertyOrder": {
+        "&": [
+          "REQUEST_URL"
+        ]
+      },
+      "metaSortKey": -1606741905171.5,
+      "_type": "request_group"
+    },
+    {
       "_id": "env_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
       "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
       "modified": 1607244667133,
@@ -513,7 +653,7 @@
     {
       "_id": "env_b4d53cfe709343abbac987590b2027f9",
       "parentId": "env_9228f65efc2a92aabeeed6de60c049fbea9b58ff",
-      "modified": 1608057787468,
+      "modified": 1609642586369,
       "created": 1607308640089,
       "name": "Local",
       "data": {
