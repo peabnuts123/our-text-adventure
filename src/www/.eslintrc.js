@@ -32,6 +32,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': DISABLED,
     '@typescript-eslint/restrict-template-expressions': DISABLED,
     '@typescript-eslint/no-unsafe-member-access': DISABLED, // Too restrictive, you need `any` in certain situations
+    '@typescript-eslint/explicit-module-boundary-types': DISABLED, // As above
 
 
     // Rules that are explicitly a warning

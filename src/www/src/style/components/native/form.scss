@@ -20,3 +20,10 @@
     width: 200px;
   }
 }
+
+.form__input__error {
+  @extend %font-terminal;
+  display: block;
+  color: $error;
+  margin-top: $m;
+}

@@ -22,4 +22,8 @@
   @include media-query('tablet') {
     font-size: 20px;
   }
+
+  &.has-error {
+    border: 1px solid $error;
+  }
 }

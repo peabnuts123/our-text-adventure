@@ -21,6 +21,10 @@
     color: rgba($primary, 0.35);
   }
 
+  &.has-error {
+    border: 1px solid $error;
+  }
+
   @include media-query('tablet') {
     font-size: 20px;
   }
