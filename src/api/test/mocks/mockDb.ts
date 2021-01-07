@@ -11,7 +11,7 @@ export default class MockDb implements IDatabase {
     return Promise.resolve(MockDb.screens);
   }
 
-  public getScreenById(id: string): Promise<GameScreen|undefined> {
+  public getScreenById(id: string): Promise<GameScreen | undefined> {
     const screen = MockDb.screens.find((screen) => screen.id === id);
     if (screen === undefined) {
       return Promise.resolve(undefined);
@@ -37,9 +37,10 @@ export default class MockDb implements IDatabase {
 
   public async addPath(sourceScreen: GameScreen, command: string, newScreenBody: string[]): Promise<GameScreen> {
     // Create new screen
-    const newScreen = new GameScreen(uuid(), newScreenBody, []);
+    const newScreen = new GameScreen({ id: uuid(), body: newScreenBody, commands: [] });
     // Create command that points to new screen
-    const newCommand = new Command(uuid(), command, newScreen.id);
+    // @TODO this is gonna change
+    const newCommand = new Command({ id: uuid(), command, targetScreenId: newScreen.id, itemsTaken: [], itemsGiven: [], itemsRequired: [] });
     // Add command to existing screen
     sourceScreen.commands.push(newCommand);
 

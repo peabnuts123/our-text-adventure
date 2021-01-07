@@ -1,12 +1,18 @@
 import Command from "./Command";
 import isArray from '../../util/is-array';
 
+export interface GameScreenArgs {
+  id: string;
+  body: string[];
+  commands: Command[];
+}
+
 export default class GameScreen {
   public readonly id: string;
   public readonly body: string[];
   public readonly commands: Command[];
 
-  public constructor(id: string, body: string[], commands: Command[]) {
+  public constructor({ id, body, commands }: GameScreenArgs) {
     this.id = id;
     this.body = body;
     this.commands = commands;
@@ -29,18 +35,18 @@ export default class GameScreen {
     if (!isArray<Record<string, unknown>>(commands, (command) => typeof command === 'object' && !Array.isArray(command))) throw new Error("Cannot parse attribute map. Field `commands` must be an object (type 'M')");
 
     // Construct object
-    return new GameScreen(
+    return new GameScreen({
       id,
-      body.map((item, index) => {
+      body: body.map((item, index) => {
         if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'body' has invalid member: index [${index}] is empty`);
 
         return item;
       }),
-      commands.map((item, index) => {
+      commands: commands.map((item, index) => {
         if (item === undefined) throw new Error(`Cannot parse attribute map. Field 'commands' has invalid member: index [${index}] is empty`);
 
         return Command.fromRaw(item);
       }),
-    );
+    });
   }
 }

@@ -14,13 +14,28 @@ describe("GetScreenById handler", () => {
 
   test('Requesting a screen with a valid ID returns the correct screen', async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
-      new GameScreen('bcfc72df-4e16-4ef6-b41f-961edcbdf729', ["Test", "body", "B"], [
-        new Command('2ae7dc7e-a766-401e-9200-a4a0060d3579', 'look bone', 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4'),
-      ]),
+      new GameScreen({
+        id: 'bcfc72df-4e16-4ef6-b41f-961edcbdf729',
+        body: ["Test", "body", "B"],
+        commands: [
+          new Command({
+            id: '2ae7dc7e-a766-401e-9200-a4a0060d3579',
+            command: 'look bone',
+            targetScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+            itemsTaken: [],
+            itemsGiven: [],
+            itemsRequired: [],
+          }),
+        ],
+      }),
     ];
 
     const mockRequest: SimpleRequest = {

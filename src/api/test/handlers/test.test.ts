@@ -14,10 +14,25 @@ describe('Test Handler', () => {
   test('returns all screen data', async () => {
     // Setup
     const mockScreens: GameScreen[] = [
-      new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []),
-      new GameScreen('bcfc72df-4e16-4ef6-b41f-961edcbdf729', ["Test", "body", "B"], [
-        new Command('2ae7dc7e-a766-401e-9200-a4a0060d3579', 'look bone', 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4'),
-      ]),
+      new GameScreen({
+        id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+        body: ["Test", "body", "A"],
+        commands: [],
+      }),
+      new GameScreen({
+        id: 'bcfc72df-4e16-4ef6-b41f-961edcbdf729',
+        body: ["Test", "body", "B"],
+        commands: [
+          new Command({
+            id: '2ae7dc7e-a766-401e-9200-a4a0060d3579',
+            command: 'look bone',
+            targetScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+            itemsTaken: [],
+            itemsGiven: [],
+            itemsRequired: [],
+          }),
+        ],
+      }),
     ];
     const mockRequest: SimpleRequest = {
       path: "/test/123456",
@@ -33,7 +48,7 @@ describe('Test Handler', () => {
     expect(response.headers).toBeDefined();
     expect(response.headers && response.headers['Content-Type']).toBe('application/json');
     expect(response.body && JSON.parse(response.body)).toEqual({
-      message: "This is a test endpoint",
+      message: "[DEBUG] All screens",
       allScreens: mockScreens,
     });
   });

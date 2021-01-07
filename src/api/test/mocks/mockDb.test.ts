@@ -11,11 +11,11 @@ describe('MockDB', () => {
 
   test('Adding mock data works', async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen(
-      '5998098e-5fe4-4d11-a87e-d30c73612ca6',
-      ["this", "is", "body"],
-      [],
-    );
+    const mockScreen: GameScreen = new GameScreen({
+      id: '5998098e-5fe4-4d11-a87e-d30c73612ca6',
+      body: ["this", "is", "body"],
+      commands: [],
+    });
 
     const db: IDatabase = new MockDb();
 

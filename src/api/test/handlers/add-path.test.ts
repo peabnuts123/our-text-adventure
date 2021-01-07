@@ -14,7 +14,11 @@ describe("AddPath handler", () => {
 
   test("Correct request creates a new path", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -143,7 +147,11 @@ describe("AddPath handler", () => {
   /* VALIDATION TESTS: `command` property */
   test("Missing `command` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -181,7 +189,11 @@ describe("AddPath handler", () => {
   });
   test("Empty `command` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -220,7 +232,11 @@ describe("AddPath handler", () => {
   });
   test("Non-string `command` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -261,7 +277,11 @@ describe("AddPath handler", () => {
   /* VALIDATION TESTS: `screenBody` property */
   test("Missing `screenBody` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -299,7 +319,11 @@ describe("AddPath handler", () => {
   });
   test("Non-array `screenBody` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,
@@ -338,7 +362,11 @@ describe("AddPath handler", () => {
   });
   test("Array of non-strings for `screenBody` property returns 400", async () => {
     // Setup
-    const mockScreen: GameScreen = new GameScreen('d9ba40f7-cc19-485b-88c9-43aae7fd32d4', ["Test", "body", "A"], []);
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
 
     MockDb.screens = [
       mockScreen,

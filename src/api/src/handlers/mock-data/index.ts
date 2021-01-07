@@ -15,9 +15,9 @@ import ErrorModel from '../../errors/ErrorModel';
 import UnknownError from '../../errors/UnknownError';
 
 const MOCK_DATA = [
-  new GameScreen(
-    '0290922a-59ce-458b-8dbc-1c33f646580a',
-    [
+  new GameScreen({
+    id: '0290922a-59ce-458b-8dbc-1c33f646580a',
+    body: [
       "+---------------+",
       "| This is a     |",
       "| sample dialog |",
@@ -25,22 +25,25 @@ const MOCK_DATA = [
       "| something.    |",
       "+---------------+",
     ],
-    [
-      new Command(
-        '51e5db90-0587-471f-a281-0b37b7eccb8c',
-        `look bone`,
-        '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
-      ),
+    commands: [
+      new Command({
+        id: '51e5db90-0587-471f-a281-0b37b7eccb8c',
+        command: `look bone`,
+        targetScreenId: '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+        itemsTaken: [],
+        itemsGiven: [],
+        itemsRequired: [],
+      }),
     ],
-  ),
-  new GameScreen(
-    '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
-    [
+  }),
+  new GameScreen({
+    id: '9bdd1cdb-d7c9-4c34-9eac-6775fa94d087',
+    body: [
       "This is a second",
       "screen.",
     ],
-    [],
-  ),
+    commands: [],
+  }),
 ];
 
 Logger.setLogLevel(Config.logLevel);
