@@ -1,6 +1,7 @@
 import Config from '@app/config';
+import { parseApiErrorModel } from './errors';
 
-export class ApiError extends Error {
+export class ApiErrorResponse extends Error {
   public response: Response;
 
   public constructor(response: Response) {
@@ -35,18 +36,32 @@ class Api {
   }
 
   private async processResponse(response: Response): Promise<any> {
-    if (response.status === 200) {
-      // Success
-      const contentTypeHeader = response.headers.get('Content-Type');
+    const contentTypeHeader = response.headers.get('Content-Type');
 
-      if (contentTypeHeader && contentTypeHeader.includes('application/json')) {
-        return response.json();
-      } else {
-        return response.text();
-      }
+    // Parse the response into either text or JSON
+    let parsedResponse: any;
+    if (contentTypeHeader && contentTypeHeader.includes('application/json')) {
+      // Response is JSON
+      parsedResponse = await response.json() as unknown;
     } else {
-      // Failure
-      throw new ApiError(response);
+      // Response is probably not JSON
+      parsedResponse = await response.text();
+    }
+
+    // Change behavior based on status code
+    if (response.status === 200) {
+      // Success, return the result
+      return Promise.resolve(parsedResponse);
+    } else {
+      // Failure, maybe parse into ApiErrorModel
+      // (Result will be thrown)
+      if (parsedResponse.model && parsedResponse.modelVersion) {
+        // Response is an ApiErrorModel
+        throw parseApiErrorModel(parsedResponse);
+      } else {
+        // Who knows, wrap response in an error class
+        throw new ApiErrorResponse(response);
+      }
     }
   }
 

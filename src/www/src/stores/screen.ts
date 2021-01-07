@@ -1,6 +1,6 @@
 import Endpoints from "@app/constants/endpoints";
 import GameScreen, { GameScreenDto } from "@app/models/GameScreen";
-import Api, { ApiError } from "@app/services/api";
+import Api, { ApiErrorResponse } from "@app/services/api";
 import Logger, { LogLevel } from "@app/util/Logger";
 
 export default class ScreenStore {
@@ -11,7 +11,7 @@ export default class ScreenStore {
       const result = await Api.get<GameScreenDto>(Endpoints.Screen.getById(id));
       return new GameScreen(result);
     } catch (e) {
-      if (e instanceof ApiError) {
+      if (e instanceof ApiErrorResponse) {
         Logger.logError(LogLevel.debug, `API returned error: `, e);
       } else {
         throw e;
