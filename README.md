@@ -14,13 +14,14 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [ ] line-wrap on prompt input
 
   - [x] ~~Make the terminal write text and then prompt you~~
-  - [ ] Implement slash commands e.g. `/path`
-  - [ ] `/path` command opens form for creating pathway
-    - Command
-    - Items taken
-    - Items given
-    - Items required
-    - Target screen (new / existing)
+  - [x] ~~Implement slash commands e.g. `/path`~~
+  - [x] ~~`/path` command opens form for creating pathway~~
+    - ~~Command~~
+    - ~~Items taken~~
+    - ~~Items given~~
+    - ~~Items required~~
+    - ~~Target screen (new / existing)~~
+  - [x] ~~Form validation for create-path form~~
   - [ ] Create `/api/command` endpoint
     - Takes:
       - State
@@ -30,7 +31,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
       - Screen
       - Updated State
   - [ ] (API) Restrict commands to be unique per screen
-  - [ ] Update `/api/path` endpoint to handle item requirements
+  - [x] ~~Update `/api/path` endpoint to handle item requirements~~
   - [ ] Make the terminal submit the command to the API
   - [ ] Make terminal print command result
   - [ ] Terminal hydrates state from the URL whenever an command is issued

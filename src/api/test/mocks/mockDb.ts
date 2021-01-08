@@ -1,8 +1,9 @@
 import { v4 as uuid } from 'uuid';
 
-import IDatabase from '@app/db/IDatabase';
+import IDatabase, { AddPathArgs } from '@app/db/IDatabase';
 import GameScreen from '@app/db/models/GameScreen';
 import Command from '@app/db/models/Command';
+import { PathDestinationType } from '@app/constants/DestinationType';
 
 export default class MockDb implements IDatabase {
   public static screens: GameScreen[] = [];
@@ -35,20 +36,36 @@ export default class MockDb implements IDatabase {
     return Promise.resolve(screen);
   }
 
-  public async addPath(sourceScreen: GameScreen, command: string, newScreenBody: string[]): Promise<GameScreen> {
-    // Create new screen
-    const newScreen = new GameScreen({ id: uuid(), body: newScreenBody, commands: [] });
+  public async addPath({
+    sourceScreen,
+    command,
+    itemsTaken,
+    itemsGiven,
+    itemsRequired,
+    destinationType,
+    newScreenBody,
+    existingScreen,
+  }: AddPathArgs): Promise<GameScreen> {
+    let targetScreen: GameScreen;
+    if (destinationType === PathDestinationType.New) {
+      // Create new screen
+      targetScreen = new GameScreen({ id: uuid(), body: newScreenBody!, commands: [] });
+    } else {
+      // Use supplied existing screen
+      targetScreen = existingScreen as GameScreen;
+    }
+
     // Create command that points to new screen
-    // @TODO this is gonna change
-    const newCommand = new Command({ id: uuid(), command, targetScreenId: newScreen.id, itemsTaken: [], itemsGiven: [], itemsRequired: [] });
+    const newCommand = new Command({ id: uuid(), command, targetScreenId: targetScreen.id, itemsTaken, itemsGiven, itemsRequired });
     // Add command to existing screen
     sourceScreen.commands.push(newCommand);
 
     // Save all these changes to the database
-    await this.saveScreen(newScreen);
+    // @TODO transaction?
+    await this.saveScreen(targetScreen);
     await this.saveScreen(sourceScreen);
 
-    return newScreen;
+    return targetScreen;
   }
 
   public static reset(): void {

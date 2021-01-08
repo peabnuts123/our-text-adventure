@@ -3,7 +3,8 @@ enum ErrorId {
   GetScreenById_NoScreenExistsWithId = 'GetScreenById_NoScreenExistsWithId',
 
   // AddPath
-  AddPath_NoScreenExistsWithId = 'AddPath_NoScreenExistsWithId',
+  AddPath_NoSourceScreenExistsWithId = 'AddPath_NoSourceScreenExistsWithId',
+  AddPath_NoDestinationScreenExistsWithId = 'AddPath_NoDestinationScreenExistsWithId',
 }
 
 export default ErrorId;

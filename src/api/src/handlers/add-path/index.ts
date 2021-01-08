@@ -14,6 +14,8 @@ import UnknownError from "../../errors/UnknownError";
 import ErrorModel from "../../errors/ErrorModel";
 import ErrorId from "../../errors/ErrorId";
 import GenericError from "../../errors/GenericError";
+import { PathDestinationType } from "../../constants/PathDestinationType";
+import { GAME_SCREEN_MAX_LINE_LENGTH } from "../../constants";
 
 import { AddPathDto } from "./dto";
 
@@ -65,25 +67,104 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     // VALIDATION
     const validationErrors: ErrorModel[] = [];
 
-    // Validate `command`
-    const command: string = dto.command as string;
-    if (typeof command !== 'string' || command.trim() === '') validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
-    // @TODO validate command does not already exist for screen
-
-    // Validate `screenBody`
-    const screenBody: string[] = dto.screenBody as string[];
-    if (!isArray<string>(screenBody, (screenBodyItem) => typeof screenBodyItem === 'string')) validationErrors.push(new RequestValidationError('screenBody', "Field must be a non-empty array of strings"));
-
     // Validate `sourceScreenId`
-    const sourceScreenId: string = dto.sourceScreenId as string;
+    let sourceScreenId: string = dto.sourceScreenId as string;
     let sourceScreen: GameScreen | undefined;
-    // - ensure `sourceScreenId` is correct type / defined / not empty
     if (typeof sourceScreenId !== 'string' || sourceScreenId.trim() === '') {
+      // - ensure `sourceScreenId` is correct type / defined / not empty
       validationErrors.push(new RequestValidationError('sourceScreenId', "Field must be a non-empty string"));
     } else {
       // - ensure `sourceScreenId` is a real screen that exists
-      sourceScreen = await db.getScreenById(sourceScreenId) as GameScreen;
-      if (sourceScreen === undefined) validationErrors.push(new GenericError(ErrorId.AddPath_NoScreenExistsWithId, `No screen exists with id: ${sourceScreenId}`));
+      sourceScreenId = sourceScreenId.trim();
+      sourceScreen = await db.getScreenById(sourceScreenId.trim()) as GameScreen;
+      if (sourceScreen === undefined) validationErrors.push(new GenericError(ErrorId.AddPath_NoSourceScreenExistsWithId, `No source screen exists with id: ${sourceScreenId}`));
+    }
+
+    // Validate `command`
+    let command: string = dto.command as string;
+    if (typeof command !== 'string' || command.trim() === '') validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
+    else {
+      command = command.trim();
+    }
+    // @TODO validate command does not already exist for screen
+
+    // Validate `itemsTaken`
+    let itemsTaken: string[] = dto.itemsTaken || [];
+    if (!isArray<string>(itemsTaken, (item) => typeof item === 'string')) {
+      validationErrors.push(new RequestValidationError('itemsTaken', "Field must be an array of strings"));
+    } else {
+      // Remove blank / empty items
+      itemsTaken = itemsTaken.filter((item) => !!item);
+    }
+
+    // Validate `itemsGiven`
+    let itemsGiven: string[] = dto.itemsGiven || [];
+    if (!isArray<string>(itemsGiven, (item) => typeof item === 'string')) {
+      validationErrors.push(new RequestValidationError('itemsGiven', "Field must be an array of strings"));
+    } else {
+      // Remove blank / empty items
+      itemsGiven = itemsGiven.filter((item) => !!item);
+    }
+
+    // Validate `itemsRequired`
+    let itemsRequired: string[] = dto.itemsRequired || [];
+    if (!isArray<string>(itemsRequired, (item) => typeof item === 'string')) {
+      validationErrors.push(new RequestValidationError('itemsRequired', "Field must be an array of strings"));
+    } else {
+      // Remove blank / empty items
+      itemsRequired = itemsRequired.filter((item) => !!item);
+    }
+
+    // Validate `destinationType`
+    let destinationType: PathDestinationType = dto.destinationType as PathDestinationType;
+    if (typeof destinationType !== 'string' || !(
+      destinationType.trim().toLocaleLowerCase() === PathDestinationType.New ||
+      destinationType.trim().toLocaleLowerCase() === PathDestinationType.Existing)
+    ) {
+      validationErrors.push(new RequestValidationError('destinationType', "Field must be a non-empty string with value either 'new' or 'existing'"));
+    } else {
+      destinationType = destinationType.trim().toLocaleLowerCase() as PathDestinationType;
+    }
+
+    // Validate `newScreenBody`
+    const newScreenBody: string[] = dto.newScreenBody as string[];
+    if (destinationType !== PathDestinationType.New && newScreenBody !== undefined) {
+      // - ensure `newScreenBody` is only defined when `destinationType === 'new'`
+      validationErrors.push(new RequestValidationError('newScreenBody', "Field can only be specified when `destinationType === 'new'`"));
+    } else if (destinationType === PathDestinationType.New) {
+      if (!isArray<string>(newScreenBody, (screenBodyItem) => typeof screenBodyItem === 'string') ||
+        newScreenBody.length === 0 ||
+        newScreenBody.every((line) => line.trim().length === 0)
+      ) {
+        // - ensure `newScreenBody` is correct type / defined / not empty
+        //    and only specified when `destinationType === 'new'`
+        validationErrors.push(new RequestValidationError('newScreenBody', "Field must be a non-empty array of strings when `destinationType === 'new'`"));
+      } else if (newScreenBody.some((line) => line.length > GAME_SCREEN_MAX_LINE_LENGTH)) {
+        // - ensure no line in `newScreenBody` is longer than `GAME_SCREEN_MAX_LINE_LENGTH`
+        validationErrors.push(new RequestValidationError('newScreenBody', `Maximum line length of ${GAME_SCREEN_MAX_LINE_LENGTH} exceeded`));
+      }
+    }
+
+    // Validate `existingScreenId`
+    let existingScreenId: string = dto.existingScreenId as string;
+    let existingScreen: GameScreen | undefined;
+    if (destinationType !== PathDestinationType.Existing && existingScreenId !== undefined) {
+      // - ensure `existingScreenId` is only defined when `destinationType === 'existing'`
+      validationErrors.push(new RequestValidationError('existingScreenId', "Field can only be specified when `destinationType === 'existing'`"));
+    } else if (destinationType === PathDestinationType.Existing) {
+      if (typeof existingScreenId !== 'string' || existingScreenId.trim() === '') {
+        // - ensure `existingScreenId` is correct type / defined / not empty
+        //    and only specified when `destinationType === 'existing'`
+        validationErrors.push(new RequestValidationError('existingScreenId', "Field must be a non-empty string"));
+      } else if (sourceScreenId && existingScreenId.trim() === sourceScreenId.trim()) {
+        // - ensure `existingScreenId` and `sourceScreenId` do not have the same value
+        validationErrors.push(new RequestValidationError('existingScreenId', "Field cannot have the same value as `sourceScreenId`"));
+      } else {
+        // - ensure `existingScreenId` is a real screen that exists
+        existingScreenId = existingScreenId.trim();
+        existingScreen = await db.getScreenById(existingScreenId.trim()) as GameScreen;
+        if (existingScreen === undefined) validationErrors.push(new GenericError(ErrorId.AddPath_NoDestinationScreenExistsWithId, `No existing destination screen exists with id: ${existingScreenId}`));
+      }
     }
 
     // Return validation errors
@@ -93,7 +174,16 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       }));
     }
 
-    const newScreen = await db.addPath(sourceScreen!, command, screenBody);
+    const newScreen = await db.addPath({
+      sourceScreen: sourceScreen!,
+      command,
+      itemsTaken,
+      itemsGiven,
+      itemsRequired,
+      destinationType,
+      newScreenBody,
+      existingScreen,
+    });
 
     Logger.log(`Successfully added new path. GameScreen(${sourceScreen!.id})["${command}"] => GameScreen(${newScreen.id})`);
 
