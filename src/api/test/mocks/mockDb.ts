@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import IDatabase, { AddPathArgs } from '@app/db/IDatabase';
 import GameScreen from '@app/db/models/GameScreen';
 import Command from '@app/db/models/Command';
-import { PathDestinationType } from '@app/constants/DestinationType';
+import { PathDestinationType } from '@app/constants/PathDestinationType';
 
 export default class MockDb implements IDatabase {
   public static screens: GameScreen[] = [];
