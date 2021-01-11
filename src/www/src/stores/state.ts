@@ -14,16 +14,19 @@ export default class StateStore {
   private _currentState!: GameState;
 
   public constructor() {
-    // @NOTE debug functions
-    /** Inspect current state contents */
-    (window as any).debug_printState = (): void => {
-      Logger.log(LogLevel.debug, this._currentState);
-    };
-    /** Compress / encode a string */
-    (window as any).debug_encodeString = compressToEncodedURIComponent;
-    /** Decode / decompress a string */
-    (window as any).debug_decodeString = decompressFromEncodedURIComponent;
+    if (typeof window !== 'undefined') {
+      // @NOTE debug functions
+      /** Inspect current state contents */
+      (window as any).debug_printState = (): void => {
+        Logger.log(LogLevel.debug, this._currentState);
+      };
+      /** Compress / encode a string */
+      (window as any).debug_encodeString = compressToEncodedURIComponent;
+      /** Decode / decompress a string */
+      (window as any).debug_decodeString = decompressFromEncodedURIComponent;
+    }
   }
+
 
   public init(): void {
     // Default states
