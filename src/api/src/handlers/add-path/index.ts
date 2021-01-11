@@ -69,7 +69,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
     // Validate `sourceScreenId`
     let sourceScreenId: string = dto.sourceScreenId as string;
-    let sourceScreen: GameScreen | undefined;
+    let sourceScreen: GameScreen;
     if (typeof sourceScreenId !== 'string' || sourceScreenId.trim() === '') {
       // - ensure `sourceScreenId` is correct type / defined / not empty
       validationErrors.push(new RequestValidationError('sourceScreenId', "Field must be a non-empty string"));
@@ -82,8 +82,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
     // Validate `command`
     let command: string = dto.command as string;
-    if (typeof command !== 'string' || command.trim() === '') validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
-    else {
+    if (typeof command !== 'string' || command.trim() === '') {
+      // - ensure `command` is correct type / defined / not empty
+      validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
+    } else {
       command = command.trim();
     }
     // @TODO validate command does not already exist for screen
@@ -174,7 +176,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       }));
     }
 
-    const newScreen = await db.addPath({
+    const targetScreen = await db.addPath({
       sourceScreen: sourceScreen!,
       command,
       itemsTaken,
@@ -185,14 +187,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       existingScreen,
     });
 
-    Logger.log(`Successfully added new path. GameScreen(${sourceScreen!.id})["${command}"] => GameScreen(${newScreen.id})`);
+    Logger.log(`Successfully added new path. GameScreen(${sourceScreen!.id})["${command}"] => GameScreen(${targetScreen.id})`);
 
     return {
       statusCode: 201,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newScreen),
     };
   } catch (err) {
     // Error occurred while processing
