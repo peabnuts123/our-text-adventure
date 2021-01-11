@@ -49,7 +49,7 @@ class Api {
     }
 
     // Change behavior based on status code
-    if (response.status === 200) {
+    if (`${response.status}`[0] === '2') {
       // Success, return the result
       return Promise.resolve(parsedResponse);
     } else {
