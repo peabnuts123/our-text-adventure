@@ -132,7 +132,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       // Serve response
       const response: SubmitCommandSuccessDto = {
         success: true,
-        screen: targetScreen,
+        screen: targetScreen.toDto(),
         state: updatedState,
         itemsAdded: command.itemsGiven,
         itemsRemoved: command.itemsTaken,

@@ -1,4 +1,4 @@
-import GameScreen from "../../db/models/GameScreen";
+import { GameScreenDto } from "../../db/models/GameScreen";
 
 export interface SubmitCommandDto {
   /** The screen the player is currently on */
@@ -11,7 +11,7 @@ export interface SubmitCommandDto {
 
 export interface SubmitCommandSuccessDto {
   success: true;
-  screen: GameScreen;
+  screen: GameScreenDto;
   state: string;
   itemsAdded: string[],
   itemsRemoved: string[],

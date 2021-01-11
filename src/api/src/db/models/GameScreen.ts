@@ -7,6 +7,11 @@ export interface GameScreenArgs {
   commands: Command[];
 }
 
+export interface GameScreenDto {
+  id: string;
+  body: string[];
+}
+
 export default class GameScreen {
   public readonly id: string;
   public readonly body: string[];
@@ -48,6 +53,13 @@ export default class GameScreen {
         return Command.fromRaw(item);
       }),
     });
+  }
+
+  public toDto(): GameScreenDto {
+    return {
+      id: this.id,
+      body: this.body,
+    };
   }
 
   public lookupCommand(rawCommand: string): Command | undefined {

@@ -46,7 +46,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
 
     Logger.log("Successfully looked up screen with id", screenId);
 
-    return okResponse(screen);
+    return okResponse(screen.toDto());
   } catch (err) {
     // Error occurred while processing
     let error: ErrorModel;
