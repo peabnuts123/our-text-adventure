@@ -100,8 +100,16 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
         case 'inventory':
           appendTerminalLinesToBuffer([
             `Inventory:`,
-            ...StateStore.currentState.inventory.map((item) => `- ${item}`),
           ]);
+          if (StateStore.currentState.inventory.length === 0) {
+            appendTerminalLinesToBuffer([
+              `Your inventory is empty!`,
+            ]);
+          } else {
+            appendTerminalLinesToBuffer(
+              StateStore.currentState.inventory.map((item) => `- ${item}`),
+            );
+          }
           break;
 
         default:
