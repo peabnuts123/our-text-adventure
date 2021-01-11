@@ -7,14 +7,20 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - A maintenance mode for the site?
 
 ## Backlog / @TODO
+  - [ ] line-wrap on prompt input
+  - [ ] Add spinner / loading state to terminal onSubmit
+  - [ ] Gracefully handle errors in the frontend
+  - [ ] Update Insomnia.json
+    - Add Command handler
+    - Add new exceptions for add-path
+  - [ ] Mobile nav
+  - [ ] Make a utility to wrap words or something
+  - [ ] Remove path params from test handler and make it more "debug"-y or something
+  - [ ] Persist state when navigating around the site
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
-  - [ ] Mobile nav
-  - [ ] line-wrap on prompt input
-  - [ ] Do not send Commands over the wire in GameScreen payload
-  - [ ] Add spinner / loading state to terminal onSubmit
-  - [ ] Print what items you have received / lost in terminal
+
 
   - [x] ~~Make the terminal write text and then prompt you~~
   - [x] ~~Implement slash commands e.g. `/path`~~
@@ -44,7 +50,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Update `/api/path` endpoint to handle item requirements~~
   - [x] ~~Make the terminal submit the command to the API~~
   - [x] ~~Make terminal print command result~~
-  - [ ] Make `/inventory` list your inventory
+  - [x] ~~Make `/inventory` list your inventory~~
   - [x] ~~Make `/help` list commands and stuff~~
 
 ### Terminal
