@@ -12,10 +12,11 @@ export default class ScreenStore {
       return new GameScreen(result);
     } catch (e) {
       if (e instanceof ApiErrorResponse) {
+        // @TODO do something better
         Logger.logError(LogLevel.debug, `API returned error: `, e);
-      } else {
-        throw e;
       }
+
+      throw e;
     }
   }
 }

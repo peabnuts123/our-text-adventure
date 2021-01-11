@@ -5,6 +5,9 @@ const Endpoints = {
   Path: {
     add: (): string => `/api/path`,
   },
+  Command: {
+    submit: (): string => `/api/command`,
+  },
 };
 
 export default Endpoints;
