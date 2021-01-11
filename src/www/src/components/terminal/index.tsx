@@ -95,6 +95,18 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
           appendTerminalLinesToBuffer(['Creating a new pathway...']);
           setIsCreatingNewPath(true);
           break;
+
+        // LIST INVENTORY
+        case 'inventory':
+          appendTerminalLinesToBuffer([
+            `Inventory:`,
+            ...StateStore.currentState.inventory.map((item) => `- ${item}`),
+          ]);
+          break;
+
+        default:
+          appendTerminalLinesToBuffer([`Unrecognised command.`]);
+          break;
       }
       flushTerminalBuffer();
       return Promise.resolve();
