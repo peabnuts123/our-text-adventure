@@ -5,6 +5,9 @@ enum ErrorId {
   // AddPath
   AddPath_NoSourceScreenExistsWithId = 'AddPath_NoSourceScreenExistsWithId',
   AddPath_NoDestinationScreenExistsWithId = 'AddPath_NoDestinationScreenExistsWithId',
+
+  // Command
+  Command_NoContextScreenExistsWithId = 'Command_NoContextScreenExistsWithId',
 }
 
 export default ErrorId;

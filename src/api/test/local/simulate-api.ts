@@ -11,6 +11,7 @@ import { handler as testHandler } from '@app/handlers/test';
 import { handler as getScreenByIdHandler } from '@app/handlers/get-screen-by-id';
 import { handler as addPathHandler } from '@app/handlers/add-path';
 import { handler as mockDataHandler } from '@app/handlers/mock-data';
+import { handler as commandHandler } from '@app/handlers/command';
 
 // EXPRESS APP
 const app = express();
@@ -32,6 +33,7 @@ app.listen(SERVER_PORT, () => {
 const router = Router();
 router.get('/screen/:id', proxyHandler(getScreenByIdHandler));
 router.post('/path', proxyHandler(addPathHandler));
+router.post('/command', proxyHandler(commandHandler));
 
 // DEBUG ROUTES
 router.get('/test/*', proxyHandler(testHandler));

@@ -1,0 +1,72 @@
+import { compressToBase64, decompressFromBase64 } from 'lz-string';
+
+import Command from '../db/models/Command';
+import Messaging from '../constants/Messaging';
+
+export interface ClientGameState {
+  inventory: string[];
+}
+
+export class ClientStateHandlingError extends Error {
+  public constructor(message: string) {
+    // @NOTE obscene hacks required by TypeScript maintainers.
+    // See: https://github.com/microsoft/TypeScript/issues/13965#issuecomment-278570200
+    const trueProto = new.target.prototype;
+
+    super(message);
+
+    Object.setPrototypeOf(this, trueProto);
+  }
+}
+
+export function parseClientStateFromString(stateString: string): ClientGameState {
+  const json = decompressFromBase64(stateString) as string;
+
+  if (typeof json !== 'string') {
+    throw new Error("Cannot parse compressed and encoded state string");
+  }
+
+  const newState = JSON.parse(json) as ClientGameState;
+  if (newState.inventory === undefined) {
+    throw new Error("Parsed state does not appear to be the right type");
+  }
+
+  return newState;
+}
+
+export function encodeClientStateAsString(state: ClientGameState): string {
+  return compressToBase64(JSON.stringify(state));
+}
+
+export function applyCommandToClientState(stateString: string, command: Command): string {
+  // Decode string into an object
+  const state = parseClientStateFromString(stateString);
+
+  // Check state has required items
+  command.itemsRequired.forEach((requiredItem) => {
+    if (!state.inventory.includes(requiredItem)) {
+      // Required item is not found, throw error
+      throw new ClientStateHandlingError(Messaging.RequiredItemNotPresent);
+    }
+  });
+
+  // Remove taken items and ensure state has them
+  command.itemsTaken.forEach((takenItem) => {
+    const inventoryIndex = state.inventory.findIndex((item) => item === takenItem);
+    if (inventoryIndex === -1) {
+      // Required item is not found, throw error
+      throw new ClientStateHandlingError(Messaging.RequiredItemNotPresent);
+    } else {
+      // Remove item at index
+      state.inventory.splice(inventoryIndex, 1);
+    }
+  });
+
+  // Reward given items
+  command.itemsGiven.forEach((givenItem) => {
+    state.inventory.push(givenItem);
+  });
+
+  // Re-encode state as string
+  return encodeClientStateAsString(state);
+}
