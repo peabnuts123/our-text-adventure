@@ -7,29 +7,36 @@ export interface GameState {
 
 const STATE_URL_PARAM_NAME = 'state';
 const SCREEN_ID_URL_PARAM_NAME = 'screenId';
+const DEFAULT_INITIAL_SCREEN_ID: string = '0290922a-59ce-458b-8dbc-1c33f646580a';
 
 export default class StateStore {
-  private _currentScreenId: string | undefined;
-  private _currentState: GameState;
+  private _currentScreenId!: string;
+  private _currentState!: GameState;
 
   public constructor() {
-    this._currentState = {
-      inventory: [],
-    };
-
     // @NOTE debug functions
     /** Inspect current state contents */
     (window as any).debug_printState = (): void => {
       Logger.log(LogLevel.debug, this._currentState);
     };
+    /** Compress / encode a string */
+    (window as any).debug_encodeString = compressToEncodedURIComponent;
+    /** Decode / decompress a string */
+    (window as any).debug_decodeString = decompressFromEncodedURIComponent;
   }
 
-  public init(initialScreenId: string): void {
-    this.setCurrentScreenId(initialScreenId);
-
+  public init(): void {
+    // Default states
     this._currentState = {
       inventory: [],
     };
+    this._currentScreenId = DEFAULT_INITIAL_SCREEN_ID;
+
+    // Overwrite defaults from URL
+    this.hydrateFromCurrentUrl();
+
+    // Ensure URL is up-to-date
+    this.updateUrlState();
   }
 
   /**
@@ -62,7 +69,10 @@ export default class StateStore {
     const urlParams = new URLSearchParams(window.location.search);
 
     // Read screen ID from URL (might not exist)
-    this._currentScreenId = urlParams.get(SCREEN_ID_URL_PARAM_NAME) || undefined;
+    const maybeScreenId: string | undefined = urlParams.get(SCREEN_ID_URL_PARAM_NAME) || undefined;
+    if (maybeScreenId) {
+      this.setCurrentScreenId(maybeScreenId);
+    }
 
     // Read state from URL (might not exist)
     const maybeStateString: string | undefined = urlParams.get(STATE_URL_PARAM_NAME) || undefined;
@@ -90,7 +100,7 @@ export default class StateStore {
     return this._currentState;
   }
 
-  public get currentScreenId(): string | undefined {
+  public get currentScreenId(): string {
     return this._currentScreenId;
   }
 }

@@ -1,20 +1,15 @@
-import React, { FunctionComponent, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 
 import Logger, { LogLevel } from "@app/util/Logger";
-import GameScreen from "@app/models/GameScreen";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
 
 import CommandInput from "../command-input";
 import CreatePath, { CreatePathSubmitPayload } from "../create-path";
 
-interface Props {
-  initialScreen: GameScreen | undefined;
-}
-
-const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
+const Terminal: FunctionComponent = () => {
   // Stores
-  const { CommandStore, StateStore } = useStores();
+  const { CommandStore, StateStore, ScreenStore } = useStores();
 
   // State
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
@@ -35,6 +30,43 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
 
   // Refs
   const terminalCodeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Initialise the state store. This will sync it with the URL
+    //  and load any default values
+    StateStore.init();
+
+    const loadInitialScreen = async (): Promise<void> => {
+      setHasLoaded(false);
+
+      try {
+        const initialScreen = await ScreenStore.getScreenById(StateStore.currentScreenId);
+
+        // Print initial screen to terminal
+        appendTerminalLinesToBuffer(initialScreen.body);
+        flushTerminalBuffer();
+
+        setHasLoaded(true);
+      } catch (err) {
+        // @TODO not sure how to handle this just yet
+        // @TODO some kind of `setHasError` or something
+        setHasLoaded(true);
+
+        Logger.logError(`Could not load initial screen with id: ${StateStore.currentScreenId}.`, err);
+        appendTerminalLinesToBuffer([
+          `An error occurred.`,
+          `Could not load initial screen.`,
+          `Please try reloading or`,
+          `clearing out the URL`,
+        ]);
+        flushTerminalBuffer();
+      }
+    };
+
+    void loadInitialScreen();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Functions
   /**
@@ -123,7 +155,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
       Logger.log(LogLevel.debug, "Regular command: ", command);
 
       // Send command to the API
-      const response = await CommandStore.submitCommand(StateStore.currentScreenId!, command, StateStore.getStateAsString());
+      const response = await CommandStore.submitCommand(StateStore.currentScreenId, command, StateStore.getStateAsString());
 
       if (response.success === true) {
         // Successful request
@@ -172,7 +204,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
 
   const handleSubmitCreatePath = async (payload: CreatePathSubmitPayload): Promise<void> => {
     await CommandStore.createPath({
-      sourceScreenId: StateStore.currentScreenId!,
+      sourceScreenId: StateStore.currentScreenId,
       ...payload,
     });
 
@@ -181,18 +213,6 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
     appendTerminalLinesToBuffer([`Successfully created new path!`, `To go there now, type:`, '  ' + payload.command]);
     flushTerminalBuffer();
   };
-
-  // Detect when initialScreen has loaded
-  if (!hasLoaded && initialScreen !== undefined) {
-    setHasLoaded(true);
-
-    // Initialise state store
-    StateStore.init(initialScreen.id);
-
-    // Print initial screen to terminal
-    appendTerminalLinesToBuffer(initialScreen.body);
-    flushTerminalBuffer();
-  }
 
   return (
     <>
