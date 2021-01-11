@@ -113,6 +113,25 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
 
         // Write response screen to terminal
         appendTerminalLinesToBuffer(response.screen.body);
+
+        // Print items removed to terminal
+        if (response.itemsRemoved && response.itemsRemoved.length > 0) {
+          appendTerminalLinesToBuffer([
+            '',
+            'Items removed:',
+            ...response.itemsRemoved.map((item) => `- ${item}`),
+          ]);
+        }
+
+        // Print items added to terminal
+        if (response.itemsAdded && response.itemsAdded.length > 0) {
+          appendTerminalLinesToBuffer([
+            '',
+            'Items added:',
+            ...response.itemsAdded.map((item) => `+ ${item}`),
+          ]);
+        }
+
         flushTerminalBuffer();
       } else if (response.success === false) {
         // Failed request

@@ -14,6 +14,8 @@ interface SubmitCommandSuccessResponseDto {
   success: true;
   screen: GameScreenDto;
   state: string;
+  itemsAdded: string[],
+  itemsRemoved: string[],
 }
 
 interface SubmitCommandFailureResponseDto {
@@ -25,6 +27,8 @@ export interface SubmitCommandSuccessResponse {
   success: true;
   screen: GameScreen;
   state: string;
+  itemsAdded: string[];
+  itemsRemoved: string[];
 }
 
 export interface SubmitCommandFailureResponse {
@@ -88,6 +92,8 @@ export default class CommandStore {
           success: true,
           screen: new GameScreen(rawResponse.screen),
           state: rawResponse.state,
+          itemsAdded: rawResponse.itemsAdded,
+          itemsRemoved: rawResponse.itemsRemoved,
         };
         return parsedResponse;
       } else if (rawResponse.success === false) {
