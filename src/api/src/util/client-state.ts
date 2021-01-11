@@ -1,4 +1,4 @@
-import { compressToBase64, decompressFromBase64 } from 'lz-string';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
 import Command from '../db/models/Command';
 import Messaging from '../constants/Messaging';
@@ -20,7 +20,7 @@ export class ClientStateHandlingError extends Error {
 }
 
 export function parseClientStateFromString(stateString: string): ClientGameState {
-  const json = decompressFromBase64(stateString) as string;
+  const json = decompressFromEncodedURIComponent(stateString) as string;
 
   if (typeof json !== 'string') {
     throw new Error("Cannot parse compressed and encoded state string");
@@ -35,7 +35,7 @@ export function parseClientStateFromString(stateString: string): ClientGameState
 }
 
 export function encodeClientStateAsString(state: ClientGameState): string {
-  return compressToBase64(JSON.stringify(state));
+  return compressToEncodedURIComponent(JSON.stringify(state));
 }
 
 export function applyCommandToClientState(stateString: string, command: Command): string {

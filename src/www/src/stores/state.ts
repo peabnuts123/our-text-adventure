@@ -1,5 +1,5 @@
 import Logger, { LogLevel } from '@app/util/Logger';
-import { compressToBase64, decompressFromBase64 } from 'lz-string';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
 export interface GameState {
   inventory: string[];
@@ -22,14 +22,6 @@ export default class StateStore {
     (window as any).debug_printState = (): void => {
       Logger.log(LogLevel.debug, this._currentState);
     };
-    /** Compress / encode a string */
-    (window as any).debug_encodeString = (s: string) => {
-      Logger.log(LogLevel.debug, compressToBase64(s));
-    };
-    /** Decode / decompress a string */
-    (window as any).debug_decodeString = (base64String: string) => {
-      Logger.log(LogLevel.debug, decompressFromBase64(base64String));
-    };
   }
 
   public init(initialScreenId: string): void {
@@ -44,7 +36,7 @@ export default class StateStore {
    * Convert the current state object to a compressed, base64 encoded string
    */
   public getStateAsString(): string {
-    return compressToBase64(JSON.stringify(this._currentState));
+    return compressToEncodedURIComponent(JSON.stringify(this._currentState));
   }
 
   /**
@@ -52,7 +44,7 @@ export default class StateStore {
    * @param compressedEncodedStateString Compressed, base64 encoded string
    */
   public setStateFromString(compressedEncodedStateString: string): void {
-    const json = decompressFromBase64(compressedEncodedStateString) as string;
+    const json = decompressFromEncodedURIComponent(compressedEncodedStateString) as string;
     if (typeof json !== 'string') {
       throw new Error("Cannot parse compressed state string");
     }
