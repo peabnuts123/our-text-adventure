@@ -107,6 +107,6 @@ function convertApiGatewayResultToResponse(result: APIGatewayProxyStructuredResu
   if (result.body) {
     return res.send(result.body);
   } else {
-    return res;
+    return res.send();
   }
 }
