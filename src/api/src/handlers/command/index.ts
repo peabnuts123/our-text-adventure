@@ -134,6 +134,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
         success: true,
         screen: targetScreen,
         state: updatedState,
+        itemsAdded: command.itemsGiven,
+        itemsRemoved: command.itemsTaken,
       };
       return okResponse(response);
     } catch (err) {

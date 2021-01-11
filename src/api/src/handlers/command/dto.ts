@@ -13,6 +13,8 @@ export interface SubmitCommandSuccessDto {
   success: true;
   screen: GameScreen;
   state: string;
+  itemsAdded: string[],
+  itemsRemoved: string[],
 }
 
 export interface SubmitCommandFailureDto {
