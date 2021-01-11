@@ -6,7 +6,7 @@ import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
 
 import CommandInput from "../command-input";
-import CreatePath from "../create-path";
+import CreatePath, { CreatePathSubmitPayload } from "../create-path";
 
 interface Props {
   initialScreen: GameScreen | undefined;
@@ -61,6 +61,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
   /** Callback for submitting a command in the prompt */
   const onSubmitCommand = async (rawCommand: string): Promise<void> => {
     const command: string = rawCommand.trim();
+    // @TODO spinner / - \ |
 
     appendTerminalLinesToBuffer([`> ${command}`]);
 
@@ -91,7 +92,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
         // CREATE PATH
         case 'path':
         case 'create-path':
-          appendTerminalLinesToBuffer(['Creating a new pathway within the universe...']);
+          appendTerminalLinesToBuffer(['Creating a new pathway...']);
           setIsCreatingNewPath(true);
           break;
       }
@@ -130,6 +131,18 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
     flushTerminalBuffer();
   };
 
+  const handleSubmitCreatePath = async (payload: CreatePathSubmitPayload): Promise<void> => {
+    await CommandStore.createPath({
+      sourceScreenId: StateStore.currentScreenId!,
+      ...payload,
+    });
+
+    setIsCreatingNewPath(false);
+
+    appendTerminalLinesToBuffer([`Successfully created new path!`, `To go there now, type:`, '  ' + payload.command]);
+    flushTerminalBuffer();
+  };
+
   // Detect when initialScreen has loaded
   if (!hasLoaded && initialScreen !== undefined) {
     setHasLoaded(true);
@@ -162,7 +175,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
       </div>
 
       {isCreatingNewPath && (
-        <CreatePath onCancel={handleCancelCreatePath} />
+        <CreatePath onCancel={handleCancelCreatePath} onSubmit={handleSubmitCreatePath} />
       )}
     </>
   );

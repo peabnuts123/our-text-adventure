@@ -32,7 +32,41 @@ export interface SubmitCommandFailureResponse {
   message: string;
 }
 
+export enum DestinationType {
+  New = 'new',
+  Existing = 'existing',
+}
+
+interface CreatePathRequestDto {
+  /** Screen that this command will be added to */
+  sourceScreenId: string;
+  /** Command the user must type */
+  command: string;
+
+  /** Items taken (and required) from the player to use this command */
+  itemsTaken?: string[];
+  /** Items given to the player if this command is successfully executed */
+  itemsGiven?: string[];
+  /** Items required that the player have (but not removed) in order to successfully execute this command */
+  itemsRequired?: string[];
+
+  /** Whether the command links to a new or existing screen */
+  destinationType: DestinationType;
+  /** (If `destinationType === 'new'`) The body of the new screen that will be created */
+  newScreenBody?: string[];
+  /** (If `destinationType === 'existing'`) The ID of the existing screen to link to */
+  existingScreenId?: string;
+}
+
 export default class CommandStore {
+  public async createPath(dto: CreatePathRequestDto): Promise<void> {
+    const response = await Api.postJson<string>(Endpoints.Command.addPath(), {
+      body: dto,
+    });
+
+    Logger.log(LogLevel.debug, `Got response: '${response}' (${response.length})`);
+  }
+
   public async submitCommand(contextScreenId: string, command: string, stateString: string): Promise<SubmitCommandSuccessResponse | SubmitCommandFailureResponse> {
     try {
       // Fetch from API

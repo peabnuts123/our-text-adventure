@@ -2,23 +2,29 @@ import React, { ChangeEventHandler, FormEventHandler, FunctionComponent, useStat
 import classnames from 'classnames';
 
 import { TERMINAL_CHARACTER_WIDTH } from '@app/constants';
-import Logger, { LogLevel } from "@app/util/Logger";
 import { useStores } from "@app/stores";
 import { ApiError, GenericApiError } from "@app/services/errors";
 import ErrorId from "@app/constants/ErrorId";
+import { DestinationType } from "@app/stores/command";
 
 import AutoSizeTextarea from "../auto-size-textarea";
 
-enum DestinationType {
-  New = 'DestinationType_New',
-  Existing = 'DestinationType_Existing',
+export interface CreatePathSubmitPayload {
+  command: string;
+  itemsTaken?: string[];
+  itemsGiven?: string[];
+  itemsRequired?: string[];
+  destinationType: DestinationType;
+  existingScreenId?: string;
+  newScreenBody?: string[];
 }
 
 interface Props {
   onCancel: () => void;
+  onSubmit: (payload: CreatePathSubmitPayload) => void;
 }
 
-const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
+const CreatePath: FunctionComponent<Props> = ({ onCancel, onSubmit }) => {
   // Stores
   const { ScreenStore } = useStores();
 
@@ -29,7 +35,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
   const [itemsRequiredInput, setItemsRequiredInput] = useState<string>("");
   const [destinationTypeInput, setDestinationTypeInput] = useState<DestinationType | undefined>(undefined);
   const [existingDestinationIdInput, setExistingDestinationIdInput] = useState<string>("");
-  const [newScreenBody, setNewScreenBody] = useState<string>("");
+  const [newScreenBodyInput, setNewScreenBodyInput] = useState<string>("");
 
   // Validation state
   const [isLoadingValidationState, setIsLoadingValidationState] = useState<boolean>(false);
@@ -88,7 +94,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
   };
   const validateAndSetNewScreenBody = (newValue: string): void => {
     validateNewScreenBody(newValue);
-    setNewScreenBody(newValue);
+    setNewScreenBodyInput(newValue);
   };
 
   // - Existing destination input
@@ -109,6 +115,16 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
 
 
   // Functions
+  const transformNewScreenBodyToLines = (body: string): string[] => {
+    // Split text into lines
+    const rawLines = body.split(/[\r\n]/g);
+
+    // Restrict length of each line to `TERMINAL_CHARACTER_WIDTH`
+    const trimmedLines = rawLines.map((line) => line.substring(0, TERMINAL_CHARACTER_WIDTH));
+
+    return trimmedLines;
+  };
+
   const handleSubmit: FormEventHandler<Element> = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -119,7 +135,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
       // Validation
       const isCommandInputValid = validateCommandInput(commandInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
-      const isNewScreenBodyValid = validateNewScreenBody(newScreenBody);
+      const isNewScreenBodyValid = validateNewScreenBody(newScreenBodyInput);
       const isDestinationTypeValid = validateDestinationTypeInput(destinationTypeInput);
       let hasValidationErrors: boolean = !isCommandInputValid ||
         !isExistingDestinationIdValid ||
@@ -154,7 +170,6 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
         }
       }
 
-
       // Finished validating (async)
       // Hide spinners and show errors
       setIsLoadingValidationState(false);
@@ -165,23 +180,59 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
         return;
       }
 
-      // @TODO validation
-      if (destinationTypeInput === DestinationType.New) {
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        Logger.log(LogLevel.debug, `SAVING COMMAND\n` +
-          `Command: ${commandInput}\n` +
-          `Items taken: ${itemsTakenInput}\n` +
-          `Items given: ${itemsGivenInput}\n` +
-          `Items required: ${itemsRequiredInput}\n` +
-          `Creating NEW screen with body:\n` + newScreenBody);
-      } else if (destinationTypeInput === DestinationType.Existing)
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        Logger.log(LogLevel.debug, `SAVING COMMAND\n` +
-          `Command: ${commandInput}\n` +
-          `Items taken: ${itemsTakenInput}\n` +
-          `Items given: ${itemsGivenInput}\n` +
-          `Items required: ${itemsRequiredInput}\n` +
-          `Referencing EXISTING screen with ID:\n` + existingDestinationIdInput);
+      // Parse input fields
+      // - Command
+      const command: string = commandInput.trim();
+
+      // - Items taken
+      let itemsTaken: string[] | undefined = undefined;
+      if (itemsTakenInput.trim() !== '') {
+        itemsTaken = itemsTakenInput.split(',')
+          .map((item) => item.trim())
+          .filter((item) => item !== '');
+      }
+
+      // - Items given
+      let itemsGiven: string[] | undefined = undefined;
+      if (itemsGivenInput.trim() !== '') {
+        itemsGiven = itemsGivenInput.split(',')
+          .map((item) => item.trim())
+          .filter((item) => item !== '');
+      }
+
+      // - Items required
+      let itemsRequired: string[] | undefined = undefined;
+      if (itemsRequiredInput.trim() !== '') {
+        itemsRequired = itemsRequiredInput.split(',')
+          .map((item) => item.trim())
+          .filter((item) => item !== '');
+      }
+
+      // - Destination type
+      const destinationType: DestinationType = destinationTypeInput!;
+
+      // - Existing screen ID
+      let existingScreenId: string | undefined = undefined;
+      if (destinationType === DestinationType.Existing) {
+        existingScreenId = existingDestinationIdInput.trim();
+      }
+
+      // - New screen body
+      let newScreenBody: string[] | undefined = undefined;
+      if (destinationType === DestinationType.New) {
+        newScreenBody = transformNewScreenBodyToLines(newScreenBodyInput);
+      }
+
+      // Submit form
+      onSubmit({
+        command,
+        itemsTaken,
+        itemsGiven,
+        itemsRequired,
+        destinationType,
+        existingScreenId,
+        newScreenBody,
+      });
     })();
   };
 
@@ -190,13 +241,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
     e.stopPropagation();
 
     const textareaEl = e.target;
-
-    // Split text into lines
-    const rawBody = textareaEl.value;
-    const rawLines = rawBody.split(/[\r\n]/g);
-
-    // Restrict length of each line to `TERMINAL_CHARACTER_WIDTH`
-    const trimmedLines = rawLines.map((line) => line.substring(0, TERMINAL_CHARACTER_WIDTH));
+    const trimmedLines = transformNewScreenBodyToLines(textareaEl.value);
 
     // Re-join text back into text
     validateAndSetNewScreenBody(trimmedLines.join('\n'));
@@ -322,7 +367,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel }) => {
                   minRows={10}
                   placeholder="You enter a dark room."
                   onChange={handleNewScreenChange}
-                  value={newScreenBody}
+                  value={newScreenBodyInput}
                 />
                 {/* error */}
                 {showValidationErrors && newScreenBodyError && (
