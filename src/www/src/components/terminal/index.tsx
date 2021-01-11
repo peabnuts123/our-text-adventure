@@ -116,6 +116,9 @@ const Terminal: FunctionComponent = () => {
               Create a new pathway in the
               universe
 
+            /inventory
+              List your inventory
+
             /help (alias: /?)
               Print this help message
           `));
