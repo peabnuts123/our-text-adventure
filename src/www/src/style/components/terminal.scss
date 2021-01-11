@@ -14,6 +14,7 @@
   max-height: 60vh;
   overflow-y: scroll;
   white-space: pre-wrap;
+  line-break: anywhere;
 
   /* @NOTE hide scrollbars */
   scrollbar-width: none; /* Firefox */
