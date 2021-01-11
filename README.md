@@ -12,6 +12,9 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
   - [ ] Mobile nav
   - [ ] line-wrap on prompt input
+  - [ ] Do not send Commands over the wire in GameScreen payload
+  - [ ] Add spinner / loading state to terminal onSubmit
+  - [ ] Print what items you have received / lost in terminal
 
   - [x] ~~Make the terminal write text and then prompt you~~
   - [x] ~~Implement slash commands e.g. `/path`~~
@@ -22,21 +25,27 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
     - ~~Items required~~
     - ~~Target screen (new / existing)~~
   - [x] ~~Form validation for create-path form~~
-  - [ ] Create `/api/command` endpoint
-    - Takes:
-      - State
-      - Command
-    - Returns:
-      - Error OR
-      - Screen
-      - Updated State
+  - [ ] Add concept of state to frontend
+    - ~~State store (current screen, inventory, etc, methods to stringify state)~~
+    - ~~Commands can update state~~
+    - ~~State store will either update the URL with state string or give out a shareable URL or something~~
+    - ~~When sending commands to the API also end the state string~~
+    - ~~API will need to unencode and decompress the state string into JSON~~
+    - Load state from URL when first loading the page
+  - [x] ~~Create `/api/command` endpoint~~
+    - ~~Takes:~~
+      - ~~State~~
+      - ~~Command~~
+    - ~~Returns:~~
+      - ~~Error OR~~
+      - ~~Screen~~
+      - ~~Updated State~~
   - [ ] (API) Restrict commands to be unique per screen
   - [x] ~~Update `/api/path` endpoint to handle item requirements~~
-  - [ ] Make the terminal submit the command to the API
-  - [ ] Make terminal print command result
-  - [ ] Terminal hydrates state from the URL whenever an command is issued
+  - [x] ~~Make the terminal submit the command to the API~~
+  - [x] ~~Make terminal print command result~~
   - [ ] Make `/inventory` list your inventory
-  - [ ] Make `/help` list commands and stuff
+  - [x] ~~Make `/help` list commands and stuff~~
 
 ### Terminal
   - Shows text
