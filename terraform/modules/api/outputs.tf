@@ -8,6 +8,7 @@ output "lambda_function_names" {
   value = [
     aws_lambda_function.test.function_name,
     aws_lambda_function.get_screen_by_id.function_name,
-    aws_lambda_function.add_path.function_name
+    aws_lambda_function.add_path.function_name,
+    aws_lambda_function.command.function_name
   ]
 }

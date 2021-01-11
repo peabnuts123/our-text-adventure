@@ -28,3 +28,13 @@ resource "aws_cloudwatch_log_group" "add_path" {
     environment = var.environment_id
   }
 }
+# Function - Command
+resource "aws_cloudwatch_log_group" "command" {
+  name              = "/aws/lambda/${local.lambda_name_command}"
+  retention_in_days = 14
+
+  tags = {
+    project = var.project_id
+    environment = var.environment_id
+  }
+}

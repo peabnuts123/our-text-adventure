@@ -55,23 +55,41 @@ resource "aws_apigatewayv2_integration" "add_path" {
   integration_uri        = aws_lambda_function.add_path.invoke_arn
   payload_format_version = "2.0"
 }
+# Function - Command
+resource "aws_apigatewayv2_integration" "command" {
+  api_id      = aws_apigatewayv2_api.api.id
+  description = "Proxy to Command Lambda"
+
+  integration_type       = "AWS_PROXY"
+  # @TODO VPC probably
+  connection_type        = "INTERNET"
+  integration_method     = "POST"
+  integration_uri        = aws_lambda_function.command.invoke_arn
+  payload_format_version = "2.0"
+}
 
 # Routes
-# GET /test/*
+# GET /api/test/*
 resource "aws_apigatewayv2_route" "test" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "GET /api/test/{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.test.id}"
 }
-# GET /screen/:id
+# GET /api/screen/:id
 resource "aws_apigatewayv2_route" "get_screen_by_id" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "GET /api/screen/{id}"
   target    = "integrations/${aws_apigatewayv2_integration.get_screen_by_id.id}"
 }
-# POST /path
+# POST /api/path
 resource "aws_apigatewayv2_route" "add_path" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "POST /api/path"
   target    = "integrations/${aws_apigatewayv2_integration.add_path.id}"
+}
+# POST /api/command
+resource "aws_apigatewayv2_route" "command" {
+  api_id    = aws_apigatewayv2_api.api.id
+  route_key = "POST /api/command"
+  target    = "integrations/${aws_apigatewayv2_integration.command.id}"
 }
