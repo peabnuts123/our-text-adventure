@@ -3,6 +3,7 @@ import React, { FunctionComponent, useRef, useState } from "react";
 import Logger, { LogLevel } from "@app/util/Logger";
 import GameScreen from "@app/models/GameScreen";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
+import { useStores } from "@app/stores";
 
 import CommandInput from "../command-input";
 import CreatePath from "../create-path";
@@ -12,6 +13,9 @@ interface Props {
 }
 
 const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
+  // Stores
+  const { CommandStore, StateStore } = useStores();
+
   // State
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
@@ -55,7 +59,7 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
   };
 
   /** Callback for submitting a command in the prompt */
-  const onSubmitCommand = (rawCommand: string): Promise<void> => {
+  const onSubmitCommand = async (rawCommand: string): Promise<void> => {
     const command: string = rawCommand.trim();
 
     appendTerminalLinesToBuffer([`> ${command}`]);
@@ -96,19 +100,24 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
     } else {
       // Regular commands
       Logger.log(LogLevel.debug, "Regular command: ", command);
-      appendTerminalLinesToBuffer(heredocToStringArray(`
-        Lorem ipsum dolor sit amet,
-        consectetuer adipiscing elit.
-        Donec odio. Quisque volutpat
-        mattis eros. Nullam malesuada
-        erat ut turpis.
-        Lorem ipsum dolor sit amet,
-        consectetuer adipiscing elit.
-        Donec odio. Quisque volutpat
-        mattis eros. Nullam malesuada
-        erat ut turpis.`));
 
-      flushTerminalBuffer();
+      // Send command to the API
+      const response = await CommandStore.submitCommand(StateStore.currentScreenId!, command, StateStore.getStateAsString());
+
+      if (response.success === true) {
+        // Successful request
+        // Store new screen ID and state string into State Store
+        StateStore.setCurrentScreenId(response.screen.id);
+        StateStore.setStateFromString(response.state);
+
+        // Write response screen to terminal
+        appendTerminalLinesToBuffer(response.screen.body);
+        flushTerminalBuffer();
+      } else if (response.success === false) {
+        // Failed request
+        appendTerminalLinesToBuffer([response.message]);
+        flushTerminalBuffer();
+      }
 
       return Promise.resolve();
     }
@@ -125,6 +134,10 @@ const Terminal: FunctionComponent<Props> = ({ initialScreen }) => {
   if (!hasLoaded && initialScreen !== undefined) {
     setHasLoaded(true);
 
+    // Initialise state store
+    StateStore.init(initialScreen.id);
+
+    // Print initial screen to terminal
     appendTerminalLinesToBuffer(initialScreen.body);
     flushTerminalBuffer();
   }
