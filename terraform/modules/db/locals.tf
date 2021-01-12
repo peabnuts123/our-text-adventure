@@ -1,3 +1,3 @@
 locals {
-  table_name = "AdventureScreens"
+  table_name = "${var.project_id}_${var.environment_id}_screens"
 }

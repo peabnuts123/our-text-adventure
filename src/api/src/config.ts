@@ -1,6 +1,6 @@
 import { LogLevel } from "./util/Logger";
 
-const { ENVIRONMENT_ID } = process.env;
+const { ENVIRONMENT_ID, PROJECT_ID } = process.env;
 
 export interface Config {
   screensTableName: string;
@@ -10,7 +10,8 @@ export interface Config {
 }
 
 const baseConfig = {
-  screensTableName: 'AdventureScreens',
+  // @NOTE defaults to "our-text-adventure" if not specified (e.g. when running locally)
+  screensTableName: `${PROJECT_ID || 'our-text-adventure'}_${ENVIRONMENT_ID}_screens`,
   environmentId: ENVIRONMENT_ID!,
 };
 

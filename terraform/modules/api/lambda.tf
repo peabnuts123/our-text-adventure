@@ -24,6 +24,7 @@ resource "aws_lambda_function" "test" {
     variables = {
       NODE_ENV = "production"
       ENVIRONMENT_ID = var.environment_id
+      PROJECT_ID = var.project_id
     }
   }
 }
@@ -61,6 +62,7 @@ resource "aws_lambda_function" "get_screen_by_id" {
     variables = {
       NODE_ENV = "production"
       ENVIRONMENT_ID = var.environment_id
+      PROJECT_ID = var.project_id
     }
   }
 }
@@ -98,6 +100,7 @@ resource "aws_lambda_function" "add_path" {
     variables = {
       NODE_ENV = "production"
       ENVIRONMENT_ID = var.environment_id
+      PROJECT_ID = var.project_id
     }
   }
 }
@@ -134,6 +137,7 @@ resource "aws_lambda_function" "command" {
     variables = {
       NODE_ENV = "production"
       ENVIRONMENT_ID = var.environment_id
+      PROJECT_ID = var.project_id
     }
   }
 }
