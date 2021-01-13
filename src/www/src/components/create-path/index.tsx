@@ -38,7 +38,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [newScreenBodyInput, setNewScreenBodyInput] = useState<string>("");
 
   // Validation state
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [_isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
