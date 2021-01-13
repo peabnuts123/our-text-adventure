@@ -3,6 +3,7 @@ enum ErrorId {
   GetScreenById_NoScreenExistsWithId = 'GetScreenById_NoScreenExistsWithId',
 
   // AddPath
+  AddPath_CommandAlreadyExistsForScreen = 'AddPath_CommandAlreadyExistsForScreen',
   AddPath_NoSourceScreenExistsWithId = 'AddPath_NoSourceScreenExistsWithId',
   AddPath_NoDestinationScreenExistsWithId = 'AddPath_NoDestinationScreenExistsWithId',
 

@@ -81,12 +81,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     }
 
     // Validate `command`
-    let command: string = dto.command as string;
+    const command: string = dto.command as string;
     if (typeof command !== 'string' || command.trim() === '') {
       // - ensure `command` is correct type / defined / not empty
       validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
-    } else {
-      command = command.trim();
+    } else if (sourceScreen! !== undefined && sourceScreen.lookupCommand(command)) {
+      validationErrors.push(new GenericError(ErrorId.AddPath_CommandAlreadyExistsForScreen, `A command already exists on this screen with name: '${command}'`));
     }
     // @TODO validate command does not already exist for screen
 
