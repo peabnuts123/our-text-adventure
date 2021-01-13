@@ -21,12 +21,12 @@ export interface CreatePathSubmitPayload {
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (payload: CreatePathSubmitPayload) => void;
+  onSuccessfulCreate: (payload: CreatePathSubmitPayload) => void;
 }
 
-const CreatePath: FunctionComponent<Props> = ({ onCancel, onSubmit }) => {
+const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) => {
   // Stores
-  const { ScreenStore } = useStores();
+  const { CommandStore, StateStore } = useStores();
 
   // State
   const [commandInput, setCommandInput] = useState<string>("");
@@ -38,7 +38,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSubmit }) => {
   const [newScreenBodyInput, setNewScreenBodyInput] = useState<string>("");
 
   // Validation state
-  const [isLoadingValidationState, setIsLoadingValidationState] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
@@ -130,49 +130,19 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSubmit }) => {
     e.stopPropagation();
 
     void (async () => {
-      setIsLoadingValidationState(true);
+      setIsSubmitting(true);
 
       // Validation
       const isCommandInputValid = validateCommandInput(commandInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
       const isNewScreenBodyValid = validateNewScreenBody(newScreenBodyInput);
       const isDestinationTypeValid = validateDestinationTypeInput(destinationTypeInput);
-      let hasValidationErrors: boolean = !isCommandInputValid ||
+      const hasValidationErrors: boolean = !isCommandInputValid ||
         !isExistingDestinationIdValid ||
         !isNewScreenBodyValid ||
         !isDestinationTypeValid;
 
-      // Only validate `existingDestinationId` if we're picking `DestinationType.Existing`
-      if (destinationTypeInput === DestinationType.Existing && isExistingDestinationIdValid) {
-        // @NOTE Extra validation for `existingDestinationId`
-        // This is because it makes a call to the API to verify that it is
-        //  a valid (i.e. existant) ID. We can't do this every time you press a
-        //  character, so we only validate it when you submit.
-        try {
-          // Try get the screen by provided ID
-          await ScreenStore.getScreenById(existingDestinationIdInput.trim());
-        } catch (err) {
-          // If an error occurs, either it is because a screen does not exist
-          //  with that ID, or some random error occurred while processing
-          if (
-            err instanceof ApiError &&
-            err.errors.some((error) =>
-              error instanceof GenericApiError &&
-              error.id === ErrorId.GetScreenById_NoScreenExistsWithId)
-          ) {
-            // API response is "Screen not found"
-            setExistingDestinationIdInputError("No screen exists with ID: " + existingDestinationIdInput);
-            hasValidationErrors = true;
-          } else {
-            // Unknown, continue throwing
-            throw err;
-          }
-        }
-      }
-
-      // Finished validating (async)
-      // Hide spinners and show errors
-      setIsLoadingValidationState(false);
+      // Form has submitted at least once - show validation errors now
       setShowValidationErrors(true);
 
       // Do nothing if there are validation errors
@@ -224,15 +194,64 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSubmit }) => {
       }
 
       // Submit form
-      onSubmit({
-        command,
-        itemsTaken,
-        itemsGiven,
-        itemsRequired,
-        destinationType,
-        existingScreenId,
-        newScreenBody,
-      });
+      try {
+        const payload: CreatePathSubmitPayload = {
+          command,
+          itemsTaken,
+          itemsGiven,
+          itemsRequired,
+          destinationType,
+          existingScreenId,
+          newScreenBody,
+        };
+
+        await CommandStore.createPath({
+          sourceScreenId: StateStore.currentScreenId,
+          ...payload,
+        });
+
+        // Finished loading - hide spinners
+        // Hidin' spinners, we hidin' spinners (they don't stop)
+        setIsSubmitting(false);
+
+        onSuccessfulCreate(payload);
+      } catch (err) {
+        // Finished loading (even through we got an error)
+        setIsSubmitting(false);
+
+        if (err instanceof ApiError) {
+          // API returned well-formed, known error
+          const response = err;
+          const { errors } = response;
+
+          let wasHandled = false;
+
+          // Command already exists
+          if (errors.some((error) =>
+            error instanceof GenericApiError &&
+            error.id === ErrorId.AddPath_CommandAlreadyExistsForScreen)
+          ) {
+            setCommandInputError("This command already exists for this screen");
+            wasHandled = true;
+          }
+
+          // Existing screen ID does not exist
+          if (errors.some((error) =>
+            error instanceof GenericApiError &&
+            error.id === ErrorId.AddPath_NoDestinationScreenExistsWithId)
+          ) {
+            setExistingDestinationIdInputError("No screen exists with ID: " + existingDestinationIdInput);
+            wasHandled = true;
+          }
+
+          // Continue throwing if we don't know what happened
+          if (wasHandled === false) {
+            throw err;
+          }
+        } else {
+          throw err;
+        }
+      }
     })();
   };
 

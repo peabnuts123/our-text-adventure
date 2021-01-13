@@ -205,12 +205,7 @@ const Terminal: FunctionComponent = () => {
     flushTerminalBuffer();
   };
 
-  const handleSubmitCreatePath = async (payload: CreatePathSubmitPayload): Promise<void> => {
-    await CommandStore.createPath({
-      sourceScreenId: StateStore.currentScreenId,
-      ...payload,
-    });
-
+  const handleSuccessfulCreatePath = (payload: CreatePathSubmitPayload): void => {
     setIsCreatingNewPath(false);
 
     appendTerminalLinesToBuffer([`Successfully created new path!`, `To go there now, type:`, '  ' + payload.command]);
@@ -237,7 +232,7 @@ const Terminal: FunctionComponent = () => {
       </div>
 
       {isCreatingNewPath && (
-        <CreatePath onCancel={handleCancelCreatePath} onSubmit={handleSubmitCreatePath} />
+        <CreatePath onCancel={handleCancelCreatePath} onSuccessfulCreate={handleSuccessfulCreatePath} />
       )}
     </>
   );
