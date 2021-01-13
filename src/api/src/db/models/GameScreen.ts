@@ -63,8 +63,6 @@ export default class GameScreen {
   }
 
   public lookupCommand(rawCommand: string): Command | undefined {
-    // @TODO do some fuzzy matching or something
-    const command = this.commands.find((command) => command.command === rawCommand);
-    return command;
+    return this.commands.find((command) => command.isEquivalentTo(rawCommand));
   }
 }

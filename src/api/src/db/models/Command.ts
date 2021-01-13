@@ -1,4 +1,5 @@
 import isArray from "../../util/is-array";
+import Logger, { LogLevel } from "../../util/Logger";
 
 export interface CommandArgs {
   id: string;
@@ -7,6 +8,16 @@ export interface CommandArgs {
   itemsTaken: string[];
   itemsGiven: string[];
   itemsRequired: string[];
+}
+
+function tokeniseRawCommand(command: string): string[] {
+  return command.toLocaleLowerCase().trim().split(/\s+/g);
+}
+
+function normaliseToken(token: string): string {
+  // Compatibility Decomposition, followed by Canonical Composition
+  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+  return token.normalize('NFKC');
 }
 
 export default class Command {
@@ -63,5 +74,26 @@ export default class Command {
       itemsGiven,
       itemsRequired,
     });
+  }
+
+  /**
+   * Test whether a string is equivalent to this command.
+   * This will perform a relatively tolerant match. Spacing between
+   *  words and casing of letters is not considered. Also, strings are
+   *  normalised so equivalent unicode representations are considered equal.
+   * @param rawOther The string to test
+   */
+  public isEquivalentTo(rawOther: string): boolean {
+    const thisTokens = tokeniseRawCommand(this.command);
+    const otherTokens = tokeniseRawCommand(rawOther);
+
+    for (let index = 0; index < otherTokens.length; index++) {
+      if (normaliseToken(thisTokens[index]).localeCompare(normaliseToken(otherTokens[index])) !== 0) {
+        Logger.log(LogLevel.debug, `Raw command '${rawOther}' is NOT equivalent to '${this.command}'`);
+        return false;
+      }
+    }
+
+    return true;
   }
 }
