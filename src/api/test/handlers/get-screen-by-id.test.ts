@@ -1,6 +1,6 @@
 import { handler } from '@app/handlers/get-screen-by-id';
 import Command from '@app/db/models/Command';
-import GameScreen from '@app/db/models/GameScreen';
+import GameScreen, { GameScreenDto } from '@app/db/models/GameScreen';
 import ErrorId from '@app/errors/ErrorId';
 
 import MockDb from '@test/mocks/mockDb';
@@ -45,6 +45,10 @@ describe("GetScreenById handler", () => {
       },
     };
 
+    const expectedResponse: GameScreenDto = {
+      id: mockScreen.id,
+      body: mockScreen.body,
+    };
 
     // Test
     const response = await invokeHandler(handler, mockRequest);
@@ -52,7 +56,7 @@ describe("GetScreenById handler", () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(response.headers && response.headers['Content-Type']).toBe('application/json');
-    expect(response.body && JSON.parse(response.body)).toEqual(mockScreen);
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
   });
 
   test("Getting a screen with an ID that doesn't exist returns a 404", async () => {

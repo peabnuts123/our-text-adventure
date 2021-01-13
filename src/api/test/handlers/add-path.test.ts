@@ -36,11 +36,6 @@ describe("AddPath handler", () => {
       itemsRequired: ['Thunder Stone'],
     };
 
-    const expectedResponse = {
-      body: requestPayload.newScreenBody,
-      commands: [],
-    };
-
     const mockRequest: SimpleRequest = {
       path: `/path`,
       headers: {
@@ -51,14 +46,12 @@ describe("AddPath handler", () => {
 
     // Test
     const response = await invokeHandler(handler, mockRequest);
-    const responseBodyRaw: string = response.body as string;
-    expect(responseBodyRaw).toBeDefined();
-    const responseBody = JSON.parse(responseBodyRaw) as GameScreen;
+    const responseBody: string = response.body as string;
 
     // Assert
+    expect(responseBody).not.toBeDefined();
     expect(response.statusCode).toBe(201);
-    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
-    expect(responseBody.body).toEqual(expectedResponse.body); // New screen has correct body
+    expect(response.headers && response.headers['Content-Type']).toBeUndefined();
     expect(mockScreen.commands.some((c) => c.command === requestPayload.command)).toBe(true); // Command has been appended to correct screen
   });
 
