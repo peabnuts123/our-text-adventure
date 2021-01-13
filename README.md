@@ -9,6 +9,10 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
 ## Backlog / @TODO
   - [ ] line-wrap on prompt input
   - [ ] Add spinner / loading state to terminal onSubmit
+  - [ ] Up to go through command history
+  - [ ] Remove stupid crap from create-path copy
+  - [ ] (?) Command to re-print the current screen
+  - [ ] Command to print the current screen's ID
   - [ ] Gracefully handle errors in the frontend
   - [ ] Update Insomnia.json
     - Add Command handler
@@ -20,7 +24,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
-
+  - [ ] Feedback command
 
   - [x] ~~Make the terminal write text and then prompt you~~
   - [x] ~~Implement slash commands e.g. `/path`~~
@@ -31,13 +35,13 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
     - ~~Items required~~
     - ~~Target screen (new / existing)~~
   - [x] ~~Form validation for create-path form~~
-  - [ ] Add concept of state to frontend
+  - [x] ~~Add concept of state to frontend~~
     - ~~State store (current screen, inventory, etc, methods to stringify state)~~
     - ~~Commands can update state~~
     - ~~State store will either update the URL with state string or give out a shareable URL or something~~
     - ~~When sending commands to the API also end the state string~~
     - ~~API will need to unencode and decompress the state string into JSON~~
-    - Load state from URL when first loading the page
+    - ~~Load state from URL when first loading the page~~
   - [x] ~~Create `/api/command` endpoint~~
     - ~~Takes:~~
       - ~~State~~
@@ -46,7 +50,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
       - ~~Error OR~~
       - ~~Screen~~
       - ~~Updated State~~
-  - [ ] (API) Restrict commands to be unique per screen
+  - [x] ~~(API) Restrict commands to be unique per screen~~
   - [x] ~~Update `/api/path` endpoint to handle item requirements~~
   - [x] ~~Make the terminal submit the command to the API~~
   - [x] ~~Make terminal print command result~~
