@@ -269,9 +269,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   return (
     <div className="create-path">
       <h2 className="create-path__title">Create a new path</h2>
-      <p className="create-path__description">Create a new pathway in the narrative. When the user is on this screen ($CURRENT_SCREEN_ID) and types this command{commandInput && <>
-        &ensp;(<span>{commandInput}</span>)
-      </>}, they will be taken to the target screen ($TARGET_SCREEN_ID). You can create a new screen or link to an existing one. Leave your mark on Our Text Adventure!</p>
+      <p className="create-path__description">Create a new pathway in the narrative. When the user is on this screen and types this command, they will be taken to the specified target screen. You can create a new screen or link to an existing one. Leave your mark on Our Text Adventure!</p>
       <form action="#" onSubmit={handleSubmit} className="create-path__form form">
         {/* Command */}
         <div className="form__input">
@@ -419,31 +417,6 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             </>
           )}
         </div>
-
-        {/* @TODO REMOVE debug visualising form state */}
-        {/* <ul>
-          <li>
-            commandInput: {commandInput}
-          </li>
-          <li>
-            itemsTakenInput: {itemsTakenInput}
-          </li>
-          <li>
-            itemsGivenInput: {itemsGivenInput}
-          </li>
-          <li>
-            itemsRequiredInput: {itemsRequiredInput}
-          </li>
-          <li>
-            destinationTypeInput: {destinationTypeInput}
-          </li>
-          <li>
-            existingDestinationIdInput: {existingDestinationIdInput}
-          </li>
-          <li>
-            newScreenBody: {newScreenBody}
-          </li>
-        </ul> */}
 
         <button type="submit" className="button form__button u-margin-top-md">Create pathway</button>
         <button type="button" className="button form__button u-md-margin-left-md u-margin-top-md" onClick={onCancel}>Cancel</button>

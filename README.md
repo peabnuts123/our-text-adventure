@@ -9,8 +9,8 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
 ## Backlog / @TODO
   - [ ] line-wrap on prompt input
   - [ ] Add spinner / loading state to terminal onSubmit
-  - [ ] Up to go through command history
-  - [ ] Remove stupid crap from create-path copy
+  - [x] ~~Up to go through command history~~
+  - [x] ~~Remove stupid crap from create-path copy~~
   - [ ] (?) Command to re-print the current screen
   - [ ] Command to print the current screen's ID
   - [ ] Gracefully handle errors in the frontend
