@@ -12,6 +12,7 @@ const DEFAULT_INITIAL_SCREEN_ID: string = '0290922a-59ce-458b-8dbc-1c33f646580a'
 export default class StateStore {
   private _currentScreenId!: string;
   private _currentState!: GameState;
+  public terminalHistory: string[];
 
   public constructor() {
     if (typeof window !== 'undefined') {
@@ -25,6 +26,8 @@ export default class StateStore {
       /** Decode / decompress a string */
       (window as any).debug_decodeString = decompressFromEncodedURIComponent;
     }
+
+    this.terminalHistory = [];
   }
 
 
