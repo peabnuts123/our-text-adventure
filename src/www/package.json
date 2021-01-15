@@ -10,7 +10,7 @@
     "start": "gatsby develop --port 8080",
     "build": "gatsby build",
     "serve": "gatsby serve",
-    "simulate-build": "npm run lint && npm run test && npm run type-check && npm run build && echo 'Build succeeded'",
+    "simulate-build": "npm run type-check && npm run lint && npm run test && npm run build && echo 'Build succeeded'",
     "type-check": "tsc --project ./tsconfig.json",
     "lint": "eslint --max-warnings 0 --no-error-on-unmatched-pattern \"./*.{js,jsx,ts,tsx}\" \"src/**/*.{js,jsx,ts,tsx}\" \"test/**/*.{js,jsx,ts,tsx}\"",
     "test": "ENVIRONMENT_ID=test echo 'No tests yet 🙃'",
