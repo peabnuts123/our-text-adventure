@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, FunctionComponent, KeyboardEventHandler, RefObject, TextareaHTMLAttributes, useEffect, useRef } from "react";
+import React, { FunctionComponent, RefObject, TextareaHTMLAttributes, useEffect, useRef } from "react";
 
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   minRows?: number;
@@ -34,18 +34,12 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
   };
 
   /** Update height of textarea to fit content */
-  const handleChange: ChangeEventHandler<HTMLTextAreaElement> = (e): void => {
-    updateTextareaSize();
-
-    if (props.onChange) {
-      props.onChange(e);
-    }
-  };
 
   useEffect(() => {
-    // Update size on first render
-    setTimeout(updateTextareaSize);
-  }, []);
+    // Update size on every render #yolo
+    updateTextareaSize();
+  });
+
 
   return (
     <textarea
@@ -53,7 +47,6 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
       rows={minRows}
       className={`textarea auto-size-textarea ${props.className || ''}`}
       ref={textareaRef}
-      onChange={handleChange}
     />
   );
 };
