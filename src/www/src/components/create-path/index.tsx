@@ -283,6 +283,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             placeholder="look bone"
             onChange={(e) => validateAndSetCommandInput(e.target.value)}
             value={commandInput}
+            autoCapitalize="none"
           />
           {/* error */}
           {showValidationErrors && commandInputError && (
@@ -302,6 +303,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             placeholder="green key, golden idol"
             onChange={(e) => setItemsTakenInput(e.target.value)}
             value={itemsTakenInput}
+            autoCapitalize="words"
           />
         </div>
 
@@ -317,6 +319,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             placeholder="red key, crystal skull"
             onChange={(e) => setItemsGivenInput(e.target.value)}
             value={itemsGivenInput}
+            autoCapitalize="words"
           />
         </div>
 
@@ -332,6 +335,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             placeholder="blue key, amulet of rambotan"
             onChange={(e) => setItemsRequiredInput(e.target.value)}
             value={itemsRequiredInput}
+            autoCapitalize="words"
           />
         </div>
 
@@ -385,6 +389,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   placeholder="You enter a dark room."
                   onChange={handleNewScreenChange}
                   value={newScreenBodyInput}
+                  autoCapitalize="sentences"
                 />
                 {/* error */}
                 {showValidationErrors && newScreenBodyError && (
@@ -408,6 +413,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   placeholder="a0674659-3f17-4f71-9ec1-447d9b7f4ddd"
                   onChange={(e) => validateAndSetExistingDestinationIdInput(e.target.value)}
                   value={existingDestinationIdInput}
+                  autoCapitalize="off"
                 />
                 {/* error */}
                 {showValidationErrors && existingDestinationIdInputError && (
