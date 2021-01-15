@@ -38,13 +38,18 @@ export function encodeClientStateAsString(state: ClientGameState): string {
   return compressToEncodedURIComponent(JSON.stringify(state));
 }
 
+// @TODO write tests for this
+export function areItemsEquivalent(itemA: string, itemB: string): boolean {
+  return itemA.trim().localeCompare(itemB.trim(), undefined, { sensitivity: 'accent' }) === 0;
+}
+
 export function applyCommandToClientState(stateString: string, command: Command): string {
   // Decode string into an object
   const state = parseClientStateFromString(stateString);
 
   // Check state has required items
   command.itemsRequired.forEach((requiredItem) => {
-    if (!state.inventory.includes(requiredItem)) {
+    if (!state.inventory.some((inventoryItem) => areItemsEquivalent(inventoryItem, requiredItem))) {
       // Required item is not found, throw error
       throw new ClientStateHandlingError(Messaging.RequiredItemNotPresent);
     }
@@ -52,7 +57,7 @@ export function applyCommandToClientState(stateString: string, command: Command)
 
   // Remove taken items and ensure state has them
   command.itemsTaken.forEach((takenItem) => {
-    const inventoryIndex = state.inventory.findIndex((item) => item === takenItem);
+    const inventoryIndex = state.inventory.findIndex((item) => areItemsEquivalent(item, takenItem));
     if (inventoryIndex === -1) {
       // Required item is not found, throw error
       throw new ClientStateHandlingError(Messaging.RequiredItemNotPresent);

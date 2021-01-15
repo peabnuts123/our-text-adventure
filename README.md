@@ -7,24 +7,25 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - A maintenance mode for the site?
 
 ## Backlog / @TODO
-  - [ ] Items are not case sensitive
+  - [x] ~~Items are not case sensitive~~
+  - [ ] (?) Command to re-print the current screen
+  - [ ] Command to print the current screen's ID
+  - [ ] Clicking on fake radio button does not work
+  - [ ] Add spinner / loading state to terminal onSubmit
   - [ ] line-wrap on various inputs
     - ~~prompt~~
     - path form: command
     - path form: items taken
     - path form: items given
     - path form: items required
-  - [ ] Add spinner / loading state to terminal onSubmit
   - [x] ~~Up to go through command history~~
   - [x] ~~Remove stupid crap from create-path copy~~
-  - [ ] (?) Command to re-print the current screen
-  - [ ] Command to print the current screen's ID
-  - [ ] Gracefully handle errors in the frontend
+  - [ ] Gracefully handle uncaught errors in the frontend
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
   - [ ] Mobile nav
-  - [ ] Make a utility to wrap words or something
+  - [ ] Make a utility for wrapping words or something
   - [ ] Remove path params from test handler and make it more "debug"-y or something
   - [ ] Persist state when navigating around the site
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
