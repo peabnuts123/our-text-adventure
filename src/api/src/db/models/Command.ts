@@ -88,7 +88,7 @@ export default class Command {
     const otherTokens = tokeniseRawCommand(rawOther);
 
     for (let index = 0; index < otherTokens.length; index++) {
-      if (normaliseToken(thisTokens[index]).localeCompare(normaliseToken(otherTokens[index])) !== 0) {
+      if (normaliseToken(thisTokens[index]).localeCompare(normaliseToken(otherTokens[index]), undefined, { usage: 'search' }) !== 0) {
         return false;
       }
     }
