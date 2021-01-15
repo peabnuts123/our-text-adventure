@@ -41,6 +41,7 @@ const Terminal: FunctionComponent = () => {
 
       try {
         const initialScreen = await ScreenStore.getScreenById(StateStore.currentScreenId);
+        StateStore.setCurrentScreen(initialScreen);
 
         // Print initial screen to terminal
         appendTerminalLinesToBuffer(initialScreen.body);
@@ -161,7 +162,7 @@ const Terminal: FunctionComponent = () => {
       if (response.success === true) {
         // Successful request
         // Store new screen ID and state string into State Store
-        StateStore.setCurrentScreenId(response.screen.id);
+        StateStore.setCurrentScreen(response.screen);
         StateStore.setStateFromString(response.state);
 
         // Write response screen to terminal

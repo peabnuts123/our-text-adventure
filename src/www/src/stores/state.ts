@@ -1,5 +1,7 @@
-import Logger, { LogLevel } from '@app/util/Logger';
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+
+import GameScreen from '@app/models/GameScreen';
+import Logger, { LogLevel } from '@app/util/Logger';
 
 export interface GameState {
   inventory: string[];
@@ -11,6 +13,7 @@ const DEFAULT_INITIAL_SCREEN_ID: string = '0290922a-59ce-458b-8dbc-1c33f646580a'
 
 export default class StateStore {
   private _currentScreenId!: string;
+  private _currentScreenInstance: GameScreen | undefined;
   private _currentState!: GameState;
   public terminalHistory: string[];
 
@@ -37,6 +40,7 @@ export default class StateStore {
       inventory: [],
     };
     this._currentScreenId = DEFAULT_INITIAL_SCREEN_ID;
+    this._currentScreenInstance = undefined;
 
     // Overwrite defaults from URL
     this.hydrateFromCurrentUrl();
@@ -77,7 +81,9 @@ export default class StateStore {
     // Read screen ID from URL (might not exist)
     const maybeScreenId: string | undefined = urlParams.get(SCREEN_ID_URL_PARAM_NAME) || undefined;
     if (maybeScreenId) {
-      this.setCurrentScreenId(maybeScreenId);
+      this._currentScreenId = maybeScreenId;
+      this._currentScreenInstance = undefined;
+      this.updateUrlState();
     }
 
     // Read state from URL (might not exist)
@@ -87,8 +93,9 @@ export default class StateStore {
     }
   }
 
-  public setCurrentScreenId(screenId: string): void {
-    this._currentScreenId = screenId;
+  public setCurrentScreen(screen: GameScreen): void {
+    this._currentScreenInstance = screen;
+    this._currentScreenId = screen.id;
     this.updateUrlState();
   }
 
@@ -108,5 +115,9 @@ export default class StateStore {
 
   public get currentScreenId(): string {
     return this._currentScreenId;
+  }
+
+  public get currentScreen(): GameScreen | undefined {
+    return this._currentScreenInstance;
   }
 }
