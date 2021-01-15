@@ -1,5 +1,4 @@
 import isArray from "../../util/is-array";
-import Logger, { LogLevel } from "../../util/Logger";
 
 export interface CommandArgs {
   id: string;
