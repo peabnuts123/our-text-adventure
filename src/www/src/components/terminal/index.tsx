@@ -103,7 +103,6 @@ const Terminal: FunctionComponent = () => {
       return Promise.resolve();
     } else if (command[0] === '/') {
       // Slash commands
-      Logger.log(LogLevel.debug, "Slash command: ", command);
       switch (command.substring(1)) {
         // HELP
         case '?':
@@ -155,7 +154,6 @@ const Terminal: FunctionComponent = () => {
       return Promise.resolve();
     } else {
       // Regular commands
-      Logger.log(LogLevel.debug, "Regular command: ", command);
 
       // Send command to the API
       const response = await CommandStore.submitCommand(StateStore.currentScreenId, command, StateStore.getStateAsString());

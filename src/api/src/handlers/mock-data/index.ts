@@ -57,7 +57,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     // Save all mock records to DB "in parallel"
     await Promise.all(MOCK_DATA.map((mockItem) => db.saveScreen(mockItem)));
 
-    Logger.log(LogLevel.debug, `Successfully inserted ${MOCK_DATA.length} items into table.`);
+    Logger.log(`Successfully inserted ${MOCK_DATA.length} items into table.`);
 
     return okResponse({
       message: `Successfully inserted ${MOCK_DATA.length} items into table.`,

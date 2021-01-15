@@ -89,7 +89,6 @@ export default class Command {
 
     for (let index = 0; index < otherTokens.length; index++) {
       if (normaliseToken(thisTokens[index]).localeCompare(normaliseToken(otherTokens[index])) !== 0) {
-        Logger.log(LogLevel.debug, `Raw command '${rawOther}' is NOT equivalent to '${this.command}'`);
         return false;
       }
     }

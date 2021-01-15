@@ -64,11 +64,9 @@ interface CreatePathRequestDto {
 
 export default class CommandStore {
   public async createPath(dto: CreatePathRequestDto): Promise<void> {
-    const response = await Api.postJson<string>(Endpoints.Command.addPath(), {
+    await Api.postJson<string>(Endpoints.Command.addPath(), {
       body: dto,
     });
-
-    Logger.log(LogLevel.debug, `Got response: '${response}' (${response.length})`);
   }
 
   public async submitCommand(contextScreenId: string, command: string, stateString: string): Promise<SubmitCommandSuccessResponse | SubmitCommandFailureResponse> {
