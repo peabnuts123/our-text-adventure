@@ -112,14 +112,30 @@ const Terminal: FunctionComponent = () => {
             // -- 30 chars --------------|
             `
             List of commands:
-            /create-path (alias: /path)
+            /create-path
+            (alias: /path)
               Create a new pathway in the
               universe
 
             /inventory
               List your inventory
 
-            /help (alias: /?)
+            /screen-id
+            (alias: /screen)
+              Print the current screen's
+              id (useful when creating a
+              new screen)
+
+            /whereami
+            (alias: /where)
+            (alias: /repeat)
+            (alias: /again)
+              Print the current screen
+              again
+
+
+            /help
+            (alias: /?)
               Print this help message
           `));
           break;
@@ -147,6 +163,26 @@ const Terminal: FunctionComponent = () => {
           }
           break;
 
+        // SCREEN
+        case 'screen':
+        case 'screen-id':
+          appendTerminalLinesToBuffer([
+            `Current screen ID:`,
+            StateStore.currentScreenId,
+          ]);
+          break;
+
+        // REPEAT / WHERE / AGAIN
+        case 'repeat':
+        case 'again':
+        case 'where':
+        case 'whereami':
+          if (StateStore.currentScreen !== undefined) {
+            appendTerminalLinesToBuffer(StateStore.currentScreen.body);
+          }
+          break;
+
+        // UNKNOWN
         default:
           appendTerminalLinesToBuffer([`Unrecognised command.`]);
           break;
