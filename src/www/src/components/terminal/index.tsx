@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 
-import Logger, { LogLevel } from "@app/util/Logger";
+import Logger from "@app/util/Logger";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
 
