@@ -1,22 +1,27 @@
-import React, { ChangeEventHandler, FunctionComponent, TextareaHTMLAttributes, useEffect, useRef } from "react";
+import React, { ChangeEventHandler, FunctionComponent, KeyboardEventHandler, RefObject, TextareaHTMLAttributes, useEffect, useRef } from "react";
 
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  name: string;
-  id: string;
   minRows?: number;
+  refObject?: RefObject<HTMLTextAreaElement>;
 }
 
 const AutoSizeTextarea: FunctionComponent<Props> = ({
-  name,
-  id,
   minRows,
+  refObject,
   ...props
 }) => {
   // Default parameters
   minRows = minRows || props.rows || 3;
 
   // Refs
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  /**
+   * Used if no ref is supplied. If a ref is provided through props, that one
+   * is used instead.
+   */
+  const defaultRef = useRef<HTMLTextAreaElement>(null);
+
+  // Prefer provided ref, otherwise, use defaultRef
+  const textareaRef: RefObject<HTMLTextAreaElement> = refObject || defaultRef;
 
   // Functions
   const updateTextareaSize = (): void => {
@@ -45,8 +50,6 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
   return (
     <textarea
       {...props}
-      id={id}
-      name={name}
       rows={minRows}
       className={`textarea auto-size-textarea ${props.className || ''}`}
       ref={textareaRef}

@@ -2,6 +2,8 @@ import React, { FormEventHandler, FunctionComponent, KeyboardEventHandler, useEf
 
 import { useStores } from "@app/stores";
 
+import AutoSizeTextarea from "../auto-size-textarea";
+
 interface Props {
   onSubmit: (command: string) => Promise<void>;
 }
@@ -21,13 +23,10 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
   const [temporaryHistoryItem, setTemporaryHistoryItem] = useState<string>('');
 
   // Refs
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Functions
-  const handleSubmit: FormEventHandler<Element> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
+  const submit = (): void => {
     // History
     StateStore.terminalHistory.unshift(inputCommand);
     setHistoryIndex(undefined);
@@ -38,7 +37,15 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
     setInputCommand("");
   };
 
+  const handleSubmit: FormEventHandler<Element> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    submit();
+  };
+
   const handleKeyDown: KeyboardEventHandler = (e) => {
+    // Handle "Arrow Up" key press
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       e.stopPropagation();
@@ -63,6 +70,7 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
       setInputCommand(StateStore.terminalHistory[newHistoryIndex]);
     }
 
+    // Handle "Arrow Down" key press
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       e.stopPropagation();
@@ -85,6 +93,23 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
     }
   };
 
+  const handleKeyPress: KeyboardEventHandler = (e): void => {
+    // Recreate default browser behavior for form submission in a text input
+    // @NOTE don't feel super happy about this.
+    // For example, there may be many other default ways of submitting
+    //  a form. I need the form to submit as if it were <input type="text" ...>
+    //  despite the fact that it's a textarea. The internet suggests that 'Enter'
+    //  is basically all there is to reproduce, but then, when has trusting
+    //  the internet ever been a good idea?
+    // We'll likely receive bugs about this.
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+
+      submit();
+    }
+  };
+
   useEffect(() => {
     setTimeout(() => {
       inputRef.current!.focus();
@@ -96,12 +121,14 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
       <form action="#" onSubmit={handleSubmit} className="command-input__form">
         <div className="command-input__input-container">
           <span className="command-input__input-prompt">&gt;&nbsp;</span>
-          <input className="command-input__input input"
-            type="text"
+          <AutoSizeTextarea className="command-input__input input"
             value={inputCommand}
+            minRows={1}
             onChange={(e) => setInputCommand(e.target.value)}
             onKeyDown={handleKeyDown}
-            ref={inputRef}
+            onKeyPress={handleKeyPress}
+            refObject={inputRef}
+            autoCapitalize="none"
           />
         </div>
         <button className="button u-screen-reader-only" type="submit">Submit</button>

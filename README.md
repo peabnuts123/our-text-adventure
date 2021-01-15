@@ -7,7 +7,13 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - A maintenance mode for the site?
 
 ## Backlog / @TODO
-  - [ ] line-wrap on prompt input
+  - [ ] Items are not case sensitive
+  - [ ] line-wrap on various inputs
+    - ~~prompt~~
+    - path form: command
+    - path form: items taken
+    - path form: items given
+    - path form: items required
   - [ ] Add spinner / loading state to terminal onSubmit
   - [x] ~~Up to go through command history~~
   - [x] ~~Remove stupid crap from create-path copy~~
