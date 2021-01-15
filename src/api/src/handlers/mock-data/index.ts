@@ -7,7 +7,7 @@ import IDatabase from '../../db/IDatabase';
 import GameScreen from '../../db/models/GameScreen';
 import Command from '../../db/models/Command';
 
-import Logger, { LogLevel } from '../../util/Logger';
+import Logger from '../../util/Logger';
 import errorResponse from '../../util/response/error';
 import okResponse from '../../util/response/ok';
 import ApiError from '../../errors/ApiError';
