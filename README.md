@@ -8,10 +8,11 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
 
 ## Backlog / @TODO
   - [x] ~~Items are not case sensitive~~
-  - [ ] (?) Command to re-print the current screen
-  - [ ] Command to print the current screen's ID
+  - [x] ~~Command to re-print the current screen~~
+  - [x] ~~Command to print the current screen's ID~~
+  - [x] ~~Add spinner / loading state to things loading~~
   - [ ] Clicking on fake radio button does not work
-  - [ ] Add spinner / loading state to terminal onSubmit
+  - [ ] Click on terminal to focus command-input
   - [ ] line-wrap on various inputs
     - ~~prompt~~
     - path form: command

@@ -25,6 +25,11 @@
     border: 1px solid $error;
   }
 
+  &.is-disabled {
+    opacity: 50%;
+    cursor: not-allowed;
+  }
+
   @include media-query('tablet') {
     font-size: 20px;
   }

@@ -52,3 +52,7 @@
 // ========================
 // UI STATES
 // ========================
+.radio__indicator.is-disabled, .radio__label.is-disabled {
+  opacity: 50%;
+  cursor: not-allowed;
+}

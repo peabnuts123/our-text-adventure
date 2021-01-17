@@ -8,6 +8,7 @@ import ErrorId from "@app/constants/ErrorId";
 import { DestinationType } from "@app/stores/command";
 
 import AutoSizeTextarea from "../auto-size-textarea";
+import Spinner from "../spinner";
 
 export interface CreatePathSubmitPayload {
   command: string;
@@ -38,7 +39,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [newScreenBodyInput, setNewScreenBodyInput] = useState<string>("");
 
   // Validation state
-  const [_isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
@@ -130,8 +131,6 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
     e.stopPropagation();
 
     void (async () => {
-      setIsSubmitting(true);
-
       // Validation
       const isCommandInputValid = validateCommandInput(commandInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
@@ -149,6 +148,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       if (hasValidationErrors) {
         return;
       }
+
+      setIsSubmitting(true);
 
       // Parse input fields
       // - Command
@@ -279,11 +280,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <p className="create-path__form__description">The command that the user must type when on this screen. Commands are not case or space sensitive.</p>
           {/* input */}
           <input type="text" name="command" id="command"
-            className={classnames("input input--text", { 'has-error': showValidationErrors && commandInputError })}
+            className={classnames("input input--text", {
+              'has-error': showValidationErrors && commandInputError,
+              'is-disabled': isSubmitting,
+            })}
             placeholder="look bone"
             onChange={(e) => validateAndSetCommandInput(e.target.value)}
             value={commandInput}
             autoCapitalize="none"
+            disabled={isSubmitting}
           />
           {/* error */}
           {showValidationErrors && commandInputError && (
@@ -299,11 +304,12 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <p className="create-path__form__description">Items that will be removed when the player issues this command. It is implied that the player must have these items in their inventory in order to do this, or else they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
           {/* input */}
           <input type="text" name="items-taken" id="items-taken"
-            className="input input--text"
+            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="green key, golden idol"
             onChange={(e) => setItemsTakenInput(e.target.value)}
             value={itemsTakenInput}
             autoCapitalize="words"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -315,11 +321,12 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <p className="create-path__form__description">Items that will be given to the player upon successfully issuing this command.</p>
           {/* input */}
           <input type="text" name="items-given" id="items-given"
-            className="input input--text"
+            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="red key, crystal skull"
             onChange={(e) => setItemsGivenInput(e.target.value)}
             value={itemsGivenInput}
             autoCapitalize="words"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -331,11 +338,12 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <p className="create-path__form__description">Items that the player is required to have in their inventory in order to issue this command. These items will not be removed from the player&apos;s inventory when doing this. If the player does not have these items, they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
           {/* input */}
           <input type="text" name="items-required" id="items-required"
-            className="input input--text"
+            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="blue key, amulet of rambotan"
             onChange={(e) => setItemsRequiredInput(e.target.value)}
             value={itemsRequiredInput}
             autoCapitalize="words"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -351,9 +359,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               id={DestinationType.New}
               value={DestinationType.New}
               onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+              disabled={isSubmitting}
             />
-            <span className="radio__indicator"></span>
-            <label htmlFor={DestinationType.New} className="radio__label">A new screen</label>
+            <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })}></span>
+            <label htmlFor={DestinationType.New} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>A new screen</label>
           </div>
 
           <div className="radio">
@@ -362,9 +371,11 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               id={DestinationType.Existing}
               value={DestinationType.Existing}
               onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+              disabled={isSubmitting}
             />
-            <span className="radio__indicator"></span>
-            <label htmlFor={DestinationType.Existing} className="radio__label">An existing screen</label>
+            {/*  @TODO onlick select radio button */}
+            <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })}></span>
+            <label htmlFor={DestinationType.Existing} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>An existing screen</label>
           </div>
 
           {/* error */}
@@ -384,12 +395,16 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 <AutoSizeTextarea
                   id="new-destination-screen-body"
                   name="new-destination-screen-body"
-                  className={classnames({ 'has-error': showValidationErrors && newScreenBodyError })}
+                  className={classnames({
+                    'has-error': showValidationErrors && newScreenBodyError,
+                    'is-disabled': isSubmitting,
+                  })}
                   minRows={10}
                   placeholder="You enter a dark room."
                   onChange={handleNewScreenChange}
                   value={newScreenBodyInput}
                   autoCapitalize="sentences"
+                  disabled={isSubmitting}
                 />
                 {/* error */}
                 {showValidationErrors && newScreenBodyError && (
@@ -409,11 +424,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 <p className="create-path__form__description">Paste the ID of an existing screen as the destination. You can get the ID from the URL or something, I&apos;m not quite sure yet.</p>
                 {/* input */}
                 <input type="text" name="existing-destination-screen-id" id="existing-destination-screen-id"
-                  className={classnames("input input--text", { 'has-error': showValidationErrors && existingDestinationIdInputError })}
+                  className={classnames("input input--text", {
+                    'has-error': showValidationErrors && existingDestinationIdInputError,
+                    'is-disabled': isSubmitting,
+                  })}
                   placeholder="a0674659-3f17-4f71-9ec1-447d9b7f4ddd"
                   onChange={(e) => validateAndSetExistingDestinationIdInput(e.target.value)}
                   value={existingDestinationIdInput}
                   autoCapitalize="off"
+                  disabled={isSubmitting}
                 />
                 {/* error */}
                 {showValidationErrors && existingDestinationIdInputError && (
@@ -424,8 +443,19 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           )}
         </div>
 
-        <button type="submit" className="button form__button u-margin-top-md">Create pathway</button>
-        <button type="button" className="button form__button u-md-margin-left-md u-margin-top-md" onClick={onCancel}>Cancel</button>
+        <button type="submit"
+          className={classnames("button form__button u-margin-top-md", { 'is-disabled': isSubmitting })}
+          disabled={isSubmitting}
+        >Create pathway</button>
+        <button type="button"
+          className={classnames("button form__button u-md-margin-left-md u-margin-top-md", { 'is-disabled': isSubmitting })}
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >Cancel</button>
+
+        {isSubmitting && (
+          <span className="u-margin-left-md"><Spinner /></span>
+        )}
       </form>
     </div>
   );

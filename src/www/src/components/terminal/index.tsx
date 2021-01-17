@@ -5,6 +5,7 @@ import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
 
 import CommandInput from "../command-input";
+import Spinner from "../spinner";
 import CreatePath, { CreatePathSubmitPayload } from "../create-path";
 
 const Terminal: FunctionComponent = () => {
@@ -14,6 +15,7 @@ const Terminal: FunctionComponent = () => {
   // State
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
+  const [isProcessingCommand, setIsProcessingCommand] = useState<boolean>(false);
   const [isCreatingNewPath, setIsCreatingNewPath] = useState<boolean>(false);
 
   // Volatile state
@@ -101,7 +103,6 @@ const Terminal: FunctionComponent = () => {
     if (command === '') {
       // Empty input - do nothing
       flushTerminalBuffer();
-      return Promise.resolve();
     } else if (command[0] === '/') {
       // Slash commands
       switch (command.substring(1)) {
@@ -188,12 +189,17 @@ const Terminal: FunctionComponent = () => {
           break;
       }
       flushTerminalBuffer();
-      return Promise.resolve();
     } else {
       // Regular commands
 
+      // Flag as loading (flush whatever is printed so far)
+      setIsProcessingCommand(true);
+      flushTerminalBuffer();
+
       // Send command to the API
       const response = await CommandStore.submitCommand(StateStore.currentScreenId, command, StateStore.getStateAsString());
+
+      setIsProcessingCommand(false);
 
       if (response.success === true) {
         // Successful request
@@ -228,8 +234,6 @@ const Terminal: FunctionComponent = () => {
         appendTerminalLinesToBuffer([response.message]);
         flushTerminalBuffer();
       }
-
-      return Promise.resolve();
     }
   };
 
@@ -256,12 +260,18 @@ const Terminal: FunctionComponent = () => {
               terminalLines.join('\n')
             ) :
             (
-              <span>Loading&hellip;</span>
+              <>
+                <Spinner /> Accessing system&hellip;
+              </>
             )
           }&nbsp;
         </div>
 
-        {isNotCreatingNewPath && (
+        {isProcessingCommand && (
+          <Spinner />
+        )}
+
+        {hasLoaded && !isProcessingCommand && isNotCreatingNewPath && (
           <CommandInput onSubmit={onSubmitCommand} />
         )}
       </div>
