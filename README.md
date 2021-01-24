@@ -13,8 +13,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Add spinner / loading state to things loading~~
   - [x] ~~Persist state when navigating around the site~~
   - [x] ~~Clicking on fake radio button does not work~~
-  - [ ] Focus on command-input when finish loading (? if nothing is selected ?)
-  - [ ] Click on terminal to focus command-input
+  - [x] ~~Click on terminal to focus command-input~~
   - [ ] line-wrap on various inputs
     - ~~prompt~~
     - path form: command

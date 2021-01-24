@@ -1,4 +1,4 @@
-import React, { FormEventHandler, FunctionComponent, KeyboardEventHandler, useEffect, useRef, useState } from "react";
+import React, { FormEventHandler, FunctionComponent, KeyboardEventHandler, RefObject, useEffect, useRef, useState } from "react";
 
 import { useStores } from "@app/stores";
 
@@ -6,9 +6,10 @@ import AutoSizeTextarea from "../auto-size-textarea";
 
 interface Props {
   onSubmit: (command: string) => Promise<void>;
+  refObject?: RefObject<HTMLTextAreaElement>;
 }
 
-const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
+const CommandInput: FunctionComponent<Props> = ({ onSubmit, refObject }) => {
   // Stores
   const { StateStore } = useStores();
 
@@ -23,7 +24,14 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
   const [temporaryHistoryItem, setTemporaryHistoryItem] = useState<string>('');
 
   // Refs
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  /**
+   * Used if no ref is supplied. If a ref is provided through props, that one
+   * is used instead.
+   */
+  const defaultRef = useRef<HTMLTextAreaElement>(null);
+
+  // Prefer provided ref, otherwise, use defaultRef
+  const inputRef: RefObject<HTMLTextAreaElement> = refObject || defaultRef;
 
   // Functions
   const submit = (): void => {
@@ -114,6 +122,7 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit }) => {
     setTimeout(() => {
       inputRef.current!.focus();
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

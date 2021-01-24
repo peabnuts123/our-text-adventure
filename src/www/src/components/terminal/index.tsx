@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, MouseEventHandler, useEffect, useRef, useState } from "react";
 
 import Logger from "@app/util/Logger";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
@@ -32,6 +32,7 @@ const Terminal: FunctionComponent = () => {
 
   // Refs
   const terminalCodeRef = useRef<HTMLDivElement>(null);
+  const commandInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     // Initialise the state store. This will sync it with the URL
@@ -251,9 +252,14 @@ const Terminal: FunctionComponent = () => {
     flushTerminalBuffer();
   };
 
+  const handleOnClickTerminal: MouseEventHandler = (_e): void => {
+    // Focus the command input field
+    commandInputRef.current!.focus();
+  };
+
   return (
     <>
-      <div className="terminal">
+      <div className="terminal" onClick={handleOnClickTerminal}>
         <div className="terminal__code" ref={terminalCodeRef}>
           {hasLoaded ?
             (
@@ -272,7 +278,7 @@ const Terminal: FunctionComponent = () => {
         )}
 
         {hasLoaded && !isProcessingCommand && isNotCreatingNewPath && (
-          <CommandInput onSubmit={onSubmitCommand} />
+          <CommandInput onSubmit={onSubmitCommand} refObject={commandInputRef} />
         )}
       </div>
 
