@@ -11,7 +11,9 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Command to re-print the current screen~~
   - [x] ~~Command to print the current screen's ID~~
   - [x] ~~Add spinner / loading state to things loading~~
+  - [x] ~~Persist state when navigating around the site~~
   - [ ] Clicking on fake radio button does not work
+  - [ ] Focus on command-input when finish loading (? if nothing is selected ?)
   - [ ] Click on terminal to focus command-input
   - [ ] line-wrap on various inputs
     - ~~prompt~~
@@ -22,13 +24,13 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Up to go through command history~~
   - [x] ~~Remove stupid crap from create-path copy~~
   - [ ] Gracefully handle uncaught errors in the frontend
+  - [ ] Store some stuff globally for production debugging (e.g. `window.ota.config`)
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
   - [ ] Mobile nav
   - [ ] Make a utility for wrapping words or something
   - [ ] Remove path params from test handler and make it more "debug"-y or something
-  - [ ] Persist state when navigating around the site
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure` for deployments
