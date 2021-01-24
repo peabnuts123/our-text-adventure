@@ -12,7 +12,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Command to print the current screen's ID~~
   - [x] ~~Add spinner / loading state to things loading~~
   - [x] ~~Persist state when navigating around the site~~
-  - [ ] Clicking on fake radio button does not work
+  - [x] ~~Clicking on fake radio button does not work~~
   - [ ] Focus on command-input when finish loading (? if nothing is selected ?)
   - [ ] Click on terminal to focus command-input
   - [ ] line-wrap on various inputs

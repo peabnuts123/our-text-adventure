@@ -361,8 +361,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
               disabled={isSubmitting}
             />
-            <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })}></span>
-            <label htmlFor={DestinationType.New} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>A new screen</label>
+            <label htmlFor={DestinationType.New} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+              <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+              A new screen
+            </label>
           </div>
 
           <div className="radio">
@@ -373,9 +375,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
               disabled={isSubmitting}
             />
-            {/*  @TODO onlick select radio button */}
-            <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })}></span>
-            <label htmlFor={DestinationType.Existing} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>An existing screen</label>
+            <label htmlFor={DestinationType.Existing} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+              <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+              An existing screen
+            </label>
           </div>
 
           {/* error */}

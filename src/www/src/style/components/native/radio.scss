@@ -20,11 +20,13 @@
 // ELEMENTS
 // ========================
 .radio__input {
-  &:checked + .radio__indicator::before {
+  &:checked + .radio__indicator::before,
+  &:checked + .radio__label > .radio__indicator::before {
     content: '[x]';
   }
 
-  &:focus + .radio__indicator {
+  &:focus + .radio__indicator,
+  &:focus + .radio__label > .radio__indicator {
     outline: 1px solid $focus;
   }
 }
