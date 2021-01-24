@@ -10,7 +10,10 @@ const NewGame: FunctionComponent = () => {
 
   // Immediately reset state and navigate back to index
   StateStore.resetState();
-  void navigate('/');
+  // @NOTE safeguard for server-side rendering
+  if (typeof window !== 'undefined') {
+    void navigate('/');
+  }
 
   return (
     <></>

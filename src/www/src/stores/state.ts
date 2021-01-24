@@ -89,6 +89,11 @@ export default class StateStore {
    * 4. Otherwise, set to defaults
    */
   public hydrateState(): void {
+    // Safeguard for server-side rendering
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     // Processing state
     let hasSetScreenId = false;
     let hasSetState = false;
@@ -172,6 +177,11 @@ export default class StateStore {
    * 3. Local Storage (for persistence between sessions)
    */
   private storeState(): void {
+    // Safeguard for server-side rendering
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     // Do not write state to sources while trying to read
     // Assume that it will be stored again after being read
     if (this._isReadingStoredState) {
