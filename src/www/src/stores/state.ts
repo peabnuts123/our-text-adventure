@@ -68,6 +68,20 @@ export default class StateStore {
   }
 
   /**
+   * Write defaults and store state to all sources
+   */
+  public resetState(): void {
+    this._currentScreenId = DEFAULT_INITIAL_SCREEN_ID;
+    this._currentScreenInstance = undefined;
+
+    this._currentState = {
+      inventory: [],
+    };
+
+    this.storeState();
+  }
+
+  /**
    * Update the state in this store from various sources in priority order:
    * 1. The URL
    * 2. (If a field is not present in the URL) Session Storage

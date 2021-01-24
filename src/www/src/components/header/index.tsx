@@ -9,6 +9,12 @@ const Index: FunctionComponent = () => {
       <nav className="header-desktop">
 
         <div className="header-desktop__nav-items">
+          <Link to="/new-game"
+            className="header-desktop__nav-item"
+            activeClassName="is-active"
+          >
+            Start new game
+          </Link>
           <Link to="/"
             className="header-desktop__nav-item"
             activeClassName="is-active"
