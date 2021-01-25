@@ -6,6 +6,7 @@ $tangerine: #FFA286;
 $peach: #FCDCC8;
 $rose-sugar: #FFF4F2;
 $rose: #CB1330;
+$silicon-board: #092824;
 
 // Greys
 $black: #000000;
@@ -20,9 +21,10 @@ $primary: $tangerine;
 $secondary: $rose-sugar;
 $link: $rose;
 $selection: $peach;
-$border: $grey-light;
+$border: $tangerine;
 $focus: $rose-sugar;
 $error: $rose;
+$brand: $silicon-board;
 
 // Breakpoints
 $breakpoint-mobile: 768px;
@@ -38,3 +40,4 @@ $radius: 0;
 
 // Header
 $header-width: 200px;
+$header-height: 110px;

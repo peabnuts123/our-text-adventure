@@ -85,7 +85,7 @@ a, .link {
   text-decoration: underline;
 
   &:focus, &:hover, &:active {
-    color: darken($link, 15%);
+    color: $link;
   }
 }
 

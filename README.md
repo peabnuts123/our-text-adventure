@@ -14,6 +14,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Persist state when navigating around the site~~
   - [x] ~~Clicking on fake radio button does not work~~
   - [x] ~~Click on terminal to focus command-input~~
+  - [ ] BUG: Clicking "Home" while on Home wipes out URL state
   - [ ] line-wrap on various inputs
     - ~~prompt~~
     - path form: command
@@ -27,7 +28,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
-  - [ ] Mobile nav
+  - [x] ~~Mobile nav~~
   - [ ] Make a utility for wrapping words or something
   - [ ] Remove path params from test handler and make it more "debug"-y or something
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)

@@ -9,9 +9,9 @@ interface Props {
 const Index: FunctionComponent = ({ children }: Props) => {
   return (
     <>
-      <div className="page">
-        <Header />
+      <Header />
 
+      <div className="page">
         <div className="page__content">
           {children}
         </div>

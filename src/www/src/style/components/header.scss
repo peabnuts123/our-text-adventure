@@ -3,9 +3,11 @@
 // ========================
 // @note: The header / nav at the top of the page
 // ========================
+
+
 .header {
-  display: block;
   position: relative;
+  background: $brand;
 }
 
 .header-desktop {
@@ -13,6 +15,7 @@
   position: absolute;
   width: $header-width;
   left: -$header-width;
+  top: $header-height;
   padding: 0;
   color: $primary;
 
@@ -20,32 +23,49 @@
   @include media-query('laptop') {
     display: block;
   }
+}
 
-  // Nav has special links
-  a {
-    color: $primary;
-    text-decoration: none;
+.header-mobile {
+  display: block;
+
+  @include media-query('laptop') {
+    display: none;
   }
 }
+
 
 // ========================
 // ELEMENTS
 // ========================
-.header-desktop__title {
+.header__content {
+  @extend %page-container;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  @include media-query('laptop') {
+    position: relative;
+  }
+}
+
+.header__title {
   @extend %h1;
   font-size: 48px;
   display: block;
+  height: $header-height;
   text-decoration: none;
   color: $primary;
   padding-left: $m / 2;
   padding-right: $m / 2;
+  margin: 0;
 
-  @include media-query('tablet') {
+  @include media-query('laptop') {
     padding-left: $m;
     padding-right: $m;
   }
 }
 
+/* Desktop Nav */
 .header-desktop__nav-items {
   display: block;
   font-size: $font-size-h3;
@@ -55,12 +75,100 @@
   @extend %font-heading;
   display: block;
   padding: 0 $m;
+  color: $primary;
+  text-decoration: none;
 
   &.is-active {
     box-shadow: -2px 0 0 $primary;
   };
 }
 
+/* Mobile nav */
+/*
+ * @NOTE: In order to properly animate the background
+ * color, we need a proper animation library like Vue.
+ * This will allow us to enable the element and then
+ * animate it on separate frames, so we can create
+ * an element and then slap an animating class
+ * on it (like 'is-open').
+ */
+.header-mobile__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  cursor: initial;
+
+  /*
+   * Doesn't work because if we enable the element and also
+   * transition a property in the same frame it never detects
+   * the initial "transition from" value and does not animate
+   */
+  // transition: background-color 0.3s ease-in-out;
+
+  background-color: rgba($black, 0.5);
+  cursor: pointer;
+
+  @include media-query('laptop') {
+    display: none;
+  }
+}
+
+// Mobile nav sandwich container (tupperware)
+.header-mobile__sandwich-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-right: $m * 2;
+  margin-left: $m;
+}
+
+// Mobile nav content container
+.header-mobile__container {
+  position: absolute;
+  top: $header-height;
+  left: -100vw;
+  width: max(40vw, 200px);
+  height: calc(100vh - #{$header-height});
+  background-color: $brand;
+  transition: left 0.3s ease-in-out;
+
+  &.is-open {
+    left: 0;
+  }
+}
+
+
+.header-mobile__nav-item {
+  @extend %font-heading;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: $m 2 * $m;
+  cursor: pointer;
+  color: $primary;
+  text-decoration: none;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $border;
+  }
+
+  &:hover,
+  &:active {
+    background: rgba($text, 0.1);
+  }
+
+  &.is-active {
+    background: rgba($text, 0.2);
+  }
+}
+
+.header-mobile__nav-item-divider {
+  border-bottom: 2px double $border;
+}
 
 // ========================
 // MODIFIERS
