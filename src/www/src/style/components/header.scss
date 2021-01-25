@@ -121,9 +121,10 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  margin-right: $m * 2;
-  margin-left: $m;
+  height: calc(100% - #{$m * 2});
+  padding-left: $m;
+  padding-right: $m;
+  margin: $m;
 }
 
 // Mobile nav content container
