@@ -1,20 +1,20 @@
 // ========================
-// RADIO
+// CHECKBOX
 // ========================
-// @note: A radio button. The actual radio button is intended to be hidden, and represented
-//  by .radio__indicator instead.
+// @note: A checkbox. The actual checkbox is intended to be hidden, and represented
+//  by .checkbox__indicator instead.
 // ========================
 // @example:
-// <div class="radio">
-//   <input type="radio" name="some-choice" id="option-a" class="radio__input u-screen-reader-only" />
-//   <label for="option-a" class="radio__label">
-//     <span class="radio__indicator"></span>
+// <div class="checkbox">
+//   <input type="checkbox" name="thing-is-enabled" id="my-checkbox" class="checkbox__input u-screen-reader-only" />
+//   <label for="my-checkbox" class="checkbox__label">
+//     <span class="checkbox__indicator"></span>
 //     Option A
 //   </label>
 // </div>
 //
 
-.radio {
+.checkbox {
   display: block;
   margin-bottom: $m;
 }
@@ -22,19 +22,19 @@
 // ========================
 // ELEMENTS
 // ========================
-.radio__input {
-  &:checked + .radio__indicator::before,
-  &:checked + .radio__label > .radio__indicator::before {
-    content: '[o]';
+.checkbox__input {
+  &:checked + .checkbox__indicator::before,
+  &:checked + .checkbox__label > .checkbox__indicator::before {
+    content: '[x]';
   }
 
-  &:focus + .radio__indicator,
-  &:focus + .radio__label > .radio__indicator {
+  &:focus + .checkbox__indicator,
+  &:focus + .checkbox__label > .checkbox__indicator {
     outline: 1px solid $focus;
   }
 }
 
-.radio__indicator {
+.checkbox__indicator {
   padding-right: $m;
   padding-left: $m;
   white-space: nowrap;
@@ -46,7 +46,7 @@
   }
 }
 
-.radio__label {
+.checkbox__label {
   @extend %font-terminal;
   display: flex;
   flex-direction: row;
@@ -62,7 +62,7 @@
 // ========================
 // UI STATES
 // ========================
-.radio__indicator.is-disabled, .radio__label.is-disabled {
+.checkbox__indicator.is-disabled, .checkbox__label.is-disabled {
   opacity: 50%;
   cursor: not-allowed;
 }

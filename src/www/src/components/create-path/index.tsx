@@ -5,7 +5,7 @@ import { TERMINAL_CHARACTER_WIDTH } from '@app/constants';
 import { useStores } from "@app/stores";
 import { ApiError, GenericApiError } from "@app/services/errors";
 import ErrorId from "@app/constants/ErrorId";
-import { DestinationType } from "@app/stores/command";
+import { CommandActionType, DestinationType } from "@app/stores/command";
 
 import AutoSizeTextarea from "../auto-size-textarea";
 import Spinner from "../spinner";
@@ -14,10 +14,13 @@ export interface CreatePathSubmitPayload {
   command: string;
   itemsTaken?: string[];
   itemsGiven?: string[];
+  limitItemsGiven?: boolean;
   itemsRequired?: string[];
-  destinationType: DestinationType;
+  actionType: CommandActionType;
+  destinationType?: DestinationType;
   existingScreenId?: string;
   newScreenBody?: string[];
+  printMessage?: string;
 }
 
 interface Props {
@@ -33,18 +36,23 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [commandInput, setCommandInput] = useState<string>("");
   const [itemsTakenInput, setItemsTakenInput] = useState<string>("");
   const [itemsGivenInput, setItemsGivenInput] = useState<string>("");
+  const [limitItemsGivenInput, setLimitItemsGivenInput] = useState<boolean>(false);
   const [itemsRequiredInput, setItemsRequiredInput] = useState<string>("");
+  const [actionTypeInput, setActionTypeInput] = useState<CommandActionType | undefined>(undefined);
   const [destinationTypeInput, setDestinationTypeInput] = useState<DestinationType | undefined>(undefined);
   const [existingDestinationIdInput, setExistingDestinationIdInput] = useState<string>("");
   const [newScreenBodyInput, setNewScreenBodyInput] = useState<string>("");
+  const [printMessageInput, setPrintMessageInput] = useState<string>("");
 
   // Validation state
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
+  const [actionTypeInputError, setActionTypeInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
   const [existingDestinationIdInputError, setExistingDestinationIdInputError] = useState<string | undefined>(undefined);
   const [newScreenBodyError, setNewScreenBodyError] = useState<string | undefined>(undefined);
+  const [printMessageInputError, setPrintMessageInputError] = useState<string | undefined>(undefined);
 
 
   // Validated set functions
@@ -68,9 +76,27 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
     setCommandInput(newValue);
   };
 
+  // - Action type
+  const validationActionTypeInput = (newValue: CommandActionType | undefined): boolean => {
+    if (newValue == undefined) {
+      setActionTypeInputError("You must specify an action type");
+      return false;
+    } else {
+      setActionTypeInputError(undefined);
+      return true;
+    }
+  };
+  const validateAndSetActionTypeInput = (newValue: CommandActionType): void => {
+    validationActionTypeInput(newValue);
+    setActionTypeInput(newValue);
+  };
+
   // - Destination type
   const validateDestinationTypeInput = (newValue: DestinationType | undefined): boolean => {
-    if (newValue == undefined) {
+    if (
+      actionTypeInput === CommandActionType.Navigate &&
+      newValue == undefined
+    ) {
       setDestinationTypeInputError("You must specify a destination");
       return false;
     } else {
@@ -85,7 +111,11 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
   // - New screen body
   const validateNewScreenBody = (newValue: string): boolean => {
-    if (destinationTypeInput === DestinationType.New && newValue.trim() === '') {
+    if (
+      actionTypeInput === CommandActionType.Navigate &&
+      destinationTypeInput === DestinationType.New &&
+      newValue.trim() === ''
+    ) {
       setNewScreenBodyError("You must provide content for the screen");
       return false;
     } else {
@@ -100,7 +130,11 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
   // - Existing destination input
   const validateExistingDestinationIdInput = (newValue: string): boolean => {
-    if (destinationTypeInput === DestinationType.Existing && newValue.trim() === '') {
+    if (
+      actionTypeInput === CommandActionType.Navigate &&
+      destinationTypeInput === DestinationType.Existing &&
+      newValue.trim() === ''
+    ) {
       setExistingDestinationIdInputError('You must provide a screen ID');
       return false;
     } else {
@@ -112,6 +146,23 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const validateAndSetExistingDestinationIdInput = (newValue: string): void => {
     validateExistingDestinationIdInput(newValue);
     setExistingDestinationIdInput(newValue);
+  };
+  // - Print message
+  const validatePrintMessage = (newValue: string): boolean => {
+    if (
+      actionTypeInput === CommandActionType.PrintMessage &&
+      newValue.trim() === ''
+    ) {
+      setPrintMessageInputError("You must provide a message");
+      return false;
+    } else {
+      setPrintMessageInputError(undefined);
+      return true;
+    }
+  };
+  const validateAndSetPrintMessage = (newValue: string): void => {
+    validatePrintMessage(newValue);
+    setPrintMessageInput(newValue);
   };
 
 
@@ -135,11 +186,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       const isCommandInputValid = validateCommandInput(commandInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
       const isNewScreenBodyValid = validateNewScreenBody(newScreenBodyInput);
+      const isActionTypeValid = validationActionTypeInput(actionTypeInput);
       const isDestinationTypeValid = validateDestinationTypeInput(destinationTypeInput);
+      const isPrintMessageValid = validatePrintMessage(printMessageInput);
       const hasValidationErrors: boolean = !isCommandInputValid ||
+        !isActionTypeValid ||
+        !isDestinationTypeValid ||
         !isExistingDestinationIdValid ||
         !isNewScreenBodyValid ||
-        !isDestinationTypeValid;
+        !isPrintMessageValid;
 
       // Form has submitted at least once - show validation errors now
       setShowValidationErrors(true);
@@ -171,6 +226,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           .filter((item) => item !== '');
       }
 
+      // - Limit items given
+      let limitItemsGiven: boolean | undefined = undefined;
+      if (itemsGiven !== undefined) {
+        limitItemsGiven = limitItemsGivenInput;
+      }
+
+      // - Action type
+      const actionType: CommandActionType = actionTypeInput!;
+
       // - Items required
       let itemsRequired: string[] | undefined = undefined;
       if (itemsRequiredInput.trim() !== '') {
@@ -194,16 +258,25 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         newScreenBody = transformNewScreenBodyToLines(newScreenBodyInput);
       }
 
+      // - Print message
+      let printMessage: string | undefined = undefined;
+      if (actionType === CommandActionType.PrintMessage) {
+        printMessage = printMessageInput.trim();
+      }
+
       // Submit form
       try {
         const payload: CreatePathSubmitPayload = {
           command,
           itemsTaken,
           itemsGiven,
+          limitItemsGiven,
           itemsRequired,
+          actionType,
           destinationType,
           existingScreenId,
           newScreenBody,
+          printMessage,
         };
 
         await CommandStore.createPath({
@@ -328,6 +401,21 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             autoCapitalize="words"
             disabled={isSubmitting}
           />
+
+          {/* Limit items given */}
+          <div className="checkbox u-margin-top-md">
+            <input type="checkbox" name="limit-items-given"
+              className="checkbox__input u-screen-reader-only"
+              id="limit-items-given"
+              checked={limitItemsGivenInput}
+              onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
+              disabled={isSubmitting}
+            />
+            <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
+              <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
+              Do not give these items to the player if they already have them
+            </label>
+          </div>
         </div>
 
         {/* Items required */}
@@ -347,118 +435,209 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           />
         </div>
 
-        {/* Destination */}
+        {/* Action */}
         <div className="form__input">
-          {/* Destination type */}
-          <label className="form__input-label">Destination <span className="create-path__form__specifier">(required)</span></label>
-          <p className="create-path__form__description">Where will this command take the player?</p>
+          {/* Action type */}
+          <label className="form__input-label">Action <span className="create-path__form__specifier">(required)</span></label>
+          <p className="create-path__form__description">What happens when a player issues this command?</p>
 
+          {/* Option: Navigate */}
           <div className="radio">
-            <input type="radio" name="destination-type"
+            <input type="radio" name="action-type"
               className="radio__input u-screen-reader-only"
-              id={DestinationType.New}
-              value={DestinationType.New}
-              onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+              id={`action-type_${CommandActionType.Navigate}`}
+              value={CommandActionType.Navigate}
+              checked={actionTypeInput === CommandActionType.Navigate}
+              onChange={(e) => validateAndSetActionTypeInput(e.target.value as CommandActionType)}
               disabled={isSubmitting}
             />
-            <label htmlFor={DestinationType.New} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+            <label htmlFor={`action-type_${CommandActionType.Navigate}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
               <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
-              A new screen
+              Navigate to another screen
             </label>
           </div>
 
+          {/* Option: Print */}
           <div className="radio">
-            <input type="radio" name="destination-type"
+            <input type="radio" name="action-type"
               className="radio__input u-screen-reader-only"
-              id={DestinationType.Existing}
-              value={DestinationType.Existing}
-              onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+              id={`action-type_${CommandActionType.PrintMessage}`}
+              value={CommandActionType.PrintMessage}
+              checked={actionTypeInput === CommandActionType.PrintMessage}
+              onChange={(e) => validateAndSetActionTypeInput(e.target.value as CommandActionType)}
               disabled={isSubmitting}
             />
-            <label htmlFor={DestinationType.Existing} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+            <label htmlFor={`action-type_${CommandActionType.PrintMessage}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
               <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
-              An existing screen
+              Print a message
             </label>
           </div>
 
           {/* error */}
-          {showValidationErrors && destinationTypeInputError && (
-            <span className="form__input__error">{destinationTypeInputError}</span>
-          )}
-
-          {destinationTypeInput === DestinationType.New && (
-            <>
-              {/* New screen body */}
-              <div className="form__input">
-                {/* label */}
-                <label htmlFor="existing-destination-screen-id" className="form__input-label">New screen body <span className="create-path__form__specifier">(required)</span></label>
-                {/* help text */}
-                <p className="create-path__form__description">@TODO write the body of a new screen</p>
-                {/* input */}
-                <AutoSizeTextarea
-                  id="new-destination-screen-body"
-                  name="new-destination-screen-body"
-                  className={classnames({
-                    'has-error': showValidationErrors && newScreenBodyError,
-                    'is-disabled': isSubmitting,
-                  })}
-                  minRows={10}
-                  placeholder="You enter a dark room."
-                  onChange={handleNewScreenChange}
-                  value={newScreenBodyInput}
-                  autoCapitalize="sentences"
-                  disabled={isSubmitting}
-                />
-                {/* error */}
-                {showValidationErrors && newScreenBodyError && (
-                  <span className="form__input__error">{newScreenBodyError}</span>
-                )}
-              </div>
-            </>
-          )}
-
-          {destinationTypeInput === DestinationType.Existing && (
-            <>
-              {/* Existing screen ID */}
-              <div className="form__input">
-                {/* label */}
-                <label htmlFor="existing-destination-screen-id" className="form__input-label">Destination screen ID <span className="create-path__form__specifier">(required)</span></label>
-                {/* help text */}
-                <p className="create-path__form__description">Paste the ID of an existing screen as the destination. You can get the ID from the URL or something, I&apos;m not quite sure yet.</p>
-                {/* input */}
-                <input type="text" name="existing-destination-screen-id" id="existing-destination-screen-id"
-                  className={classnames("input input--text", {
-                    'has-error': showValidationErrors && existingDestinationIdInputError,
-                    'is-disabled': isSubmitting,
-                  })}
-                  placeholder="a0674659-3f17-4f71-9ec1-447d9b7f4ddd"
-                  onChange={(e) => validateAndSetExistingDestinationIdInput(e.target.value)}
-                  value={existingDestinationIdInput}
-                  autoCapitalize="off"
-                  disabled={isSubmitting}
-                />
-                {/* error */}
-                {showValidationErrors && existingDestinationIdInputError && (
-                  <span className="form__input__error">{existingDestinationIdInputError}</span>
-                )}
-              </div>
-            </>
+          {showValidationErrors && actionTypeInputError && (
+            <span className="form__input__error">{actionTypeInputError}</span>
           )}
         </div>
 
-        <button type="submit"
-          className={classnames("button form__button u-margin-top-md", { 'is-disabled': isSubmitting })}
-          disabled={isSubmitting}
-        >Create pathway</button>
-        <button type="button"
-          className={classnames("button form__button u-md-margin-left-md u-margin-top-md", { 'is-disabled': isSubmitting })}
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >Cancel</button>
 
-        {isSubmitting && (
-          <span className="u-margin-left-md"><Spinner /></span>
+        {/* PRINT TYPE COMMANDS */}
+        {actionTypeInput === CommandActionType.PrintMessage && (
+          <>
+            {/* Print a message */}
+            <div className="form__input">
+              {/* label */}
+              <label htmlFor="print-message-contents" className="form__input-label">Message <span className="create-path__form__specifier">(required)</span></label>
+              {/* help text */}
+              <p className="create-path__form__description">@TODO What message to print?</p>
+              {/* input */}
+              <AutoSizeTextarea
+                id="print-message-contents"
+                name="print-message-contents"
+                className={classnames({
+                  'has-error': showValidationErrors && printMessageInputError,
+                  'is-disabled': isSubmitting,
+                })}
+                minRows={10}
+                placeholder="You pick up the tattered envelope and place it in your pocket."
+                onChange={(e) => validateAndSetPrintMessage(e.target.value)}
+                value={printMessageInput}
+                autoCapitalize="sentences"
+                disabled={isSubmitting}
+              />
+              {/* error */}
+              {showValidationErrors && printMessageInputError && (
+                <span className="form__input__error">{printMessageInputError}</span>
+              )}
+            </div>
+          </>
         )}
+
+        {/* NAVIGATE TYPE COMMANDS */}
+        {actionTypeInput === CommandActionType.Navigate && (
+          <>
+            {/* Destination */}
+            <div className="form__input">
+              {/* Destination type */}
+              <label className="form__input-label">Destination <span className="create-path__form__specifier">(required)</span></label>
+              <p className="create-path__form__description">Where will this command take the player?</p>
+
+              {/* Option: New screen */}
+              <div className="radio">
+                <input type="radio" name="destination-type"
+                  className="radio__input u-screen-reader-only"
+                  id={`destination-type_${DestinationType.New}`}
+                  value={DestinationType.New}
+                  checked={destinationTypeInput === DestinationType.New}
+                  onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+                  disabled={isSubmitting}
+                />
+                <label htmlFor={`destination-type_${DestinationType.New}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+                    Create a new screen
+                  </label>
+              </div>
+
+              {/* Option: Existing screen */}
+              <div className="radio">
+                <input type="radio" name="destination-type"
+                  className="radio__input u-screen-reader-only"
+                  id={`destination-type_${DestinationType.Existing}`}
+                  value={DestinationType.Existing}
+                  checked={destinationTypeInput === DestinationType.Existing}
+                  onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
+                  disabled={isSubmitting}
+                />
+                <label htmlFor={`destination-type_${DestinationType.Existing}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+                    An existing screen
+                  </label>
+              </div>
+
+              {/* error */}
+              {showValidationErrors && destinationTypeInputError && (
+                <span className="form__input__error">{destinationTypeInputError}</span>
+              )}
+            </div>
+
+
+            {/* New screen */}
+            {destinationTypeInput === DestinationType.New && (
+              <>
+                {/* New screen body */}
+                <div className="form__input">
+                  {/* label */}
+                  <label htmlFor="new-destination-screen-body" className="form__input-label">New screen body <span className="create-path__form__specifier">(required)</span></label>
+                  {/* help text */}
+                  <p className="create-path__form__description">@TODO write the body of a new screen</p>
+                  {/* input */}
+                  <AutoSizeTextarea
+                    id="new-destination-screen-body"
+                    name="new-destination-screen-body"
+                    className={classnames({
+                      'has-error': showValidationErrors && newScreenBodyError,
+                      'is-disabled': isSubmitting,
+                    })}
+                    minRows={10}
+                    placeholder="You enter a dark room."
+                    onChange={handleNewScreenChange}
+                    value={newScreenBodyInput}
+                    autoCapitalize="sentences"
+                    disabled={isSubmitting}
+                  />
+                  {/* error */}
+                  {showValidationErrors && newScreenBodyError && (
+                    <span className="form__input__error">{newScreenBodyError}</span>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* Existing screen */}
+            {destinationTypeInput === DestinationType.Existing && (
+              <>
+                {/* Existing screen ID */}
+                <div className="form__input">
+                  {/* label */}
+                  <label htmlFor="existing-destination-screen-id" className="form__input-label">Destination screen ID <span className="create-path__form__specifier">(required)</span></label>
+                  {/* help text */}
+                  <p className="create-path__form__description">Paste the ID of an existing screen as the destination. You can get the ID from the URL or something, I&apos;m not quite sure yet.</p>
+                  {/* input */}
+                  <input type="text" name="existing-destination-screen-id" id="existing-destination-screen-id"
+                    className={classnames("input input--text", {
+                      'has-error': showValidationErrors && existingDestinationIdInputError,
+                      'is-disabled': isSubmitting,
+                    })}
+                    placeholder="a0674659-3f17-4f71-9ec1-447d9b7f4ddd"
+                    onChange={(e) => validateAndSetExistingDestinationIdInput(e.target.value)}
+                    value={existingDestinationIdInput}
+                    autoCapitalize="off"
+                    disabled={isSubmitting}
+                  />
+                  {/* error */}
+                  {showValidationErrors && existingDestinationIdInputError && (
+                    <span className="form__input__error">{existingDestinationIdInputError}</span>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        <div className="form__input">
+          <button type="submit"
+            className={classnames("button form__button u-margin-bottom-md u-md-margin-bottom-0", { 'is-disabled': isSubmitting })}
+            disabled={isSubmitting}
+          >Create pathway</button>
+          <button type="button"
+            className={classnames("button form__button u-md-margin-left-md", { 'is-disabled': isSubmitting })}
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >Cancel</button>
+
+          {isSubmitting && (
+            <span className="u-margin-left-md"><Spinner /></span>
+          )}
+        </div>
       </form>
     </div>
   );
