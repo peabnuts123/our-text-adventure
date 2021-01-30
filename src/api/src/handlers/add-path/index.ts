@@ -15,7 +15,8 @@ import ErrorModel from "../../errors/ErrorModel";
 import ErrorId from "../../errors/ErrorId";
 import GenericError from "../../errors/GenericError";
 import { PathDestinationType } from "../../constants/PathDestinationType";
-import { GAME_SCREEN_MAX_LINE_LENGTH } from "../../constants";
+import { TERMINAL_MAX_LINE_LENGTH } from "../../constants";
+import { CommandActionType } from "../../constants/CommandActionType";
 
 import { AddPathDto } from "./dto";
 
@@ -88,7 +89,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     } else if (sourceScreen! !== undefined && sourceScreen.lookupCommand(command)) {
       validationErrors.push(new GenericError(ErrorId.AddPath_CommandAlreadyExistsForScreen, `A command already exists on this screen with name: '${command}'`));
     }
-    // @TODO validate command does not already exist for screen
 
     // Validate `itemsTaken`
     let itemsTaken: string[] = dto.itemsTaken || [];
@@ -96,7 +96,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       validationErrors.push(new RequestValidationError('itemsTaken', "Field must be an array of strings"));
     } else {
       // Remove blank / empty items
-      itemsTaken = itemsTaken.filter((item) => !!item);
+      itemsTaken = itemsTaken.map((item) => item.trim()).filter((item) => !!item);
     }
 
     // Validate `itemsGiven`
@@ -105,7 +105,21 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       validationErrors.push(new RequestValidationError('itemsGiven', "Field must be an array of strings"));
     } else {
       // Remove blank / empty items
-      itemsGiven = itemsGiven.filter((item) => !!item);
+      itemsGiven = itemsGiven.map((item) => item.trim()).filter((item) => !!item);
+    }
+
+    // Validate `limitItemsGiven`
+    const limitItemsGiven: boolean | undefined = dto.limitItemsGiven;
+    if (itemsGiven.length === 0) {
+      // `itemsGiven` is not specified - make sure that `limitItemsGiven` is not specified either
+      if (limitItemsGiven !== undefined) {
+        validationErrors.push(new RequestValidationError('limitItemsGiven', "Field can only be provided if `itemsGiven` is not empty"));
+      }
+    } else {
+      // `itemsGiven` is specified - make sure its valid
+      if (limitItemsGiven === undefined || typeof limitItemsGiven !== 'boolean') {
+        validationErrors.push(new RequestValidationError('limitItemsGiven', "Field must be a boolean"));
+      }
     }
 
     // Validate `itemsRequired`
@@ -114,59 +128,129 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       validationErrors.push(new RequestValidationError('itemsRequired', "Field must be an array of strings"));
     } else {
       // Remove blank / empty items
-      itemsRequired = itemsRequired.filter((item) => !!item);
+      itemsRequired = itemsRequired.map((item) => item.trim()).filter((item) => !!item);
     }
 
+    // Validate `actionType`
+    let actionType: CommandActionType = dto.actionType as CommandActionType;
+    if (typeof actionType !== 'string' || !(
+      actionType.trim().toLocaleLowerCase() === CommandActionType.Navigate ||
+      actionType.trim().toLocaleLowerCase() === CommandActionType.PrintMessage)
+    ) {
+      validationErrors.push(new RequestValidationError('actionType', `Field must be a non-empty string with value either '${CommandActionType.Navigate}' or '${CommandActionType.PrintMessage}'`));
+    } else {
+      actionType = actionType.trim().toLocaleLowerCase() as CommandActionType;
+    }
+
+    /* NAVIGATE ACTIONS */
     // Validate `destinationType`
     let destinationType: PathDestinationType = dto.destinationType as PathDestinationType;
-    if (typeof destinationType !== 'string' || !(
-      destinationType.trim().toLocaleLowerCase() === PathDestinationType.New ||
-      destinationType.trim().toLocaleLowerCase() === PathDestinationType.Existing)
-    ) {
-      validationErrors.push(new RequestValidationError('destinationType', "Field must be a non-empty string with value either 'new' or 'existing'"));
+    if (actionType !== CommandActionType.Navigate) {
+      // actionType is NOT 'navigate' so ensure `destinationType` is not provided
+      if (destinationType !== undefined) {
+        validationErrors.push(new RequestValidationError('destinationType', `Field can only be provided when \`actionType === '${CommandActionType.Navigate}'\``));
+      }
+      // else, `destinationType` is neither needed nor provided
     } else {
-      destinationType = destinationType.trim().toLocaleLowerCase() as PathDestinationType;
+      // actionType is 'navigate' so `destinationType` is a required field
+      if (typeof destinationType !== 'string' || !(
+        destinationType.trim().toLocaleLowerCase() === PathDestinationType.New ||
+        destinationType.trim().toLocaleLowerCase() === PathDestinationType.Existing)
+      ) {
+        // `destinationType` is needed, but either it is not provided or it does not contain the right value
+        validationErrors.push(new RequestValidationError('destinationType', `Field must be a string with value either '${PathDestinationType.New}' or '${PathDestinationType.Existing}' when \`actionType === '${CommandActionType.Navigate}'\``));
+      } else {
+        // `destinationType` is needed, provided, and valid
+        destinationType = destinationType.trim().toLocaleLowerCase() as PathDestinationType;
+      }
     }
 
     // Validate `newScreenBody`
     const newScreenBody: string[] = dto.newScreenBody as string[];
-    if (destinationType !== PathDestinationType.New && newScreenBody !== undefined) {
-      // - ensure `newScreenBody` is only defined when `destinationType === 'new'`
-      validationErrors.push(new RequestValidationError('newScreenBody', "Field can only be specified when `destinationType === 'new'`"));
-    } else if (destinationType === PathDestinationType.New) {
-      if (!isArray<string>(newScreenBody, (screenBodyItem) => typeof screenBodyItem === 'string') ||
+    if (actionType !== CommandActionType.Navigate || destinationType !== PathDestinationType.New) {
+      // Either `actionType` is NOT 'navigate' OR `destinationType` is not 'new' so ensure `newScreenBody` is not provided
+      if (newScreenBody !== undefined) {
+        validationErrors.push(new RequestValidationError('newScreenBody', `Field can only be provided when \`actionType === '${CommandActionType.Navigate}'\` and \`destinationType === '${PathDestinationType.New}'\``));
+      }
+      // else, `newScreenBody` is neither needed nor provided
+    } else {
+      // `actionType` is 'navigate' AND `destinationType` is 'new', so `newScreenBody` is a required field
+      if (
+        !isArray<string>(newScreenBody, (screenBodyItem) => typeof screenBodyItem === 'string') ||
         newScreenBody.length === 0 ||
         newScreenBody.every((line) => line.trim().length === 0)
       ) {
-        // - ensure `newScreenBody` is correct type / defined / not empty
-        //    and only specified when `destinationType === 'new'`
-        validationErrors.push(new RequestValidationError('newScreenBody', "Field must be a non-empty array of strings when `destinationType === 'new'`"));
-      } else if (newScreenBody.some((line) => line.length > GAME_SCREEN_MAX_LINE_LENGTH)) {
-        // - ensure no line in `newScreenBody` is longer than `GAME_SCREEN_MAX_LINE_LENGTH`
-        validationErrors.push(new RequestValidationError('newScreenBody', `Maximum line length of ${GAME_SCREEN_MAX_LINE_LENGTH} exceeded`));
+        // `newScreenBody` is needed but either:
+        //  - Not an array of strings
+        //  - An empty array
+        //  - An array of empty strings
+        validationErrors.push(new RequestValidationError('newScreenBody', `Field must be a non-empty array of strings when \`actionType === '${CommandActionType.Navigate}'\` and \`destinationType === '${PathDestinationType.New}'\``));
+      } else if (newScreenBody.some((line) => line.length > TERMINAL_MAX_LINE_LENGTH)) {
+        // `newScreenBody` is needed but at least one of its lines is too long
+        validationErrors.push(new RequestValidationError('newScreenBody', `Maximum line length of ${TERMINAL_MAX_LINE_LENGTH} exceeded`));
       }
+      // else, `newScreenBody` is needed, provided, and valid
     }
 
     // Validate `existingScreenId`
     let existingScreenId: string = dto.existingScreenId as string;
     let existingScreen: GameScreen | undefined;
-    if (destinationType !== PathDestinationType.Existing && existingScreenId !== undefined) {
-      // - ensure `existingScreenId` is only defined when `destinationType === 'existing'`
-      validationErrors.push(new RequestValidationError('existingScreenId', "Field can only be specified when `destinationType === 'existing'`"));
-    } else if (destinationType === PathDestinationType.Existing) {
+
+    if (actionType !== CommandActionType.Navigate || destinationType !== PathDestinationType.Existing) {
+      // Either `actionType` is NOT 'navigate' OR `destinationType` is not 'existing' so ensure `existingScreenId` is not provided
+      if (existingScreenId !== undefined) {
+        validationErrors.push(new RequestValidationError('existingScreenId', `Field can only be provided when \`actionType === '${CommandActionType.Navigate}'\` and \`destinationType === '${PathDestinationType.Existing}'\``));
+      }
+      // else, `existingScreenId` is neither needed nor provided
+    } else {
+      // `actionType` is 'navigate' AND `destinationType` is 'existing', so `existingScreenId` is a required field
       if (typeof existingScreenId !== 'string' || existingScreenId.trim() === '') {
-        // - ensure `existingScreenId` is correct type / defined / not empty
-        //    and only specified when `destinationType === 'existing'`
+        // `existingScreenId` is needed but either:
+        //  - Not provided or not a string
+        //  - An empty string
         validationErrors.push(new RequestValidationError('existingScreenId', "Field must be a non-empty string"));
       } else if (sourceScreenId && existingScreenId.trim() === sourceScreenId.trim()) {
-        // - ensure `existingScreenId` and `sourceScreenId` do not have the same value
+        // `existingScreenId` is needed and provided but is the same as `sourceScreenId`
         validationErrors.push(new RequestValidationError('existingScreenId', "Field cannot have the same value as `sourceScreenId`"));
       } else {
-        // - ensure `existingScreenId` is a real screen that exists
+        // `existingScreenId` is needed and provided but may not reference an existing screen (valid otherwise)
         existingScreenId = existingScreenId.trim();
         existingScreen = await db.getScreenById(existingScreenId.trim()) as GameScreen;
-        if (existingScreen === undefined) validationErrors.push(new GenericError(ErrorId.AddPath_NoDestinationScreenExistsWithId, `No existing destination screen exists with id: ${existingScreenId}`));
+
+        if (existingScreen === undefined) {
+          // `existingScreenId` is needed and provided but does NOT reference an existing screen
+          validationErrors.push(new GenericError(ErrorId.AddPath_NoDestinationScreenExistsWithId, `No existing destination screen exists with id: ${existingScreenId}`));
+        }
+        // else, `existingScreenId` is needed, provided, and valid
       }
+    }
+
+    /* PRINT ACTIONS */
+    // Validate `printMessage`
+    const printMessage: string[] = dto.printMessage as string[];
+    if (actionType !== CommandActionType.PrintMessage) {
+      // `actionType` is NOT 'print', so ensure `printMessage` is not provided
+      if (printMessage !== undefined) {
+        validationErrors.push(new RequestValidationError('printMessage', `Field can only be provided when \`actionType === '${CommandActionType.PrintMessage}'\``));
+      }
+      // else, `printMessage` is neither needed nor provided
+    } else {
+      // `actionType` is 'print', so `printMessage` is a required field
+      if (
+        !isArray<string>(printMessage, (printMessageItem) => typeof printMessageItem === 'string') ||
+        printMessage.length === 0 ||
+        printMessage.every((line) => line.trim().length === 0)
+      ) {
+        // `printMessage` is needed but either:
+        //  - Not an array of strings
+        //  - An empty array
+        //  - An array of empty strings
+        validationErrors.push(new RequestValidationError('printMessage', `Field must be a non-empty array of strings when \`actionType === '${CommandActionType.PrintMessage}'\``));
+      } else if (printMessage.some((line) => line.length > TERMINAL_MAX_LINE_LENGTH)) {
+        // `printMessage` is needed but at least one of its lines is too long
+        validationErrors.push(new RequestValidationError('printMessage', `Maximum line length of ${TERMINAL_MAX_LINE_LENGTH} exceeded`));
+      }
+      // else, `printMessage` is needed, provided, and valid
     }
 
     // Return validation errors
