@@ -9,13 +9,14 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
 ## Backlog / @TODO
   - [x] ~~Add "limit given items" checkbox to frontend~~
   - [x] ~~Add "print message" option to frontend~~
-  - [ ] Make API validate and store actionType, printMessage, limitItemsGiven
-  - [ ] Update command endpoint to
-    - Change a bunch of logic to switch on `actionType` i.e. put all existing logic under code path `actionType === 'navigate'`
-    - Implement "limit items given" logic based on command field
-    - Implement actionType 'print' and return necessary data
+  - [x] ~~Make API validate and store actionType, printMessage, limitItemsGiven~~
+  - [x] Update command endpoint to
+    - ~~Change a bunch of logic to switch on `actionType` i.e. put all existing logic under code path `actionType === 'navigate'`~~
+    - ~~Implement "limit items given" logic based on command field~~
+    - ~~Implement actionType 'print' and return necessary data~~
   - [ ] Make WWW respond to updated `command` endpoint payloads
     - Print messages returned in response
+  - [ ] Do a big ol concision refactor to the API, validation utilities, tests etc.
   - [x] ~~Items are not case sensitive~~
   - [x] ~~Command to re-print the current screen~~
   - [x] ~~Command to print the current screen's ID~~

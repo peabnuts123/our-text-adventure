@@ -14,12 +14,13 @@ import UnknownError from '../../errors/UnknownError';
 import badRequestResponse from '../../util/response/bad-request';
 import RequestValidationError from '../../errors/RequestValidationError';
 import GameScreen from '../../db/models/GameScreen';
-import { applyCommandToClientState, ClientStateHandlingError } from '../../util/client-state';
+import { applyCommandToClientState, ClientStateHandlingError, ClientStateParsingError } from '../../util/client-state';
 import ErrorId from '../../errors/ErrorId';
 import GenericError from '../../errors/GenericError';
 import Messaging from '../../constants/Messaging';
+import { CommandActionType } from '../../constants/CommandActionType';
 
-import { SubmitCommandDto, SubmitCommandSuccessDto, SubmitCommandFailureDto } from './dto';
+import { SubmitCommandDto, SubmitCommandNavigationSuccessDto, SubmitCommandFailureDto, SubmitCommandPrintMessageSuccessDto } from './dto';
 
 Logger.setLogLevel(Config.logLevel);
 
@@ -88,16 +89,16 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     let rawCommand: string = dto.command as string;
     if (typeof rawCommand !== 'string' || rawCommand.trim() === '') {
       // - ensure `rawCommand` is correct type / defined / not empty
-      validationErrors.push(new RequestValidationError('rawCommand', "Field must be a non-empty string"));
+      validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
     } else {
       rawCommand = rawCommand.trim();
     }
 
     // Validate `state`
     let clientStateString: string = dto.state as string;
-    if (typeof clientStateString !== 'string') {
+    if (typeof clientStateString !== 'string' || clientStateString.trim() === '') {
       // - ensure `clientStateString` is correct type / defined
-      validationErrors.push(new RequestValidationError('clientStateString', "Field must be a string"));
+      validationErrors.push(new RequestValidationError('state', "Field must be a non-empty string"));
     } else {
       clientStateString = clientStateString.trim();
     }
@@ -121,23 +122,40 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     }
 
     // Command exists (but we are not yet out of the woods)
-    let updatedState: string;
     try {
       // Attempt to mutate the provided state based on the command
-      updatedState = applyCommandToClientState(clientStateString, command);
+      const applyCommandToClientStateResult = applyCommandToClientState(clientStateString, command);
 
-      // State mutation was successful / valid. Look up the new target screen to return
-      const targetScreen: GameScreen = await db.getScreenById(command.targetScreenId) as GameScreen;
+      // State mutation was successful / valid
+      if (command.type === CommandActionType.Navigate) {
+        // Look up the new target screen to return
+        const targetScreen: GameScreen = await db.getScreenById(command.targetScreenId!) as GameScreen;
 
-      // Serve response
-      const response: SubmitCommandSuccessDto = {
-        success: true,
-        screen: targetScreen.toDto(),
-        state: updatedState,
-        itemsAdded: command.itemsGiven,
-        itemsRemoved: command.itemsTaken,
-      };
-      return okResponse(response);
+        // Serve response
+        const response: SubmitCommandNavigationSuccessDto = {
+          success: true,
+          type: CommandActionType.Navigate,
+          screen: targetScreen.toDto(),
+          state: applyCommandToClientStateResult.updatedState,
+          itemsAdded: applyCommandToClientStateResult.itemsAdded,
+          itemsRemoved: applyCommandToClientStateResult.itemsRemoved,
+        };
+
+        return okResponse(response);
+      } else if (command.type === CommandActionType.PrintMessage) {
+        const response: SubmitCommandPrintMessageSuccessDto = {
+          success: true,
+          type: CommandActionType.PrintMessage,
+          printMessage: command.printMessage!,
+          state: applyCommandToClientStateResult.updatedState,
+          itemsAdded: applyCommandToClientStateResult.itemsAdded,
+          itemsRemoved: applyCommandToClientStateResult.itemsRemoved,
+        };
+
+        return okResponse(response);
+      } else {
+        throw new Error(`Unhandled command type (likely unimplemented): '${command.type}'`);
+      }
     } catch (err) {
       // An error occurred while attempting to mutate state.
       if (err instanceof ClientStateHandlingError) {
@@ -148,6 +166,11 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
         };
 
         return okResponse(response);
+      } else if (err instanceof ClientStateParsingError) {
+        return badRequestResponse(new ApiError({
+          message: "An error occurred while parsing state.",
+          error: new UnknownError(err),
+        }));
       } else {
         // Wild unknown error, continue throwing
         // Will be caught by top-level error handling

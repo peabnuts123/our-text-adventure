@@ -17,6 +17,7 @@ import GenericError from "../../errors/GenericError";
 import { PathDestinationType } from "../../constants/PathDestinationType";
 import { TERMINAL_MAX_LINE_LENGTH } from "../../constants";
 import { CommandActionType } from "../../constants/CommandActionType";
+import Command from "../../db/models/Command";
 
 import { AddPathDto } from "./dto";
 
@@ -82,12 +83,14 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     }
 
     // Validate `command`
-    const command: string = dto.command as string;
+    let command: string = dto.command as string;
     if (typeof command !== 'string' || command.trim() === '') {
       // - ensure `command` is correct type / defined / not empty
       validationErrors.push(new RequestValidationError('command', "Field must be a non-empty string"));
     } else if (sourceScreen! !== undefined && sourceScreen.lookupCommand(command)) {
       validationErrors.push(new GenericError(ErrorId.AddPath_CommandAlreadyExistsForScreen, `A command already exists on this screen with name: '${command}'`));
+    } else {
+      command = command.trim();
     }
 
     // Validate `itemsTaken`
@@ -260,18 +263,25 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
       }));
     }
 
-    const targetScreen = await db.addPath({
+    const newCommand: Command = await db.addPath({
       sourceScreen: sourceScreen!,
       command,
       itemsTaken,
       itemsGiven,
+      limitItemsGiven,
       itemsRequired,
+      actionType,
       destinationType,
       newScreenBody,
       existingScreen,
+      printMessage,
     });
 
-    Logger.log(`Successfully added new path. GameScreen(${sourceScreen!.id})["${command}"] => GameScreen(${targetScreen.id})`);
+    if (actionType === CommandActionType.Navigate) {
+      Logger.log(`Successfully added new 'navigation' pathway. GameScreen(${sourceScreen!.id})["${command}"] => GameScreen(${newCommand.targetScreenId})`);
+    } else if (actionType === CommandActionType.PrintMessage) {
+      Logger.log(`Successfully added new 'print message' pathway. GameScreen(${sourceScreen!.id})["${command}"]`);
+    }
 
     return {
       statusCode: 201,

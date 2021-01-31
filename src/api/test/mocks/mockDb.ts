@@ -4,6 +4,7 @@ import IDatabase, { AddPathArgs } from '@app/db/IDatabase';
 import GameScreen from '@app/db/models/GameScreen';
 import Command from '@app/db/models/Command';
 import { PathDestinationType } from '@app/constants/PathDestinationType';
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 export default class MockDb implements IDatabase {
   public static screens: GameScreen[] = [];
@@ -41,31 +42,47 @@ export default class MockDb implements IDatabase {
     command,
     itemsTaken,
     itemsGiven,
+    limitItemsGiven,
     itemsRequired,
+    actionType,
     destinationType,
     newScreenBody,
     existingScreen,
-  }: AddPathArgs): Promise<GameScreen> {
-    let targetScreen: GameScreen;
-    if (destinationType === PathDestinationType.New) {
-      // Create new screen
-      targetScreen = new GameScreen({ id: uuid(), body: newScreenBody!, commands: [] });
-    } else {
-      // Use supplied existing screen
-      targetScreen = existingScreen as GameScreen;
-    }
+    printMessage,
+  }: AddPathArgs): Promise<Command> {
+    let targetScreenId: string | undefined;
+    if (actionType === CommandActionType.Navigate) {
+      if (destinationType === PathDestinationType.New) {
+        // Create a new screen
+        const newScreen = new GameScreen({ id: uuid(), body: newScreenBody!, commands: [] });
+        await this.saveScreen(newScreen);
+
+        targetScreenId = newScreen.id;
+      } else {
+        // Use id of supplied existing screen
+        targetScreenId = existingScreen!.id;
+      }
+    } // else, no targetScreenId needed (leave undefined)
 
     // Create command that points to new screen
-    const newCommand = new Command({ id: uuid(), command, targetScreenId: targetScreen.id, itemsTaken, itemsGiven, itemsRequired });
+    const newCommand = new Command({
+      id: uuid(),
+      command,
+      itemsTaken,
+      itemsGiven,
+      limitItemsGiven,
+      itemsRequired,
+      type: actionType,
+      targetScreenId,
+      printMessage,
+    });
     // Add command to existing screen
     sourceScreen.commands.push(newCommand);
 
-    // Save all these changes to the database
-    // @TODO transaction?
-    await this.saveScreen(targetScreen);
+    // Save these changes to the database
     await this.saveScreen(sourceScreen);
 
-    return targetScreen;
+    return newCommand;
   }
 
   public static reset(): void {

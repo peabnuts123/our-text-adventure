@@ -1,3 +1,4 @@
+import { CommandActionType } from "../../constants/CommandActionType";
 import { GameScreenDto } from "../../db/models/GameScreen";
 
 export interface SubmitCommandDto {
@@ -9,8 +10,18 @@ export interface SubmitCommandDto {
   state?: string;
 }
 
-export interface SubmitCommandSuccessDto {
+export interface SubmitCommandPrintMessageSuccessDto {
   success: true;
+  type: CommandActionType.PrintMessage,
+  printMessage: string[];
+  state: string;
+  itemsAdded: string[];
+  itemsRemoved: string[];
+}
+
+export interface SubmitCommandNavigationSuccessDto {
+  success: true;
+  type: CommandActionType.Navigate;
   screen: GameScreenDto;
   state: string;
   itemsAdded: string[],

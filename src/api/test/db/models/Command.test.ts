@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 import Command from "@app/db/models/Command";
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 describe('Command model', () => {
   ((/* Tests for `Command.isEquivalentTo()` */) => {
@@ -30,7 +31,8 @@ describe('Command model', () => {
           itemsTaken: [],
           itemsGiven: [],
           itemsRequired: [],
-          targetScreenId: uuid(), // This might break as it is not a valid reference
+          type: CommandActionType.PrintMessage,
+          printMessage: ['This is a', 'test message'],
         });
 
         // Test

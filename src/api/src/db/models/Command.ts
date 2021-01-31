@@ -1,12 +1,16 @@
+import { CommandActionType } from "../../constants/CommandActionType";
 import isArray from "../../util/is-array";
 
 export interface CommandArgs {
   id: string;
   command: string;
-  targetScreenId: string;
   itemsTaken: string[];
   itemsGiven: string[];
+  limitItemsGiven?: boolean;
   itemsRequired: string[];
+  type: CommandActionType;
+  targetScreenId?: string;
+  printMessage?: string[];
 }
 
 function tokeniseRawCommand(command: string): string[] {
@@ -22,28 +26,53 @@ function normaliseToken(token: string): string {
 export default class Command {
   public readonly id: string;
   public readonly command: string;
-  public readonly targetScreenId: string;
   public readonly itemsTaken: string[];
   public readonly itemsGiven: string[];
+  public readonly limitItemsGiven: boolean | undefined;
   public readonly itemsRequired: string[];
 
-  public constructor({ id, command, targetScreenId, itemsTaken, itemsGiven, itemsRequired }: CommandArgs) {
+  public readonly type: CommandActionType;
+
+  /* Navigation type properties*/
+  public readonly targetScreenId: string | undefined;
+
+  /* Print message type properties */
+  public readonly printMessage: string[] | undefined;
+
+  public constructor({
+    id,
+    command,
+    itemsTaken,
+    itemsGiven,
+    limitItemsGiven,
+    itemsRequired,
+    type,
+    targetScreenId,
+    printMessage,
+  }: CommandArgs) {
+    // @NOTE: No validation here. It is assumed that the handler will validate these arguments
     this.id = id;
     this.command = command;
-    this.targetScreenId = targetScreenId;
     this.itemsTaken = itemsTaken;
     this.itemsGiven = itemsGiven;
+    this.limitItemsGiven = limitItemsGiven;
     this.itemsRequired = itemsRequired;
+    this.type = type;
+    this.targetScreenId = targetScreenId;
+    this.printMessage = printMessage;
   }
 
   public static fromRaw(attributes: Record<string, any>): Command {
     // Attributes
     const id: string | unknown = attributes['id'];
     const command: string | unknown = attributes['command'];
-    const targetScreenId: string | unknown = attributes['targetScreenId'];
     const itemsTaken: string[] | unknown = attributes['itemsTaken'];
     const itemsGiven: string[] | unknown = attributes['itemsGiven'];
+    const limitItemsGiven: boolean | undefined | unknown = attributes['limitItemsGiven'];
     const itemsRequired: string[] | unknown = attributes['itemsRequired'];
+    const type: CommandActionType | unknown = attributes['type'];
+    const targetScreenId: string | undefined | unknown = attributes['targetScreenId'];
+    const printMessage: string[] | undefined | unknown = attributes['printMessage'];
 
     // Validation
     if (id === undefined) throw new Error("Cannot parse attribute map. Field `id` is empty");
@@ -52,26 +81,35 @@ export default class Command {
     if (command === undefined) throw new Error("Cannot parse attribute map. Field `command` is empty");
     if (typeof command !== 'string') throw new Error("Cannot parse attribute map. Field `command` must be a string (type 'S')");
 
-    if (targetScreenId === undefined) throw new Error("Cannot parse attribute map. Field `targetScreenId` is empty");
-    if (typeof targetScreenId !== 'string') throw new Error("Cannot parse attribute map. Field `targetScreenId` must be a string (type 'S')");
-
     if (itemsTaken === undefined) throw new Error("Cannot parse attribute map. Field `itemsTaken` is empty");
     if (!isArray<string>(itemsTaken, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `itemsTaken` must be an array of all strings (type 'L')");
 
     if (itemsGiven === undefined) throw new Error("Cannot parse attribute map. Field `itemsGiven` is empty");
     if (!isArray<string>(itemsGiven, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `itemsGiven` must be an array of all strings (type 'L')");
 
+    if (limitItemsGiven !== undefined && typeof limitItemsGiven !== 'boolean') throw new Error("Cannot parse attribute map. Field `itemsGiven` must be an array of all strings (type 'BOOL')");
+
     if (itemsRequired === undefined) throw new Error("Cannot parse attribute map. Field `itemsRequired` is empty");
     if (!isArray<string>(itemsRequired, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `itemsRequired` must be an array of all strings (type 'L')");
+
+    if (type === undefined) throw new Error("Cannot parse attribute map. Field `type` is empty");
+    if (!(type === CommandActionType.Navigate || type === CommandActionType.PrintMessage)) throw new Error(`Cannot parse attribute map. Field \`type\` must be a string (type 'S') with value either '${CommandActionType.Navigate}' or '${CommandActionType.PrintMessage}'`);
+
+    if (targetScreenId !== undefined && typeof targetScreenId !== 'string') throw new Error("Cannot parse attribute map. Field `targetScreenId` must be a string (type 'S')");
+
+    if (printMessage !== undefined && !isArray<string>(printMessage, (lineItem) => typeof lineItem === 'string')) throw new Error("Cannot parse attribute map. Field `printMessage` must be an array of all strings (type 'L')");
 
     // Construct object
     return new Command({
       id,
       command,
-      targetScreenId,
       itemsTaken,
       itemsGiven,
+      limitItemsGiven,
       itemsRequired,
+      type,
+      targetScreenId,
+      printMessage,
     });
   }
 

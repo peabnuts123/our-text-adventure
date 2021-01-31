@@ -59,6 +59,34 @@ describe("AddPath handler", () => {
     expect(mockScreen.commands.some((c) => c.command === requestPayload.command)).toBe(true); // Command has been appended to correct screen
   });
 
+  /* VALIDATION TESTS: headers */
+  test("Request without JSON header returns 400", async () => {
+    // Setup
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'headers',
+        message: "Requests must be JSON with header 'Content-Type: application/json'",
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      path: `/path`,
+      body: '{}', // @TODO should really be a valid payload, but, whatever
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
+
   /* VALIDATION TESTS: body */
   test("Request with empty body returns 400", async () => {
     // Setup
@@ -79,34 +107,6 @@ describe("AddPath handler", () => {
         'Content-Type': 'application/json',
       },
       body: '',
-    };
-
-    // Test
-    const response = await invokeHandler(handler, mockRequest);
-
-    // Assert
-    expect(response.statusCode).toBe(400);
-    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
-    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
-  });
-
-  /* VALIDATION TESTS: headers */
-  test("Request without JSON header returns 400", async () => {
-    // Setup
-    const expectedResponse = {
-      model: 'ApiError',
-      modelVersion: 1,
-      errors: [{
-        model: 'RequestValidationError',
-        modelVersion: 1,
-        field: 'headers',
-        message: "Requests must be JSON with header 'Content-Type: application/json'",
-      }],
-    };
-
-    const mockRequest: SimpleRequest = {
-      path: `/path`,
-      body: '{}', // @TODO should really be a valid payload, but, whatever
     };
 
     // Test
@@ -448,6 +448,7 @@ describe("AddPath handler", () => {
           itemsGiven: [],
           itemsRequired: [],
           itemsTaken: [],
+          type: CommandActionType.Navigate,
           targetScreenId: mockScreenA.id,
         }),
       ],
@@ -491,6 +492,7 @@ describe("AddPath handler", () => {
     expect(response.headers && response.headers['Content-Type']).toBe('application/json');
     expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
   });
+  // @TODO Whitespace is trimmed from `command` property when saved
 
   /* VALIDATION TESTS: `itemsTaken` property */
   test("Array of non-strings for `itemsTaken` property returns 400", async () => {

@@ -2,6 +2,7 @@ import { handler } from '@app/handlers/get-screen-by-id';
 import Command from '@app/db/models/Command';
 import GameScreen, { GameScreenDto } from '@app/db/models/GameScreen';
 import ErrorId from '@app/errors/ErrorId';
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 import MockDb from '@test/mocks/mockDb';
 import { invokeHandler } from '@test/util/invoke-handler';
@@ -29,6 +30,7 @@ describe("GetScreenById handler", () => {
           new Command({
             id: '2ae7dc7e-a766-401e-9200-a4a0060d3579',
             command: 'look bone',
+            type: CommandActionType.Navigate,
             targetScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
             itemsTaken: [],
             itemsGiven: [],

@@ -1,6 +1,7 @@
 import { handler } from '@app/handlers/test';
 import GameScreen from '@app/db/models/GameScreen';
 import Command from '@app/db/models/Command';
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 import SimpleRequest from '@test/local/util/SimpleRequest';
 import { invokeHandler } from '@test/util/invoke-handler';
@@ -26,6 +27,7 @@ describe('Test Handler', () => {
           new Command({
             id: '2ae7dc7e-a766-401e-9200-a4a0060d3579',
             command: 'look bone',
+            type: CommandActionType.Navigate,
             targetScreenId: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
             itemsTaken: [],
             itemsGiven: [],
