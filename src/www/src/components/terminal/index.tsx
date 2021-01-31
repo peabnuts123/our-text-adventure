@@ -7,6 +7,7 @@ import { useStores } from "@app/stores";
 import CommandInput from "../command-input";
 import Spinner from "../spinner";
 import CreatePath, { CreatePathSubmitPayload } from "../create-path";
+import { CommandActionType } from "@app/stores/command";
 
 const Terminal: FunctionComponent = () => {
   // Stores
@@ -128,7 +129,8 @@ const Terminal: FunctionComponent = () => {
               id (useful when creating a
               new screen)
 
-            /whereami
+            /look
+            (alias: /whereami)
             (alias: /where)
             (alias: /repeat)
             (alias: /again)
@@ -160,7 +162,7 @@ const Terminal: FunctionComponent = () => {
             ]);
           } else {
             appendTerminalLinesToBuffer(
-              StateStore.currentState.inventory.map((item) => `- ${item}`),
+              StateStore.currentState.inventory.map((item) => `• ${item}`),
             );
           }
           break;
@@ -179,6 +181,7 @@ const Terminal: FunctionComponent = () => {
         case 'again':
         case 'where':
         case 'whereami':
+        case 'look':
           if (StateStore.currentScreen !== undefined) {
             appendTerminalLinesToBuffer(StateStore.currentScreen.body);
           }
@@ -204,12 +207,22 @@ const Terminal: FunctionComponent = () => {
 
       if (response.success === true) {
         // Successful request
-        // Store new screen ID and state string into State Store
-        StateStore.setCurrentScreen(response.screen);
-        StateStore.setStateFromString(response.state);
 
-        // Write response screen to terminal
-        appendTerminalLinesToBuffer(response.screen.body);
+        if (response.type === CommandActionType.Navigate) {
+          // Store new screen ID into State Store
+          StateStore.setCurrentScreen(response.screen);
+
+          // Write response screen to terminal
+          appendTerminalLinesToBuffer(response.screen.body);
+        } else if (response.type === CommandActionType.PrintMessage) {
+          // Write message to terminal
+          appendTerminalLinesToBuffer(response.printMessage);
+        } else {
+          throw new Error(`Unhandled command type (likely unimplemented): '${(response as any).type}'`);
+        }
+
+        // Store new state string into State Store
+        StateStore.setStateFromString(response.state);
 
         // Print items removed to terminal
         if (response.itemsRemoved && response.itemsRemoved.length > 0) {

@@ -20,7 +20,7 @@ export interface CreatePathSubmitPayload {
   destinationType?: DestinationType;
   existingScreenId?: string;
   newScreenBody?: string[];
-  printMessage?: string;
+  printMessage?: string[];
 }
 
 interface Props {
@@ -167,7 +167,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
 
   // Functions
-  const transformNewScreenBodyToLines = (body: string): string[] => {
+  const transformTerminalStringToLines = (body: string): string[] => {
     // Split text into lines
     const rawLines = body.split(/[\r\n]/g);
 
@@ -255,13 +255,13 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       // - New screen body
       let newScreenBody: string[] | undefined = undefined;
       if (destinationType === DestinationType.New) {
-        newScreenBody = transformNewScreenBodyToLines(newScreenBodyInput);
+        newScreenBody = transformTerminalStringToLines(newScreenBodyInput);
       }
 
       // - Print message
-      let printMessage: string | undefined = undefined;
+      let printMessage: string[] | undefined = undefined;
       if (actionType === CommandActionType.PrintMessage) {
-        printMessage = printMessageInput.trim();
+        printMessage = transformTerminalStringToLines(printMessageInput);
       }
 
       // Submit form
@@ -334,10 +334,21 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
     e.stopPropagation();
 
     const textareaEl = e.target;
-    const trimmedLines = transformNewScreenBodyToLines(textareaEl.value);
+    const trimmedLines = transformTerminalStringToLines(textareaEl.value);
 
     // Re-join text back into text
     validateAndSetNewScreenBody(trimmedLines.join('\n'));
+  };
+
+  const handlePrintMessageChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const textareaEl = e.target;
+    const trimmedLines = transformTerminalStringToLines(textareaEl.value);
+
+    // Re-join text back into text
+    validateAndSetPrintMessage(trimmedLines.join('\n'));
   };
 
   return (
@@ -498,8 +509,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   'is-disabled': isSubmitting,
                 })}
                 minRows={10}
-                placeholder="You pick up the tattered envelope and place it in your pocket."
-                onChange={(e) => validateAndSetPrintMessage(e.target.value)}
+                placeholder={"You pick up the tattered\nenvelope and place it in\nyour pocket."}
+                onChange={handlePrintMessageChange}
                 value={printMessageInput}
                 autoCapitalize="sentences"
                 disabled={isSubmitting}

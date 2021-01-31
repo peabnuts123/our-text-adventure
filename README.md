@@ -10,12 +10,14 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Add "limit given items" checkbox to frontend~~
   - [x] ~~Add "print message" option to frontend~~
   - [x] ~~Make API validate and store actionType, printMessage, limitItemsGiven~~
+  - [ ] Only show "limit items" if anything has been typed
+  - [ ] If "limit items" is ticked, it should be a validation error to input duplicate items
   - [x] Update command endpoint to
     - ~~Change a bunch of logic to switch on `actionType` i.e. put all existing logic under code path `actionType === 'navigate'`~~
     - ~~Implement "limit items given" logic based on command field~~
     - ~~Implement actionType 'print' and return necessary data~~
-  - [ ] Make WWW respond to updated `command` endpoint payloads
-    - Print messages returned in response
+  - [x] ~~Make WWW respond to updated `command` endpoint payloads~~
+    - ~~Print messages returned in response~~
   - [ ] Do a big ol concision refactor to the API, validation utilities, tests etc.
   - [x] ~~Items are not case sensitive~~
   - [x] ~~Command to re-print the current screen~~

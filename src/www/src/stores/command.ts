@@ -4,46 +4,11 @@ import Api, { ApiErrorResponse } from '@app/services/api';
 import Logger, { LogLevel } from '@app/util/Logger';
 
 
+/* REQUEST DTOs */
 interface SubmitCommandRequestDto {
   contextScreenId: string;
   command: string;
   state: string;
-}
-
-interface SubmitCommandSuccessResponseDto {
-  success: true;
-  screen: GameScreenDto;
-  state: string;
-  itemsAdded: string[],
-  itemsRemoved: string[],
-}
-
-interface SubmitCommandFailureResponseDto {
-  success: false;
-  message: string;
-}
-
-export interface SubmitCommandSuccessResponse {
-  success: true;
-  screen: GameScreen;
-  state: string;
-  itemsAdded: string[];
-  itemsRemoved: string[];
-}
-
-export interface SubmitCommandFailureResponse {
-  success: false;
-  message: string;
-}
-
-export enum CommandActionType {
-  Navigate = 'navigate',
-  PrintMessage = 'print',
-}
-
-export enum DestinationType {
-  New = 'new',
-  Existing = 'existing',
 }
 
 interface CreatePathRequestDto {
@@ -73,7 +38,66 @@ interface CreatePathRequestDto {
   existingScreenId?: string;
 
   /* PRINT ACTIONS */
-  printMessage?: string;
+  printMessage?: string[];
+}
+
+/* RESPONSE DTOs */
+export interface SubmitCommandNavigationSuccessResponseDto {
+  success: true;
+  type: CommandActionType.Navigate;
+  screen: GameScreenDto;
+  state: string;
+  itemsAdded: string[],
+  itemsRemoved: string[],
+}
+
+export interface SubmitCommandPrintMessageSuccessResponseDto {
+  success: true;
+  type: CommandActionType.PrintMessage,
+  printMessage: string[];
+  state: string;
+  itemsAdded: string[];
+  itemsRemoved: string[];
+}
+
+interface SubmitCommandFailureResponseDto {
+  success: false;
+  message: string;
+}
+
+/* PARSED RESPONSES */
+export interface SubmitCommandNavigationSuccessResponse {
+  success: true;
+  type: CommandActionType.Navigate;
+  screen: GameScreen;
+  state: string;
+  itemsAdded: string[];
+  itemsRemoved: string[];
+}
+
+export interface SubmitCommandPrintMessageSuccessResponse {
+  success: true;
+  type: CommandActionType.PrintMessage,
+  printMessage: string[];
+  state: string;
+  itemsAdded: string[];
+  itemsRemoved: string[];
+}
+
+export interface SubmitCommandFailureResponse {
+  success: false;
+  message: string;
+}
+
+/* MODEL ENUMS */
+// @TODO move to model?
+export enum CommandActionType {
+  Navigate = 'navigate',
+  PrintMessage = 'print',
+}
+export enum DestinationType {
+  New = 'new',
+  Existing = 'existing',
 }
 
 export default class CommandStore {
@@ -83,7 +107,7 @@ export default class CommandStore {
     });
   }
 
-  public async submitCommand(contextScreenId: string, command: string, stateString: string): Promise<SubmitCommandSuccessResponse | SubmitCommandFailureResponse> {
+  public async submitCommand(contextScreenId: string, command: string, stateString: string): Promise<SubmitCommandNavigationSuccessResponse | SubmitCommandPrintMessageSuccessResponse | SubmitCommandFailureResponse> {
     try {
       // Fetch from API
       const request: SubmitCommandRequestDto = {
@@ -91,7 +115,7 @@ export default class CommandStore {
         command,
         state: stateString,
       };
-      const rawResponse = await Api.postJson<SubmitCommandSuccessResponseDto | SubmitCommandFailureResponseDto>(Endpoints.Command.submit(), {
+      const rawResponse = await Api.postJson<SubmitCommandNavigationSuccessResponseDto | SubmitCommandPrintMessageSuccessResponseDto | SubmitCommandFailureResponseDto>(Endpoints.Command.submit(), {
         body: request,
       });
 
@@ -99,15 +123,34 @@ export default class CommandStore {
       // @NOTE code is not inlined so the fricken compiler enforces type safety
       //  on these properties (??)
       if (rawResponse.success === true) {
-        // Success
-        const parsedResponse: SubmitCommandSuccessResponse = {
-          success: true,
-          screen: new GameScreen(rawResponse.screen),
-          state: rawResponse.state,
-          itemsAdded: rawResponse.itemsAdded,
-          itemsRemoved: rawResponse.itemsRemoved,
-        };
-        return parsedResponse;
+
+        if (rawResponse.type === CommandActionType.Navigate) {
+          // Success
+          const parsedResponse: SubmitCommandNavigationSuccessResponse = {
+            success: true,
+            screen: new GameScreen(rawResponse.screen),
+            type: rawResponse.type,
+            state: rawResponse.state,
+            itemsAdded: rawResponse.itemsAdded,
+            itemsRemoved: rawResponse.itemsRemoved,
+          };
+
+          return parsedResponse;
+        } else if (rawResponse.type === CommandActionType.PrintMessage) {
+          // Success
+          const parsedResponse: SubmitCommandPrintMessageSuccessResponse = {
+            success: true,
+            type: rawResponse.type,
+            printMessage: rawResponse.printMessage,
+            state: rawResponse.state,
+            itemsAdded: rawResponse.itemsAdded,
+            itemsRemoved: rawResponse.itemsRemoved,
+          };
+
+          return parsedResponse;
+        } else {
+          throw new Error(`Unhandled command type (likely unimplemented): '${(rawResponse as any).type}'`);
+        }
       } else if (rawResponse.success === false) {
         // Failure
         const parsedResponse: SubmitCommandFailureResponse = {
