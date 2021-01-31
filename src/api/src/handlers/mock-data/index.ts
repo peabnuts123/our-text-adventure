@@ -56,6 +56,7 @@ const MOCK_DATA = [
         command: 'fold origami',
         itemsTaken: [],
         itemsGiven: ['Paper Crane'],
+        limitItemsGiven: false,
         itemsRequired: [],
         type: CommandActionType.PrintMessage,
         printMessage: [
