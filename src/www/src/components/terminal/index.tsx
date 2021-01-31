@@ -267,7 +267,9 @@ const Terminal: FunctionComponent = () => {
 
   const handleOnClickTerminal: MouseEventHandler = (_e): void => {
     // Focus the command input field
-    commandInputRef.current!.focus();
+    if (!window.getSelection()?.toString()) {
+      commandInputRef.current!.focus();
+    }
   };
 
   return (
