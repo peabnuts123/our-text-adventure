@@ -28,6 +28,17 @@ interface Props {
   onSuccessfulCreate: (payload: CreatePathSubmitPayload) => void;
 }
 
+function parseItemString(itemString: string): string[] {
+  return itemString.split(',')
+    .map((item) => item.trim())
+    .filter((item) => item !== '');
+}
+
+// @NOTE: Must match the API
+function areItemsEquivalent(itemA: string, itemB: string): boolean {
+  return itemA.trim().localeCompare(itemB.trim(), undefined, { sensitivity: 'accent' }) === 0;
+}
+
 const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) => {
   // Stores
   const { CommandStore, StateStore } = useStores();
@@ -36,7 +47,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [commandInput, setCommandInput] = useState<string>("");
   const [itemsTakenInput, setItemsTakenInput] = useState<string>("");
   const [itemsGivenInput, setItemsGivenInput] = useState<string>("");
-  const [limitItemsGivenInput, setLimitItemsGivenInput] = useState<boolean>(false);
+  const [limitItemsGivenInput, setLimitItemsGivenInput] = useState<boolean>(true);
   const [itemsRequiredInput, setItemsRequiredInput] = useState<string>("");
   const [actionTypeInput, setActionTypeInput] = useState<CommandActionType | undefined>(undefined);
   const [destinationTypeInput, setDestinationTypeInput] = useState<DestinationType | undefined>(undefined);
@@ -48,12 +59,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
+  const [itemsGivenInputError, setItemsGivenInputError] = useState<string | undefined>(undefined);
   const [actionTypeInputError, setActionTypeInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
   const [existingDestinationIdInputError, setExistingDestinationIdInputError] = useState<string | undefined>(undefined);
   const [newScreenBodyError, setNewScreenBodyError] = useState<string | undefined>(undefined);
   const [printMessageInputError, setPrintMessageInputError] = useState<string | undefined>(undefined);
 
+  // Computed state
+  const hasAnyGivenItems = parseItemString(itemsGivenInput).length > 0;
 
   // Validated set functions
   // - Command
@@ -74,6 +88,43 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const validateAndSetCommandInput = (newValue: string): void => {
     validateCommandInput(newValue);
     setCommandInput(newValue);
+  };
+
+  // - Items given
+  const validateItemsGiven = (newValue: string): boolean => {
+    const itemsGiven = parseItemString(newValue);
+
+    if (limitItemsGivenInput === true) {
+      const duplicateItems: string[] = [];
+
+      // Check that each item is unique
+      // 1. Loop through each item
+      // 2. Check if there is an item later in the array that is equivalent
+      // 3. Record any duplicate items
+      // 4. Show a message listing any duplicate items
+      for (let i = 0; i < itemsGiven.length; i++) {
+        const currentItem = itemsGiven[i];
+        for (let j = i + 1; j < itemsGiven.length; j++) {
+          const comparisonItem = itemsGiven[j];
+          if (areItemsEquivalent(currentItem, comparisonItem)) {
+            duplicateItems.push(currentItem);
+            break;
+          }
+        }
+      }
+
+      if (duplicateItems.length > 0) {
+        setItemsGivenInputError(`Cannot give duplicate items when Item Restriction is enabled. Remove ${duplicateItems.length > 1 ? 'duplicate items' : 'the duplicate item'} or uncheck the checkbox. Duplicate ${duplicateItems.length > 1 ? 'items' : 'item'}: ${duplicateItems.join(', ')}`);
+        return false;
+      }
+    }
+
+    setItemsGivenInputError(undefined);
+    return true;
+  };
+  const validateAndSetItemsGiven = (newValue: string): void => {
+    validateItemsGiven(newValue);
+    setItemsGivenInput(newValue);
   };
 
   // - Action type
@@ -184,12 +235,14 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
     void (async () => {
       // Validation
       const isCommandInputValid = validateCommandInput(commandInput);
+      const isItemsGivenValid = validateItemsGiven(itemsGivenInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
       const isNewScreenBodyValid = validateNewScreenBody(newScreenBodyInput);
       const isActionTypeValid = validationActionTypeInput(actionTypeInput);
       const isDestinationTypeValid = validateDestinationTypeInput(destinationTypeInput);
       const isPrintMessageValid = validatePrintMessage(printMessageInput);
       const hasValidationErrors: boolean = !isCommandInputValid ||
+        !isItemsGivenValid ||
         !isActionTypeValid ||
         !isDestinationTypeValid ||
         !isExistingDestinationIdValid ||
@@ -213,17 +266,13 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       // - Items taken
       let itemsTaken: string[] | undefined = undefined;
       if (itemsTakenInput.trim() !== '') {
-        itemsTaken = itemsTakenInput.split(',')
-          .map((item) => item.trim())
-          .filter((item) => item !== '');
+        itemsTaken = parseItemString(itemsTakenInput);
       }
 
       // - Items given
       let itemsGiven: string[] | undefined = undefined;
       if (itemsGivenInput.trim() !== '') {
-        itemsGiven = itemsGivenInput.split(',')
-          .map((item) => item.trim())
-          .filter((item) => item !== '');
+        itemsGiven = parseItemString(itemsGivenInput);
       }
 
       // - Limit items given
@@ -232,16 +281,14 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         limitItemsGiven = limitItemsGivenInput;
       }
 
-      // - Action type
-      const actionType: CommandActionType = actionTypeInput!;
-
       // - Items required
       let itemsRequired: string[] | undefined = undefined;
       if (itemsRequiredInput.trim() !== '') {
-        itemsRequired = itemsRequiredInput.split(',')
-          .map((item) => item.trim())
-          .filter((item) => item !== '');
+        itemsRequired = parseItemString(itemsRequiredInput);
       }
+
+      // - Action type
+      const actionType: CommandActionType = actionTypeInput!;
 
       // - Destination type
       const destinationType: DestinationType = destinationTypeInput!;
@@ -407,26 +454,32 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <input type="text" name="items-given" id="items-given"
             className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="red key, crystal skull"
-            onChange={(e) => setItemsGivenInput(e.target.value)}
+            onChange={(e) => validateAndSetItemsGiven(e.target.value)}
             value={itemsGivenInput}
             autoCapitalize="words"
             disabled={isSubmitting}
           />
+          {/* error */}
+          {showValidationErrors && itemsGivenInputError && (
+            <span className="form__input__error">{itemsGivenInputError}</span>
+          )}
 
-          {/* Limit items given */}
-          <div className="checkbox u-margin-top-md">
-            <input type="checkbox" name="limit-items-given"
-              className="checkbox__input u-screen-reader-only"
-              id="limit-items-given"
-              checked={limitItemsGivenInput}
-              onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
-              disabled={isSubmitting}
-            />
-            <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
-              <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
-              Do not give these items to the player if they already have them
-            </label>
-          </div>
+          {/* Limit items given (only visible if anything is entered into `itemsGiven`) */}
+          {hasAnyGivenItems && (
+            <div className="checkbox u-margin-top-md">
+              <input type="checkbox" name="limit-items-given"
+                className="checkbox__input u-screen-reader-only"
+                id="limit-items-given"
+                checked={limitItemsGivenInput}
+                onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
+                disabled={isSubmitting}
+              />
+              <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
+                <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
+                Item Restriction: Do not give these items to the player if they already have them
+              </label>
+            </div>
+          )}
         </div>
 
         {/* Items required */}

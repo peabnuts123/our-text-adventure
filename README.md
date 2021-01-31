@@ -10,8 +10,8 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Add "limit given items" checkbox to frontend~~
   - [x] ~~Add "print message" option to frontend~~
   - [x] ~~Make API validate and store actionType, printMessage, limitItemsGiven~~
-  - [ ] Only show "limit items" if anything has been typed
-  - [ ] If "limit items" is ticked, it should be a validation error to input duplicate items
+  - [x] ~~Only show "limit items" if anything has been typed~~
+  - [x] ~~If "limit items" is ticked, it should be a validation error to input duplicate items~~
   - [x] Update command endpoint to
     - ~~Change a bunch of logic to switch on `actionType` i.e. put all existing logic under code path `actionType === 'navigate'`~~
     - ~~Implement "limit items given" logic based on command field~~
