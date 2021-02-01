@@ -58,7 +58,7 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Make terminal print command result~~
   - [x] ~~Make `/inventory` list your inventory~~
   - [x] ~~Make `/help` list commands and stuff~~
-  - [ ] BUG: Clicking "Home" while on Home wipes out URL state
+  - [x] ~~BUG: Clicking "Home" while on Home wipes out URL state~~
   - [ ] Change terminal parser function to insert a newline instead of just truncating
   - [ ] line-wrap on various inputs
     - ~~prompt~~

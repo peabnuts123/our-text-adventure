@@ -59,7 +59,7 @@ export default class StateStore {
   }
 
 
-  public init(): void {
+  public refresh(): void {
     // Load all state
     this.hydrateState();
 

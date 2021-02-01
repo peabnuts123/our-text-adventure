@@ -35,11 +35,11 @@ const Terminal: FunctionComponent = () => {
   const terminalCodeRef = useRef<HTMLDivElement>(null);
   const commandInputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    // Initialise the state store. This will sync it with the URL
-    //  and load any default values
-    StateStore.init();
+  // Refresh the state store. This will sync it with the URL
+  //  and load any default values
+  StateStore.refresh();
 
+  useEffect(() => {
     const loadInitialScreen = async (): Promise<void> => {
       setHasLoaded(false);
 
