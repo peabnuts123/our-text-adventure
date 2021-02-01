@@ -29,7 +29,7 @@ interface Props {
 }
 
 function parseItemString(itemString: string): string[] {
-  return itemString.split(',')
+  return itemString.split(/[\n,]+/g)
     .map((item) => item.trim())
     .filter((item) => item !== '');
 }
@@ -434,7 +434,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           {/* help text */}
           <p className="create-path__form__description">Items that will be removed when the player issues this command. It is implied that the player must have these items in their inventory in order to do this, or else they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
           {/* input */}
-          <input type="text" name="items-taken" id="items-taken"
+          <AutoSizeTextarea
+            id="items-taken"
+            name="items-taken"
+            minRows={1}
             className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="green key, golden idol"
             onChange={(e) => setItemsTakenInput(e.target.value)}
@@ -451,7 +454,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           {/* help text */}
           <p className="create-path__form__description">Items that will be given to the player upon successfully issuing this command.</p>
           {/* input */}
-          <input type="text" name="items-given" id="items-given"
+          <AutoSizeTextarea
+            id="items-given"
+            name="items-given"
+            minRows={1}
             className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="red key, crystal skull"
             onChange={(e) => validateAndSetItemsGiven(e.target.value)}
@@ -489,7 +495,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           {/* help text */}
           <p className="create-path__form__description">Items that the player is required to have in their inventory in order to issue this command. These items will not be removed from the player&apos;s inventory when doing this. If the player does not have these items, they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
           {/* input */}
-          <input type="text" name="items-required" id="items-required"
+          <AutoSizeTextarea
+            id="items-required"
+            name="items-required"
+            minRows={1}
             className={classnames("input input--text", { 'is-disabled': isSubmitting })}
             placeholder="blue key, amulet of rambotan"
             onChange={(e) => setItemsRequiredInput(e.target.value)}

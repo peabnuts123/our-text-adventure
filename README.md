@@ -59,13 +59,12 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
   - [x] ~~Make `/inventory` list your inventory~~
   - [x] ~~Make `/help` list commands and stuff~~
   - [x] ~~BUG: Clicking "Home" while on Home wipes out URL state~~
-  - [ ] Change terminal parser function to insert a newline instead of just truncating
-  - [ ] line-wrap on various inputs
+  - [x] ~~line-wrap on various inputs~~
     - ~~prompt~~
-    - path form: command
-    - path form: items taken
-    - path form: items given
-    - path form: items required
+    - ~~path form: items taken~~
+    - ~~path form: items given~~
+    - ~~path form: items required~~
+  - [ ] Max length on item names
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
