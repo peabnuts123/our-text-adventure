@@ -1,7 +1,7 @@
-import React, { ChangeEventHandler, FormEventHandler, FunctionComponent, useState } from "react";
+import React, { ChangeEvent, FormEventHandler, FunctionComponent, useState } from "react";
 import classnames from 'classnames';
 
-import { TERMINAL_CHARACTER_WIDTH } from '@app/constants';
+import { ITEM_NAME_MAX_LENGTH, TERMINAL_CHARACTER_WIDTH } from '@app/constants';
 import { useStores } from "@app/stores";
 import { ApiError, GenericApiError } from "@app/services/errors";
 import ErrorId from "@app/constants/ErrorId";
@@ -60,6 +60,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
   const [commandInputError, setCommandInputError] = useState<string | undefined>(undefined);
   const [itemsGivenInputError, setItemsGivenInputError] = useState<string | undefined>(undefined);
+  const [itemsTakenInputError, setItemsTakenInputError] = useState<string | undefined>();
+  const [itemsRequiredInputError, setItemsRequiredInputError] = useState<string | undefined>();
   const [actionTypeInputError, setActionTypeInputError] = useState<string | undefined>(undefined);
   const [destinationTypeInputError, setDestinationTypeInputError] = useState<string | undefined>(undefined);
   const [existingDestinationIdInputError, setExistingDestinationIdInputError] = useState<string | undefined>(undefined);
@@ -92,7 +94,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
   // - Items given
   const validateItemsGiven = (newValue: string): boolean => {
-    const itemsGiven = parseItemString(newValue);
+    const items = parseItemString(newValue);
 
     if (limitItemsGivenInput === true) {
       const duplicateItems: string[] = [];
@@ -102,10 +104,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       // 2. Check if there is an item later in the array that is equivalent
       // 3. Record any duplicate items
       // 4. Show a message listing any duplicate items
-      for (let i = 0; i < itemsGiven.length; i++) {
-        const currentItem = itemsGiven[i];
-        for (let j = i + 1; j < itemsGiven.length; j++) {
-          const comparisonItem = itemsGiven[j];
+      for (let i = 0; i < items.length; i++) {
+        const currentItem = items[i];
+        for (let j = i + 1; j < items.length; j++) {
+          const comparisonItem = items[j];
           if (areItemsEquivalent(currentItem, comparisonItem)) {
             duplicateItems.push(currentItem);
             break;
@@ -119,12 +121,52 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       }
     }
 
+    const itemsWithLengthValidationErrors = items.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+    if (itemsWithLengthValidationErrors.length > 0) {
+      setItemsGivenInputError(`Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. The following ${itemsWithLengthValidationErrors.length > 1 ? 'items are' : 'item is'} invalid: ${itemsWithLengthValidationErrors.join(', ')}`);
+      return false;
+    }
+
     setItemsGivenInputError(undefined);
     return true;
   };
   const validateAndSetItemsGiven = (newValue: string): void => {
     validateItemsGiven(newValue);
     setItemsGivenInput(newValue);
+  };
+  // - Items taken
+  const validateItemsTaken = (newValue: string): boolean => {
+    const items = parseItemString(newValue);
+
+    const itemsWithLengthValidationErrors = items.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+    if (itemsWithLengthValidationErrors.length > 0) {
+      setItemsTakenInputError(`Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. The following ${itemsWithLengthValidationErrors.length > 1 ? 'items are' : 'item is'} invalid: ${itemsWithLengthValidationErrors.join(', ')}`);
+      return false;
+    }
+
+    setItemsTakenInputError(undefined);
+    return true;
+  };
+  const validateAndSetItemsTaken = (newValue: string): void => {
+    validateItemsTaken(newValue);
+    setItemsTakenInput(newValue);
+  };
+  // - Items required
+  const validateItemsRequired = (newValue: string): boolean => {
+    const items = parseItemString(newValue);
+
+    const itemsWithLengthValidationErrors = items.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+    if (itemsWithLengthValidationErrors.length > 0) {
+      setItemsRequiredInputError(`Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. The following ${itemsWithLengthValidationErrors.length > 1 ? 'items are' : 'item is'} invalid: ${itemsWithLengthValidationErrors.join(', ')}`);
+      return false;
+    }
+
+    setItemsRequiredInputError(undefined);
+    return true;
+  };
+  const validateAndSetItemsRequired = (newValue: string): void => {
+    validateItemsRequired(newValue);
+    setItemsRequiredInput(newValue);
   };
 
   // - Action type
@@ -218,14 +260,48 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
 
   // Functions
-  const transformTerminalStringToLines = (body: string): string[] => {
-    // Split text into lines
-    const rawLines = body.split(/[\r\n]/g);
+  const transformStringToTerminalLines = (body: string): string[] => {
+    const lines = body.split(/\n/g);
+    /** Leftover text overflowing from the previous line */
+    let overflowBuffer: string = '';
+    for (let i = 0; i < lines.length; i++) {
+      const isLineFull = lines[i].length >= TERMINAL_CHARACTER_WIDTH;
 
-    // Restrict length of each line to `TERMINAL_CHARACTER_WIDTH`
-    const trimmedLines = rawLines.map((line) => line.substring(0, TERMINAL_CHARACTER_WIDTH));
+      if (isLineFull) {
+        // Line is full - continue flowing
 
-    return trimmedLines;
+        // Add line to the end of the buffer
+        overflowBuffer += lines[i];
+        // Set line to the start of the buffer
+        lines[i] = overflowBuffer.substring(0, TERMINAL_CHARACTER_WIDTH);
+        // Remove the front from the buffer
+        overflowBuffer = overflowBuffer.substring(TERMINAL_CHARACTER_WIDTH);
+      } else {
+        // Line is not full, ensure we preserve the new line
+
+        // Bank the current line but flush the buffer at the
+        //  line we are now before continuing
+        while (overflowBuffer.length > 0) {
+          // Construct a line out of the overflow buffer
+          const newLine = overflowBuffer.substring(0, TERMINAL_CHARACTER_WIDTH);
+          overflowBuffer = overflowBuffer.substring(TERMINAL_CHARACTER_WIDTH);
+
+          // Insert it into the middle of the array
+          lines.splice(i, 0, newLine);
+          // Mutate our iterator because the array's length has changed
+          i++;
+        }
+      }
+    }
+
+    // Create any new lines from leftover overflow buffer
+    // (could potentially be a lot)
+    while (overflowBuffer.length > 0) {
+      lines.push(overflowBuffer.substring(0, TERMINAL_CHARACTER_WIDTH));
+      overflowBuffer = overflowBuffer.substring(TERMINAL_CHARACTER_WIDTH);
+    }
+
+    return lines;
   };
 
   const handleSubmit: FormEventHandler<Element> = (e) => {
@@ -236,6 +312,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       // Validation
       const isCommandInputValid = validateCommandInput(commandInput);
       const isItemsGivenValid = validateItemsGiven(itemsGivenInput);
+      const isItemsTakenValid = validateItemsTaken(itemsTakenInput);
+      const isItemsRequiredValid = validateItemsRequired(itemsRequiredInput);
       const isExistingDestinationIdValid = validateExistingDestinationIdInput(existingDestinationIdInput);
       const isNewScreenBodyValid = validateNewScreenBody(newScreenBodyInput);
       const isActionTypeValid = validationActionTypeInput(actionTypeInput);
@@ -243,6 +321,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       const isPrintMessageValid = validatePrintMessage(printMessageInput);
       const hasValidationErrors: boolean = !isCommandInputValid ||
         !isItemsGivenValid ||
+        !isItemsTakenValid ||
+        !isItemsRequiredValid ||
         !isActionTypeValid ||
         !isDestinationTypeValid ||
         !isExistingDestinationIdValid ||
@@ -302,13 +382,13 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
       // - New screen body
       let newScreenBody: string[] | undefined = undefined;
       if (destinationType === DestinationType.New) {
-        newScreenBody = transformTerminalStringToLines(newScreenBodyInput);
+        newScreenBody = transformStringToTerminalLines(newScreenBodyInput);
       }
 
       // - Print message
       let printMessage: string[] | undefined = undefined;
       if (actionType === CommandActionType.PrintMessage) {
-        printMessage = transformTerminalStringToLines(printMessageInput);
+        printMessage = transformStringToTerminalLines(printMessageInput);
       }
 
       // Submit form
@@ -376,27 +456,16 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
     })();
   };
 
-  const handleNewScreenChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+  const handleTerminalLinesChange = (e: ChangeEvent<HTMLTextAreaElement>, setCallback: (newValue: string) => void): void => {
     e.preventDefault();
     e.stopPropagation();
 
-    const textareaEl = e.target;
-    const trimmedLines = transformTerminalStringToLines(textareaEl.value);
+    const transformedLines = transformStringToTerminalLines(e.target.value);
 
     // Re-join text back into text
-    validateAndSetNewScreenBody(trimmedLines.join('\n'));
+    setCallback(transformedLines.join('\n'));
   };
 
-  const handlePrintMessageChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const textareaEl = e.target;
-    const trimmedLines = transformTerminalStringToLines(textareaEl.value);
-
-    // Re-join text back into text
-    validateAndSetPrintMessage(trimmedLines.join('\n'));
-  };
 
   return (
     <div className="create-path">
@@ -438,13 +507,20 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-taken"
             name="items-taken"
             minRows={1}
-            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
+            className={classnames("input input--text", {
+              'has-error': showValidationErrors && itemsTakenInputError,
+              'is-disabled': isSubmitting,
+            })}
             placeholder="green key, golden idol"
-            onChange={(e) => setItemsTakenInput(e.target.value)}
+            onChange={(e) => validateAndSetItemsTaken(e.target.value)}
             value={itemsTakenInput}
             autoCapitalize="words"
             disabled={isSubmitting}
           />
+          {/* error */}
+          {showValidationErrors && itemsTakenInputError && (
+            <span className="form__input__error">{itemsTakenInputError}</span>
+          )}
         </div>
 
         {/* Items given */}
@@ -458,7 +534,10 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-given"
             name="items-given"
             minRows={1}
-            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
+            className={classnames("input input--text", {
+              'has-error': showValidationErrors && itemsGivenInputError,
+              'is-disabled': isSubmitting,
+            })}
             placeholder="red key, crystal skull"
             onChange={(e) => validateAndSetItemsGiven(e.target.value)}
             value={itemsGivenInput}
@@ -499,16 +578,23 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-required"
             name="items-required"
             minRows={1}
-            className={classnames("input input--text", { 'is-disabled': isSubmitting })}
+            className={classnames("input input--text", {
+              'has-error': showValidationErrors && itemsRequiredInputError,
+              'is-disabled': isSubmitting,
+            })}
             placeholder="blue key, amulet of rambotan"
-            onChange={(e) => setItemsRequiredInput(e.target.value)}
+            onChange={(e) => validateAndSetItemsRequired(e.target.value)}
             value={itemsRequiredInput}
             autoCapitalize="words"
             disabled={isSubmitting}
           />
+          {/* error */}
+          {showValidationErrors && itemsRequiredInputError && (
+            <span className="form__input__error">{itemsRequiredInputError}</span>
+          )}
         </div>
 
-        {/* Action */}
+        {/* Action type */}
         <div className="form__input">
           {/* Action type */}
           <label className="form__input-label">Action <span className="create-path__form__specifier">(required)</span></label>
@@ -572,7 +658,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 })}
                 minRows={10}
                 placeholder={"You pick up the tattered\nenvelope and place it in\nyour pocket."}
-                onChange={handlePrintMessageChange}
+                onChange={(e) => handleTerminalLinesChange(e, validateAndSetPrintMessage)}
                 value={printMessageInput}
                 autoCapitalize="sentences"
                 disabled={isSubmitting}
@@ -588,7 +674,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         {/* NAVIGATE TYPE COMMANDS */}
         {actionTypeInput === CommandActionType.Navigate && (
           <>
-            {/* Destination */}
+            {/* Destination type */}
             <div className="form__input">
               {/* Destination type */}
               <label className="form__input-label">Destination <span className="create-path__form__specifier">(required)</span></label>
@@ -652,7 +738,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                     })}
                     minRows={10}
                     placeholder="You enter a dark room."
-                    onChange={handleNewScreenChange}
+                    onChange={(e) => handleTerminalLinesChange(e, validateAndSetNewScreenBody)}
                     value={newScreenBodyInput}
                     autoCapitalize="sentences"
                     disabled={isSubmitting}

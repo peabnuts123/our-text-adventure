@@ -1,1 +1,2 @@
 export const TERMINAL_CHARACTER_WIDTH = 30;
+export const ITEM_NAME_MAX_LENGTH = 25;

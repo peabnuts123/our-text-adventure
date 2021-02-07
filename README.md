@@ -65,6 +65,10 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
     - ~~path form: items given~~
     - ~~path form: items required~~
   - [ ] Max length on item names
+    - ~~Validation error in the client~~
+    - Error response in the API
+  - [x] ~~Figure out better UX for max line length~~
+    - ~~It's not the best but it isn't too unpredictable~~
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
