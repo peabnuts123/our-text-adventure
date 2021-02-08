@@ -15,9 +15,10 @@ import ErrorModel from "../../errors/ErrorModel";
 import ErrorId from "../../errors/ErrorId";
 import GenericError from "../../errors/GenericError";
 import { PathDestinationType } from "../../constants/PathDestinationType";
-import { TERMINAL_MAX_LINE_LENGTH } from "../../constants";
+import { ITEM_NAME_MAX_LENGTH, TERMINAL_MAX_LINE_LENGTH } from "../../constants";
 import { CommandActionType } from "../../constants/CommandActionType";
 import Command from "../../db/models/Command";
+import { areItemsEquivalent } from "../../util/client-state";
 
 import { AddPathDto } from "./dto";
 
@@ -100,6 +101,21 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     } else {
       // Remove blank / empty items
       itemsTaken = itemsTaken.map((item) => item.trim()).filter((item) => !!item);
+
+      // Ensure item names are not longer than `ITEM_NAME_MAX_LENGTH`
+      const itemsWithLengthValidationErrors = itemsTaken.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+      if (itemsWithLengthValidationErrors.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsTaken', `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${itemsWithLengthValidationErrors.join(', ')}`));
+      }
+
+      // Ensure item names do not contain any invalid characters
+      const invalidItemNameCharacters: string[] = ',\r\n'.split('');
+      const itemsWithInvalidCharacters = itemsTaken.filter((item) => {
+        return invalidItemNameCharacters.some((invalidCharacter) => item.indexOf(invalidCharacter) !== -1);
+      });
+      if (itemsWithInvalidCharacters.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsTaken', `Item names cannot contain any of the following characters: ${invalidItemNameCharacters.join('')}. Invalid item names: ${itemsWithInvalidCharacters.join(', ')}`));
+      }
     }
 
     // Validate `itemsGiven`
@@ -109,6 +125,46 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     } else {
       // Remove blank / empty items
       itemsGiven = itemsGiven.map((item) => item.trim()).filter((item) => !!item);
+
+      // Ensure no items are duplicates if `limitItemsGiven` is true
+      if (dto.limitItemsGiven === true) {
+        const duplicateItems: string[] = [];
+
+        // Check that each item is unique
+        // 1. Loop through each item
+        // 2. Check if there is an item later in the array that is equivalent
+        // 3. Record any duplicate items
+        // 4. Show a message listing any duplicate items
+        for (let i = 0; i < itemsGiven.length; i++) {
+          const currentItem = itemsGiven[i];
+          for (let j = i + 1; j < itemsGiven.length; j++) {
+            const comparisonItem = itemsGiven[j];
+            if (areItemsEquivalent(currentItem, comparisonItem)) {
+              duplicateItems.push(currentItem);
+              break;
+            }
+          }
+        }
+
+        if (duplicateItems.length > 0) {
+          validationErrors.push(new RequestValidationError('itemsGiven', `Cannot contain duplicate items when \`limitItemsGiven\` is \`true\`. Duplicate ${duplicateItems.length > 1 ? 'items' : 'item'}: ${duplicateItems.join(', ')}`));
+        }
+      }
+
+      // Ensure item names are not longer than `ITEM_NAME_MAX_LENGTH`
+      const itemsWithLengthValidationErrors = itemsGiven.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+      if (itemsWithLengthValidationErrors.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsGiven', `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${itemsWithLengthValidationErrors.join(', ')}`));
+      }
+
+      // Ensure item names do not contain any invalid characters
+      const invalidItemNameCharacters: string[] = ',\r\n'.split('');
+      const itemsWithInvalidCharacters = itemsGiven.filter((item) => {
+        return invalidItemNameCharacters.some((invalidCharacter) => item.indexOf(invalidCharacter) !== -1);
+      });
+      if (itemsWithInvalidCharacters.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsGiven', `Item names cannot contain any of the following characters: ${invalidItemNameCharacters.join('')}. Invalid item names: ${itemsWithInvalidCharacters.join(', ')}`));
+      }
     }
 
     // Validate `limitItemsGiven`
@@ -132,6 +188,21 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, _context) => {
     } else {
       // Remove blank / empty items
       itemsRequired = itemsRequired.map((item) => item.trim()).filter((item) => !!item);
+
+      // Ensure item names are not longer than `ITEM_NAME_MAX_LENGTH`
+      const itemsWithLengthValidationErrors = itemsRequired.filter((item) => item.length > ITEM_NAME_MAX_LENGTH);
+      if (itemsWithLengthValidationErrors.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsRequired', `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${itemsWithLengthValidationErrors.join(', ')}`));
+      }
+
+      // Ensure item names do not contain any invalid characters
+      const invalidItemNameCharacters: string[] = ',\r\n'.split('');
+      const itemsWithInvalidCharacters = itemsRequired.filter((item) => {
+        return invalidItemNameCharacters.some((invalidCharacter) => item.indexOf(invalidCharacter) !== -1);
+      });
+      if (itemsWithInvalidCharacters.length > 0) {
+        validationErrors.push(new RequestValidationError('itemsRequired', `Item names cannot contain any of the following characters: ${invalidItemNameCharacters.join('')}. Invalid item names: ${itemsWithInvalidCharacters.join(', ')}`));
+      }
     }
 
     // Validate `actionType`

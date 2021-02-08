@@ -3,7 +3,7 @@ import { AddPathDto } from '@app/handlers/add-path/dto';
 import GameScreen from '@app/db/models/GameScreen';
 import ErrorId from '@app/errors/ErrorId';
 import { PathDestinationType } from '@app/constants/PathDestinationType';
-import { TERMINAL_MAX_LINE_LENGTH } from '@app/constants';
+import { ITEM_NAME_MAX_LENGTH, TERMINAL_MAX_LINE_LENGTH } from '@app/constants';
 import { CommandActionType } from '@app/constants/CommandActionType';
 import Command from '@app/db/models/Command';
 
@@ -16,7 +16,8 @@ describe("AddPath handler", () => {
     MockDb.reset();
   });
 
-  test("Correct request creates a new path", async () => {
+  // HAPPY PATHS
+  test("Correct request creates a new path (navigation type)", async () => {
     // Setup
     const mockScreen: GameScreen = new GameScreen({
       id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
@@ -56,7 +57,48 @@ describe("AddPath handler", () => {
     expect(responseBody).not.toBeDefined();
     expect(response.statusCode).toBe(201);
     expect(response.headers && response.headers['Content-Type']).toBeUndefined();
-    expect(mockScreen.commands.some((c) => c.command === requestPayload.command)).toBe(true); // Command has been appended to correct screen
+    expect(mockScreen.commands.some((c) => c.isEquivalentTo(requestPayload.command!))).toBe(true); // Command has been appended to correct screen
+  });
+  test("Correct request creates a new path (print message type)", async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    const requestPayload: AddPathDto = {
+      sourceScreenId: mockScreen.id,
+      command: 'mock bone',
+      itemsGiven: ['Key of Goldenrod'],
+      limitItemsGiven: true,
+      itemsTaken: ['Thunder Badge'],
+      itemsRequired: ['Thunder Stone'],
+      actionType: CommandActionType.PrintMessage,
+      printMessage: ["This is a", "mock message"],
+    };
+
+    const mockRequest: SimpleRequest = {
+      path: `/path`,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestPayload),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+    const responseBody: string = response.body as string;
+
+    // Assert
+    expect(responseBody).not.toBeDefined();
+    expect(response.statusCode).toBe(201);
+    expect(response.headers && response.headers['Content-Type']).toBeUndefined();
+    expect(mockScreen.commands.some((c) => c.isEquivalentTo(requestPayload.command!))).toBe(true); // Command has been appended to correct screen
   });
 
   /* VALIDATION TESTS: headers */
@@ -681,6 +723,111 @@ describe("AddPath handler", () => {
     expect(response.headers && response.headers['Content-Type']).toBeUndefined();
     expect(newCommand.itemsTaken).toEqual([mockItemA.trim(), mockItemB.trim()]);
   });
+  test(`\`itemsTaken\` item name of length greater than ${ITEM_NAME_MAX_LENGTH} returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsTaken',
+        message: `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${mockItemName}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsTaken: [mockItemName],
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
+  test(`\`itemsTaken\` item names containing invalid characters returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    // const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+    const mockItemNames: string[] = [
+      'Co,mma',
+      'New\nline',
+      'Carriage\rReturn',
+    ];
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsTaken',
+        message: `Item names cannot contain any of the following characters: ,\r\n. Invalid item names: ${mockItemNames.join(', ')}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsTaken: mockItemNames,
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
 
   /* VALIDATION TESTS: `itemsGiven` property */
   test("Array of non-strings for `itemsGiven` property returns 400", async () => {
@@ -872,6 +1019,171 @@ describe("AddPath handler", () => {
     expect(response.statusCode).toBe(201);
     expect(response.headers && response.headers['Content-Type']).toBeUndefined();
     expect(newCommand.itemsGiven).toEqual([mockItemA.trim(), mockItemB.trim()]);
+  });
+  test(`\`itemsGiven\` item name of length greater than ${ITEM_NAME_MAX_LENGTH} returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsGiven',
+        message: `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${mockItemName}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsGiven: [mockItemName],
+        limitItemsGiven: false,
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
+  test(`\`itemsGiven\` item names containing invalid characters returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    // const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+    const mockItemNames: string[] = [
+      'Co,mma',
+      'New\nline',
+      'Carriage\rReturn',
+    ];
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsGiven',
+        message: `Item names cannot contain any of the following characters: ,\r\n. Invalid item names: ${mockItemNames.join(', ')}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsGiven: mockItemNames,
+        limitItemsGiven: false,
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
+  test(`Providing duplicate/equivalent items to \`itemsGiven\` when \`limitItemsGiven\` is \`true\` returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    // const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+    const mockDuplicateItems: string[] = ['Mock Item A', 'Mock Item B'];
+    const mockItemNames: string[] = [
+      'Broken Lever',
+      'Paper Crane',
+      ...mockDuplicateItems,
+      ...mockDuplicateItems,
+    ];
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsGiven',
+        message: `Cannot contain duplicate items when \`limitItemsGiven\` is \`true\`. Duplicate ${mockDuplicateItems.length > 1 ? 'items' : 'item'}: ${mockDuplicateItems.join(', ')}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsGiven: mockItemNames,
+        limitItemsGiven: true,
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
   });
 
   /* VALIDATION TESTS: `limitItemsGiven` property */
@@ -1256,6 +1568,111 @@ describe("AddPath handler", () => {
     expect(response.statusCode).toBe(201);
     expect(response.headers && response.headers['Content-Type']).toBeUndefined();
     expect(newCommand.itemsRequired).toEqual([mockItemA.trim(), mockItemB.trim()]);
+  });
+  test(`\`itemsRequired\` item name of length greater than ${ITEM_NAME_MAX_LENGTH} returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsRequired',
+        message: `Item names cannot be longer than ${ITEM_NAME_MAX_LENGTH} characters. Invalid item names: ${mockItemName}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsRequired: [mockItemName],
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
+  });
+  test(`\`itemsRequired\` item names containing invalid characters returns 400`, async () => {
+    // Setup
+    const mockScreen: GameScreen = new GameScreen({
+      id: 'd9ba40f7-cc19-485b-88c9-43aae7fd32d4',
+      body: ["Test", "body", "A"],
+      commands: [],
+    });
+
+    MockDb.screens = [
+      mockScreen,
+    ];
+
+    // const mockItemName = `This is a really long item name ${new Array(ITEM_NAME_MAX_LENGTH).join('A')}`;
+    const mockItemNames: string[] = [
+      'Co,mma',
+      'New\nline',
+      'Carriage\rReturn',
+    ];
+
+    const expectedResponse = {
+      model: 'ApiError',
+      modelVersion: 1,
+      errors: [{
+        model: 'RequestValidationError',
+        modelVersion: 1,
+        field: 'itemsRequired',
+        message: `Item names cannot contain any of the following characters: ,\r\n. Invalid item names: ${mockItemNames.join(', ')}`,
+      }],
+    };
+
+    const mockRequest: SimpleRequest = {
+      httpMethod: 'POST',
+      path: `/path`,
+      headers: {
+        [`Content-Type`]: 'application/json',
+      },
+      body: JSON.stringify({
+        sourceScreenId: mockScreen.id,
+        command: 'look bone',
+        itemsRequired: mockItemNames,
+        actionType: CommandActionType.Navigate,
+        destinationType: PathDestinationType.New,
+        newScreenBody: ["This is a", "mock screen"],
+      } as AddPathDto),
+    };
+
+    // Test
+    const response = await invokeHandler(handler, mockRequest);
+
+
+    // Assert
+    expect(response.statusCode).toBe(400);
+    expect(response.headers && response.headers['Content-Type']).toBe('application/json');
+    expect(response.body && JSON.parse(response.body)).toEqual(expectedResponse);
   });
 
   /* VALIDATION TESTS: `actionType` property */
