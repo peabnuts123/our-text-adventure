@@ -44,6 +44,8 @@ export default class StateStore {
   public constructor() {
     if (typeof window !== 'undefined') {
       // @NOTE debug functions
+      /** Get a reference to the StateStore */
+      (window as any).debug_StateStore = this;
       /** Inspect current state contents */
       (window as any).debug_printState = (): void => {
         Logger.log(LogLevel.debug, this._currentState);
@@ -56,15 +58,9 @@ export default class StateStore {
 
     this.terminalHistory = [];
     this._isReadingStoredState = false;
-  }
 
-
-  public refresh(): void {
-    // Load all state
+    // Initialise, read from existing sources
     this.hydrateState();
-
-    // Ensure State sources are up-to-date
-    this.storeState();
   }
 
   /**
@@ -107,9 +103,16 @@ export default class StateStore {
       // Ensure we have not already processed screen ID, and that screen ID is not null
       if (!hasSetScreenId && maybeScreenId !== null) {
         hasSetScreenId = true;
-        Logger.log(LogLevel.debug, `Hydrating Screen ID from ${debug_sourceName}`);
-        this._currentScreenId = maybeScreenId;
-        this._currentScreenInstance = undefined;
+
+        // Ensure we aren't hurting ourselves by storing the same value
+        //  and removing the reference to the instance
+        if (this._currentScreenId !== maybeScreenId) {
+          Logger.log(LogLevel.debug, `Hydrating screen ID from ${debug_sourceName}`);
+          this._currentScreenId = maybeScreenId;
+          this._currentScreenInstance = undefined;
+        } else {
+          Logger.log(LogLevel.debug, `Refusing redundant screen ID hydration from ${debug_sourceName}`);
+        }
       }
     };
     /** Given a possible stored state string, validate and read it, then store it */
@@ -117,7 +120,7 @@ export default class StateStore {
       // Ensure we have not already processed state, and that state string is not null
       if (!hasSetState && maybeStateString !== null) {
         hasSetState = true;
-        Logger.log(LogLevel.debug, `Hydrating State from ${debug_sourceName}`);
+        Logger.log(LogLevel.debug, `Hydrating state from ${debug_sourceName}`);
         this.setStateFromString(maybeStateString);
       }
     };
@@ -176,7 +179,9 @@ export default class StateStore {
    * 2. Session Storage (for persistence within a tab)
    * 3. Local Storage (for persistence between sessions)
    */
-  private storeState(): void {
+  public storeState(): void {
+    Logger.log(LogLevel.debug, "Writing state to all sources");
+
     // Safeguard for server-side rendering
     if (typeof window === 'undefined') {
       return;

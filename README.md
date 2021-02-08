@@ -64,24 +64,25 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
     - ~~path form: items taken~~
     - ~~path form: items given~~
     - ~~path form: items required~~
-  - [ ] Max length on item names
+  - [x] ~~Max length on item names~~
     - ~~Validation error in the client~~
-    - Error response in the API
+    - ~~Error response in the API~~
   - [x] ~~Figure out better UX for max line length~~
     - ~~It's not the best but it isn't too unpredictable~~
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
-  - [ ] Gracefully handle uncaught errors in the frontend
   - [ ] Do a big ol concision refactor to the API, validation utilities, tests etc.
+  - [ ] Gracefully handle uncaught errors in the frontend
   - [ ] Remove test handler from production / update roles permissions
+  - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component / Update README
   - [ ] Store some stuff globally for production debugging (e.g. `window.ota.config`)
-  - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Feedback command
   - [ ] Remove path params from test handler and make it more "debug"-y or something
   - [ ] Document that you need an AWS CLI profile named `our-text-adventure`
   - [ ] Make a utility for wrapping words or something
+  - [ ] Make a "common logic" project for sharing code between the frontend and the API
 
 ### Terminal
   - Shows text
