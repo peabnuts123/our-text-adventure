@@ -1,4 +1,4 @@
-import React, { FormEventHandler, FunctionComponent, KeyboardEventHandler, RefObject, useEffect, useRef, useState } from "react";
+import React, { FormEventHandler, FunctionComponent, KeyboardEventHandler, RefObject, useRef, useState } from "react";
 
 import { useStores } from "@app/stores";
 
