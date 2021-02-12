@@ -41,10 +41,10 @@
 
 // .terminal-item--prompt {}
 .terminal-item--response {
-  @extend .terminal-item--response;
+  @extend %terminal-item--response;
 }
 .terminal-item--error {
-  @extend .terminal-item--response;
+  @extend %terminal-item--response;
 }
 
 // ========================

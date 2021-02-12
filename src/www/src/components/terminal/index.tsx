@@ -281,11 +281,23 @@ const Terminal: FunctionComponent = () => {
     }
   };
 
+  const onTerminalItemProgressDrawing = (_progress: number): void => {
+    // Scroll terminal to bottom
+    if (terminalCodeRef.current !== null) {
+      terminalCodeRef.current.scrollTop = terminalCodeRef.current.scrollHeight;
+    }
+  };
   const onTerminalItemFinishedDrawing = (): void => {
     setIsDrawing(false);
 
     // Focus the command input field
     setTimeout(() => {
+      // Scroll terminal to bottom
+      if (terminalCodeRef.current !== null) {
+        terminalCodeRef.current.scrollTop = terminalCodeRef.current.scrollHeight;
+      }
+
+      // Focus command input
       if (!window.getSelection()?.toString() && commandInputRef.current) {
         commandInputRef.current.focus();
       }
@@ -324,6 +336,7 @@ const Terminal: FunctionComponent = () => {
                 immediate={item.immediate}
                 lines={item.lines}
                 onFinishedDrawing={onTerminalItemFinishedDrawing}
+                onProgressDrawing={onTerminalItemProgressDrawing}
               />
             ))
             :
