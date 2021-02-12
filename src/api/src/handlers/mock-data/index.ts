@@ -17,12 +17,19 @@ const MOCK_DATA = [
   new GameScreen({
     id: '0290922a-59ce-458b-8dbc-1c33f646580a',
     body: [
-      "+---------------+",
-      "| This is a     |",
-      "| sample dialog |",
-      "| showing       |",
-      "| something.    |",
-      "+---------------+",
+      // ----30 chars --------------|
+      "Welcome to Our Text Adventure!",
+      "This project is still in",
+      "development.",
+      "",
+      "Try typing 'pull lever' or",
+      "'fold origami' to see some",
+      "sample commands. Or add a new",
+      "command of your own!",
+      "",
+      "For help, type /help. To",
+      "create your own command",
+      "type /create-path",
     ],
     commands: [
       new Command({
