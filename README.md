@@ -69,11 +69,13 @@ It's a text-based adventure. You can play it, but you can also contribute to it.
     - ~~Error response in the API~~
   - [x] ~~Figure out better UX for max line length~~
     - ~~It's not the best but it isn't too unpredictable~~
+  - [x] ~~Split terminal output into separate elements for styling~~
   - [ ] Update Insomnia.json
     - Add Command handler
     - Add new exceptions for add-path
   - [ ] Do a big ol concision refactor to the API, validation utilities, tests etc.
   - [ ] Gracefully handle uncaught errors in the frontend
+    - Sending a command when sourceScreenId is invalid
   - [ ] Remove test handler from production / update roles permissions
   - [ ] (API) Upgrade to v3 AWS SDK (and only included as-needed)
   - [ ] Document each component / Update README

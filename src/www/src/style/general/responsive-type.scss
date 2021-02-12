@@ -14,15 +14,20 @@
  */
  $breakpoint-max-terminal-text-size: 620px;
 
+
+// COMPUTED
+$responsive-text-height: #{100/$terminal-text-size-ratio}vw;
+$responsive-text-max-height: $breakpoint-max-terminal-text-size/$terminal-text-size-ratio;
+
 /**
  * Placeholder to style text like part of the terminal.
  * Terminal text is monospaced and responds fluidly to width
  * of the viewport.
  */
 %terminal-text {
-  font-size: #{100/$terminal-text-size-ratio}vw !important;
+  font-size: $responsive-text-height !important;
 
   @media (min-width: $breakpoint-max-terminal-text-size) {
-    font-size: $breakpoint-max-terminal-text-size/$terminal-text-size-ratio !important;
+    font-size: $responsive-text-max-height !important;
   }
 }

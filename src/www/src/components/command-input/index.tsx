@@ -118,17 +118,11 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit, refObject }) => {
     }
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      inputRef.current!.focus();
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <div className="command-input">
       <form action="#" onSubmit={handleSubmit} className="command-input__form">
         <div className="command-input__input-container">
+          {/* @TODO address newlines being flex with gt symbol */}
           <span className="command-input__input-prompt">&gt;&nbsp;</span>
           <AutoSizeTextarea className="command-input__input input"
             value={inputCommand}

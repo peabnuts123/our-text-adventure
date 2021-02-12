@@ -1,20 +1,35 @@
 import React, { FunctionComponent, MouseEventHandler, useEffect, useRef, useState } from "react";
+import { v4 as uuid } from 'uuid';
 
-import Logger from "@app/util/Logger";
+import Logger, { LogLevel } from "@app/util/Logger";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
+import { CommandActionType } from "@app/stores/command";
 
 import CommandInput from "../command-input";
 import Spinner from "../spinner";
 import CreatePath, { CreatePathSubmitPayload } from "../create-path";
-import { CommandActionType } from "@app/stores/command";
+
+import TerminalItem, { TerminalItemType } from './terminal-item';
+
+interface TerminalItemDetails {
+  id: string;
+  lines: string[];
+  immediate: boolean;
+  type: TerminalItemType,
+}
 
 const Terminal: FunctionComponent = () => {
   // Stores
   const { CommandStore, StateStore, ScreenStore } = useStores();
 
   // State
-  const [terminalLines, setTerminalLines] = useState<string[]>([]);
+  // @TODO thoughts on a better useState implementation that uses proxy get/sets?
+  // useState under the hood, maintain a local copy of the variable, write changes
+  //  to both local copy and set___ callback, initialise from useState()
+  const [terminalItems, setTerminalItems] = useState<TerminalItemDetails[]>([]);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  // const [_numItemsDrawing, _setNumItemsDrawing] = useState<number>(0);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [isProcessingCommand, setIsProcessingCommand] = useState<boolean>(false);
   const [isCreatingNewPath, setIsCreatingNewPath] = useState<boolean>(false);
@@ -26,7 +41,7 @@ const Terminal: FunctionComponent = () => {
    * This is because React is stupid and won't mutate state until a component
    * re-renders, so when calling `set___()` consecutively, only the last call "wins"
    */
-  let terminalBuffer: string[] = [];
+  let terminalItemBuffer: TerminalItemDetails[] = [];
 
   // Computed state
   const isNotCreatingNewPath = !isCreatingNewPath;
@@ -44,7 +59,7 @@ const Terminal: FunctionComponent = () => {
         StateStore.setCurrentScreen(initialScreen);
 
         // Print initial screen to terminal
-        appendTerminalLinesToBuffer(initialScreen.body);
+        appendTerminalLinesToBuffer(TerminalItemType.Response, initialScreen.body);
         flushTerminalBuffer();
 
         setHasLoaded(true);
@@ -54,19 +69,17 @@ const Terminal: FunctionComponent = () => {
         setHasLoaded(true);
 
         Logger.logError(`Could not load initial screen with id: ${StateStore.currentScreenId}.`, err);
-        appendTerminalLinesToBuffer([
+        appendTerminalLinesToBuffer(TerminalItemType.Error, [
           `An error occurred.`,
           `Could not load initial screen.`,
           `Please try reloading or`,
           `clearing out the URL`,
-        ]);
+        ], true);
         flushTerminalBuffer();
       }
     };
 
     void loadInitialScreen();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Functions
@@ -74,14 +87,32 @@ const Terminal: FunctionComponent = () => {
    * Write lines to terminal buffer.
    * This does not affect the terminal until you call `flushTerminalBuffer()`
    */
-  const appendTerminalLinesToBuffer = (newLines: string[]): void => {
-    terminalBuffer = terminalBuffer.concat(newLines);
+  const appendTerminalLinesToBuffer = (type: TerminalItemType, newLines: string[], immediate: boolean = false): void => {
+    terminalItemBuffer = terminalItemBuffer.concat({
+      id: uuid(), // for react key only
+      lines: newLines,
+      immediate,
+      type,
+    });
   };
   /**
    * Write the terminal buffer to the terminal.
    */
   const flushTerminalBuffer = (): void => {
-    setTerminalLines(terminalLines.concat(terminalBuffer, ''));
+    const nonImmediateTerminalItemsBeingFlushed = terminalItemBuffer.filter((item) => item.immediate === false);
+    if (nonImmediateTerminalItemsBeingFlushed.length > 1) {
+      Logger.logWarning(LogLevel.debug, `Flushing ${nonImmediateTerminalItemsBeingFlushed.length} non-immediate terminal items simultaneously. This is likely incorrect`);
+      Logger.logWarning(LogLevel.debug, nonImmediateTerminalItemsBeingFlushed);
+    }
+
+    // non-immediate terminal item means terminal is drawing
+    // @NOTE we are coding on the assumption that there can
+    //  never be 2 non-immediate items drawing at the same time
+    if (nonImmediateTerminalItemsBeingFlushed.length > 0) {
+      setIsDrawing(true);
+    }
+
+    setTerminalItems(terminalItems.concat(terminalItemBuffer));
 
     // Scroll terminal to bottom
     setTimeout(() => {
@@ -94,9 +125,8 @@ const Terminal: FunctionComponent = () => {
   /** Callback for submitting a command in the prompt */
   const onSubmitCommand = async (rawCommand: string): Promise<void> => {
     const command: string = rawCommand.trim();
-    // @TODO spinner / - \ |
 
-    appendTerminalLinesToBuffer([`> ${command}`]);
+    appendTerminalLinesToBuffer(TerminalItemType.Prompt, [`> ${command}`], true);
 
     if (command === '') {
       // Empty input - do nothing
@@ -107,7 +137,7 @@ const Terminal: FunctionComponent = () => {
         // HELP
         case '?':
         case 'help':
-          appendTerminalLinesToBuffer(heredocToStringArray(
+          appendTerminalLinesToBuffer(TerminalItemType.Response, heredocToStringArray(
             // -- 30 chars --------------|
             `
             List of commands:
@@ -143,30 +173,32 @@ const Terminal: FunctionComponent = () => {
         // CREATE PATH
         case 'path':
         case 'create-path':
-          appendTerminalLinesToBuffer(['Creating a new pathway...']);
+          appendTerminalLinesToBuffer(TerminalItemType.Response, ['Creating a new pathway...']);
           setIsCreatingNewPath(true);
           break;
 
         // LIST INVENTORY
         case 'inventory':
-          appendTerminalLinesToBuffer([
+          // eslint-disable-next-line no-case-declarations
+          let response: string[] = [
             `Inventory:`,
-          ]);
+          ];
           if (StateStore.currentState.inventory.length === 0) {
-            appendTerminalLinesToBuffer([
+            response = response.concat([
               `Your inventory is empty!`,
             ]);
           } else {
-            appendTerminalLinesToBuffer(
+            response = response.concat(
               StateStore.currentState.inventory.map((item) => `• ${item}`),
             );
           }
+          appendTerminalLinesToBuffer(TerminalItemType.Response, response);
           break;
 
         // SCREEN
         case 'screen':
         case 'screen-id':
-          appendTerminalLinesToBuffer([
+          appendTerminalLinesToBuffer(TerminalItemType.Response, [
             `Current screen ID:`,
             StateStore.currentScreenId,
           ]);
@@ -179,13 +211,13 @@ const Terminal: FunctionComponent = () => {
         case 'whereami':
         case 'look':
           if (StateStore.currentScreen !== undefined) {
-            appendTerminalLinesToBuffer(StateStore.currentScreen.body);
+            appendTerminalLinesToBuffer(TerminalItemType.Response, StateStore.currentScreen.body);
           }
           break;
 
         // UNKNOWN
         default:
-          appendTerminalLinesToBuffer([`Unrecognised command.`]);
+          appendTerminalLinesToBuffer(TerminalItemType.Response, [`Unrecognised command.`]);
           break;
       }
       flushTerminalBuffer();
@@ -201,6 +233,7 @@ const Terminal: FunctionComponent = () => {
 
       setIsProcessingCommand(false);
 
+      let terminalResponse: string[] = [];
       if (response.success === true) {
         // Successful request
 
@@ -209,10 +242,10 @@ const Terminal: FunctionComponent = () => {
           StateStore.setCurrentScreen(response.screen);
 
           // Write response screen to terminal
-          appendTerminalLinesToBuffer(response.screen.body);
+          terminalResponse = terminalResponse.concat(response.screen.body);
         } else if (response.type === CommandActionType.PrintMessage) {
           // Write message to terminal
-          appendTerminalLinesToBuffer(response.printMessage);
+          terminalResponse = terminalResponse.concat(response.printMessage);
         } else {
           throw new Error(`Unhandled command type (likely unimplemented): '${(response as any).type}'`);
         }
@@ -222,7 +255,7 @@ const Terminal: FunctionComponent = () => {
 
         // Print items removed to terminal
         if (response.itemsRemoved && response.itemsRemoved.length > 0) {
-          appendTerminalLinesToBuffer([
+          terminalResponse = terminalResponse.concat([
             '',
             'Items removed:',
             ...response.itemsRemoved.map((item) => `- ${item}`),
@@ -231,40 +264,52 @@ const Terminal: FunctionComponent = () => {
 
         // Print items added to terminal
         if (response.itemsAdded && response.itemsAdded.length > 0) {
-          appendTerminalLinesToBuffer([
+          terminalResponse = terminalResponse.concat([
             '',
             'Items added:',
             ...response.itemsAdded.map((item) => `+ ${item}`),
           ]);
         }
 
+        appendTerminalLinesToBuffer(TerminalItemType.Response, terminalResponse);
         flushTerminalBuffer();
       } else if (response.success === false) {
         // Failed request
-        appendTerminalLinesToBuffer([response.message]);
+        appendTerminalLinesToBuffer(TerminalItemType.Response, [response.message]);
         flushTerminalBuffer();
       }
     }
   };
 
+  const onTerminalItemFinishedDrawing = (): void => {
+    setIsDrawing(false);
+
+    // Focus the command input field
+    setTimeout(() => {
+      if (!window.getSelection()?.toString() && commandInputRef.current) {
+        commandInputRef.current.focus();
+      }
+    });
+  };
+
   const handleCancelCreatePath = (): void => {
     setIsCreatingNewPath(false);
 
-    appendTerminalLinesToBuffer(['Cancelled creating path.']);
+    appendTerminalLinesToBuffer(TerminalItemType.Response, ['Cancelled creating path.']);
     flushTerminalBuffer();
   };
 
   const handleSuccessfulCreatePath = (payload: CreatePathSubmitPayload): void => {
     setIsCreatingNewPath(false);
 
-    appendTerminalLinesToBuffer([`Successfully created new path!`, `To go there now, type:`, '  ' + payload.command]);
+    appendTerminalLinesToBuffer(TerminalItemType.Response, [`Successfully created new path!`, `To go there now, type:`, '  ' + payload.command]);
     flushTerminalBuffer();
   };
 
   const handleOnClickTerminal: MouseEventHandler = (_e): void => {
     // Focus the command input field
-    if (!window.getSelection()?.toString()) {
-      commandInputRef.current!.focus();
+    if (!window.getSelection()?.toString() && commandInputRef.current) {
+      commandInputRef.current.focus();
     }
   };
 
@@ -273,22 +318,28 @@ const Terminal: FunctionComponent = () => {
       <div className="terminal" onClick={handleOnClickTerminal}>
         <div className="terminal__code" ref={terminalCodeRef}>
           {hasLoaded ?
-            (
-              terminalLines.join('\n')
-            ) :
+            terminalItems.map((item) => (
+              <TerminalItem key={item.id}
+                type={item.type}
+                immediate={item.immediate}
+                lines={item.lines}
+                onFinishedDrawing={onTerminalItemFinishedDrawing}
+              />
+            ))
+            :
             (
               <>
                 <Spinner /> Accessing system&hellip;
               </>
             )
-          }&nbsp;
+          }
         </div>
 
         {isProcessingCommand && (
           <Spinner />
         )}
 
-        {hasLoaded && !isProcessingCommand && isNotCreatingNewPath && (
+        {hasLoaded && !isProcessingCommand && isNotCreatingNewPath && !isDrawing && (
           <CommandInput onSubmit={onSubmitCommand} refObject={commandInputRef} />
         )}
       </div>
