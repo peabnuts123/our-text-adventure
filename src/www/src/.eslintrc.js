@@ -27,6 +27,7 @@ module.exports = {
   rules: {
     // Rules that are explicitly disabled
     'react/prop-types': DISABLED,
+    'react-hooks/exhaustive-deps': DISABLED, // Stupid rule, you frequently want to specifically ignore certain props
 
     // Rules that are explicitly a warning
     // - none at present -

@@ -14,7 +14,7 @@ const useRouteChange = (callback: OnRouteChangeFunction): void => {
     };
     // @NOTE If you add `callback` to useEffect's dependencies, it still works
     //  but constantly subscribes/unsubscribes every render (as the callback function is redefined)
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 export default useRouteChange;
