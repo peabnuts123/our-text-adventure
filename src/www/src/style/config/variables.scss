@@ -1,30 +1,21 @@
-// Colors
-$purple: #2D173D;
-$pink: #FF98B7;
-$blue: #5FB2FF;
-$tangerine: #FFA286;
-$peach: #FCDCC8;
-$rose-sugar: #FFF4F2;
-$rose: #CB1330;
-$silicon-board: #092824;
+// Phosphors
+$phosphor-0: #FFB700;
+$phosphor-1: #CB5D00;
+$phosphor-2: #862C00;
+$phosphor-3: #551400;
+$phosphor-4: #1E150F;
 
 // Greys
 $black: #000000;
-$grey-dark:  #4a4a4a;
-$grey-medium:   #B0B0B0;
-$grey-light: #F3F1F1;
 $white:      #FFFFFF;
 
 // Aliases
-$text: rgba($tangerine, 0.9);
-$primary: $tangerine;
-$secondary: $rose-sugar;
-$link: $rose;
-$selection: $peach;
-$border: $tangerine;
-$focus: $rose-sugar;
-$error: $rose;
-$brand: $silicon-board;
+$primary: $phosphor-0;
+$link: $phosphor-1;
+$selection: rgba($phosphor-1, 0.8);
+$focus: $white;
+$error: $phosphor-2; // @TODO error color
+$background: $phosphor-4;
 
 // Breakpoints
 $breakpoint-mobile: 768px;
@@ -40,4 +31,4 @@ $radius: 0;
 
 // Header
 $header-width: 200px;
-$header-height: 110px;
+$header-height: 130px;

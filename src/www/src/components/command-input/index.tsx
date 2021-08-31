@@ -124,7 +124,7 @@ const CommandInput: FunctionComponent<Props> = ({ onSubmit, refObject }) => {
         <div className="command-input__input-container">
           {/* @TODO address newlines being flex with gt symbol */}
           <span className="command-input__input-prompt">&gt;&nbsp;</span>
-          <AutoSizeTextarea className="command-input__input input"
+          <AutoSizeTextarea className="command-input__input"
             value={inputCommand}
             minRows={1}
             onChange={(e) => setInputCommand(e.target.value)}

@@ -7,7 +7,7 @@
 
 .header {
   position: relative;
-  background: $brand;
+  background: $background;
 }
 
 .header-desktop {
@@ -50,13 +50,13 @@
 
 .header__title {
   @extend %h1;
-  font-size: 48px;
+  font-size: 56px;
   display: block;
   height: $header-height;
   text-decoration: none;
   color: $primary;
-  padding-left: $m / 2;
-  padding-right: $m / 2;
+  padding-left: $m;
+  padding-right: $m;
   margin: 0;
 
   @include media-query('laptop') {
@@ -134,7 +134,7 @@
   left: -100vw;
   width: max(40vw, 200px);
   height: calc(100vh - #{$header-height});
-  background-color: $brand;
+  background-color: $background;
   transition: left 0.3s ease-in-out;
 
   &.is-open {
@@ -154,21 +154,17 @@
   text-decoration: none;
 
   &:not(:last-child) {
-    border-bottom: 1px solid $border;
+    border-bottom: 1px solid $phosphor-0;
   }
 
   &:hover,
   &:active {
-    background: rgba($text, 0.1);
+    background: rgba($phosphor-0, 0.1);
   }
 
   &.is-active {
-    background: rgba($text, 0.2);
+    background: rgba($phosphor-0, 0.2);
   }
-}
-
-.header-mobile__nav-item-divider {
-  border-bottom: 2px double $border;
 }
 
 // ========================

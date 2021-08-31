@@ -4,11 +4,11 @@
 // @note: Form for creating a new path
 // ========================
 .create-path {
-  margin-top: $m * 2;
+  // margin-top: $m * 2;
 
-  @include media-query('tablet') {
-    margin-top: $m * 3;
-  }
+  // @include media-query('tablet') {
+  //   margin-top: $m * 3;
+  // }
 }
 
 // ========================
@@ -20,7 +20,7 @@
 }
 
 .create-path__form__specifier {
-  color: rgba($secondary, 0.5);
+  color: $phosphor-2;
 }
 
 // ========================

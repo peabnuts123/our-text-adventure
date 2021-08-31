@@ -22,13 +22,5 @@
 }
 
 .page__content {
-  padding-top: $m;
-  padding-left: $m / 2;
-  padding-right: $m / 2;
-
-  @include media-query('tablet') {
-    padding-top: $m;
-    padding-left: $m;
-    padding-right: $m;
-  }
+  padding: $m;
 }

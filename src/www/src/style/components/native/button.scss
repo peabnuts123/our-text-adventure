@@ -1,7 +1,7 @@
 $button-height: 40px;
 
 .button {
-  @extend %font-terminal;
+  @extend %font-body;
   background-color: unset;
   color: $primary;
   border-radius: $radius;
@@ -11,15 +11,16 @@ $button-height: 40px;
   padding-left: $m;
   padding-right: $m;
   user-select: none;
-  border: 1px solid $primary;
+  border: 1px solid;
 
   &:active {
     background-color: rgba($primary, 0.2);
   }
 
   &:focus {
-    outline: none;
-    border: 1px solid $focus;
+    @include phosphor--outline(white);
+    outline: 1px solid white;
+    border-color: $focus;
     color: $focus;
   }
 

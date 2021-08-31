@@ -1,18 +1,16 @@
-// Make tables look good by default (no class required)
-table {
+.table {
   width: 100%;
   border-collapse: collapse;
 
   &, th, td {
-    border: 0 solid $grey-light;
+    border: none;
   }
 
   th {
-    font-size: $font-size-h4;
+    font-size: $font-size-body;
     font-weight: $font-weight-bold;
     padding: ($m / 2) $m;
     text-align: left;
-    background-color: $grey-light;
     &:not(:first-child) { border-left-width: 1px; }
     &:first-child() {
       border-top-left-radius: $radius;

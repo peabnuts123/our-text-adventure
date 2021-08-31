@@ -3,7 +3,8 @@
 // ========================
 // @note: The terminal that the user reads from and types into
 // ========================
-// .terminal { }
+// .terminal {}
+
 .terminal-item {
   @extend %terminal-text;
   @extend %font-terminal;
@@ -16,7 +17,7 @@
 // ELEMENTS
 // ========================
 .terminal__code {
-  max-height: 60vh;
+  max-height: calc(100vh - 200px);
   overflow-y: scroll;
 
   /* @NOTE hide scrollbars */
@@ -32,6 +33,7 @@
 // MODIFIERS
 // ========================
 %terminal-item--response {
+  @extend %phosphor-1;
   margin-bottom: $responsive-text-height !important;
 
   @media (min-width: $breakpoint-max-terminal-text-size) {
@@ -39,7 +41,13 @@
   }
 }
 
-// .terminal-item--prompt {}
+%terminal-item--prompt {
+  font-style: italic;
+}
+
+.terminal-item--prompt {
+  @extend %terminal-item--prompt;
+}
 .terminal-item--response {
   @extend %terminal-item--response;
 }

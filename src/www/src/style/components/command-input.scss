@@ -24,16 +24,18 @@
 .command-input__input-prompt {
   @extend %terminal-text;
   @extend %font-terminal;
+  @extend %phosphor--primary;
+  font-style: italic;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  color: $primary;
 }
 
 .command-input__input {
   @extend %terminal-text;
   @extend %font-terminal;
+  font-style: italic;
   border: 0 none;
   height: 100%;
   background-color: transparent;

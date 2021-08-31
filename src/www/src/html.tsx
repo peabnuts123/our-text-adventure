@@ -27,9 +27,10 @@ const Html: FunctionComponent<Props> = (props) => {
         <meta name="app-version" content={Config.AppVersion} />
 
         {/* Fonts */}
-        <link href="//fonts.googleapis.com/css?family=Lora" rel="stylesheet" type="text/css" />
-        <link href="//fonts.googleapis.com/css?family=Raleway" rel="stylesheet" type="text/css" />
-        <link href="//fonts.googleapis.com/css?family=JetBrains+Mono" rel="stylesheet" type="text/css" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab&display=swap" rel="stylesheet" />
+
 
         {props.headComponents}
       </head>

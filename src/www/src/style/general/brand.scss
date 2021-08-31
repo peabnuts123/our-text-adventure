@@ -1,5 +1,6 @@
 // General styles that enforce the site's brand
 
 html, body {
-  background-color: $brand;
+  @extend %phosphor-0;
+  background-color: $background;
 }
