@@ -66,6 +66,8 @@ const Index: FunctionComponent<Props> = ({ type, immediate, lines, onFinishedDra
           onFinishedDrawing();
         }
       }, (1000 / PRINT_FRAMERATE));
+    } else {
+      onFinishedDrawing();
     }
   }, []);
   return (
