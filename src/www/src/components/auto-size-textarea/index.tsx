@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { FunctionComponent, RefObject, TextareaHTMLAttributes, useEffect, useRef } from "react";
 
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -34,6 +35,19 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
   };
 
   /** Update height of textarea to fit content */
+  useEffect(() => {
+    // Update size on every browser resize
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateTextareaSize);
+    }
+
+    return () => {
+      // Delete listener on re-render
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateTextareaSize);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Update size on every render #yolo
@@ -45,7 +59,7 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
     <textarea
       {...props}
       rows={minRows}
-      className={`textarea auto-size-textarea ${props.className || ''}`}
+      className={classNames('textarea auto-size-textarea', props.className)}
       ref={textareaRef}
     />
   );
