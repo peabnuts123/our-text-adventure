@@ -4,13 +4,13 @@
 
 .form__input {
   display: block;
-  margin-top: 2 * $m;
   margin-bottom: $m;
 }
 
 .form__input-label {
-  @extend %h3;
-  display: block;
+  @extend %h2;
+  display: flex;
+  align-items: center;
   margin-bottom: $m;
 }
 
@@ -24,7 +24,7 @@
 
 .form__input__error {
   @extend %font-terminal;
+  @extend %phosphor--error;
   display: block;
-  color: $error;
   margin-top: $m;
 }

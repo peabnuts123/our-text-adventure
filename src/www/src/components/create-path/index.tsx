@@ -9,6 +9,7 @@ import { CommandActionType, DestinationType } from "@app/stores/command";
 
 import AutoSizeTextarea from "../auto-size-textarea";
 import Spinner from "../spinner";
+import HelpIcon from '../help-icon';
 
 export interface CreatePathSubmitPayload {
   command: string;
@@ -67,6 +68,18 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
   const [existingDestinationIdInputError, setExistingDestinationIdInputError] = useState<string | undefined>(undefined);
   const [newScreenBodyError, setNewScreenBodyError] = useState<string | undefined>(undefined);
   const [printMessageInputError, setPrintMessageInputError] = useState<string | undefined>(undefined);
+
+  // Help text state
+  const [showCommandInputHelp, setShowCommandInputHelp] = useState<boolean>(false);
+  const [showItemsTakenInputHelp, setShowItemsTakenInputHelp] = useState<boolean>(false);
+  const [showItemsGivenInputHelp, setShowItemsGivenInputHelp] = useState<boolean>(false);
+  const [showLimitItemsGivenInputHelp, setShowLimitItemsGivenInputHelp] = useState<boolean>(false);
+  const [showItemsRequiredInputHelp, setShowItemsRequiredInputHelp] = useState<boolean>(false);
+  const [showActionTypeInputHelp, setShowActionTypeInputHelp] = useState<boolean>(false);
+  const [showDestinationTypeInputHelp, setShowDestinationTypeInputHelp] = useState<boolean>(false);
+  const [showExistingDestinationIdInputHelp, setShowExistingDestinationIdInputHelp] = useState<boolean>(false);
+  const [showNewScreenBodyInputHelp, setShowNewScreenBodyInputHelp] = useState<boolean>(false);
+  const [showPrintMessageInputHelp, setShowPrintMessageInputHelp] = useState<boolean>(false);
 
   // Computed state
   const hasAnyGivenItems = parseItemString(itemsGivenInput).length > 0;
@@ -469,15 +482,21 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
   return (
     <div className="create-path">
-      <h2 className="create-path__title">Create a new path</h2>
-      <p className="create-path__description">Create a new pathway in the narrative. When the user is on this screen and types this command, they will be taken to the specified target screen. You can create a new screen or link to an existing one. Leave your mark on Our Text Adventure!</p>
+      <h1 className="create-path__title">Add Command</h1>
+      <p className="create-path__description u-margin-top-0 u-margin-bottom-sm">Create a new pathway in the narrative. When the user is on this screen and types this command, they will be taken to the specified target screen. You can create a new screen or link to an existing one. Leave your mark on Our Text Adventure!</p>
+
       <form action="#" onSubmit={handleSubmit} className="create-path__form form">
         {/* Command */}
-        <div className="form__input">
+        <div className="form__input u-margin-top-sm">
           {/* label */}
-          <label htmlFor="command" className="form__input-label">Command <span className="create-path__form__specifier">(required)</span></label>
+          <label htmlFor="command" className="form__input-label">
+            Command<span className="create-path__form__required-symbol">*</span>
+            <HelpIcon onToggle={(isActive) => setShowCommandInputHelp(isActive)} />
+          </label>
           {/* help text */}
-          <p className="create-path__form__description">The command that the user must type when on this screen. Commands are not case or space sensitive.</p>
+          {showCommandInputHelp && (
+            <p className="create-path__form__description">The command that the user must type when on this screen. Commands are not case or space sensitive.</p>
+          )}
           {/* input */}
           <input type="text" name="command" id="command"
             className={classnames("input input--text", {
@@ -499,9 +518,14 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         {/* Items taken */}
         <div className="form__input">
           {/* label */}
-          <label htmlFor="items-taken" className="form__input-label">Items to take <span className="create-path__form__specifier">(optional)</span></label>
+          <label htmlFor="items-taken" className="form__input-label">
+            Items to take
+            <HelpIcon onToggle={(isActive) => setShowItemsTakenInputHelp(isActive)} />
+          </label>
           {/* help text */}
-          <p className="create-path__form__description">Items that will be removed when the player issues this command. It is implied that the player must have these items in their inventory in order to do this, or else they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
+          {showItemsTakenInputHelp && (
+            <p className="create-path__form__description">Items that will be removed when the player issues this command. It is implied that the player must have these items in their inventory in order to do this, or else they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
+          )}
           {/* input */}
           <AutoSizeTextarea
             id="items-taken"
@@ -526,9 +550,14 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         {/* Items given */}
         <div className="form__input">
           {/* label */}
-          <label htmlFor="items-given" className="form__input-label">Items to give <span className="create-path__form__specifier">(optional)</span></label>
+          <label htmlFor="items-given" className="form__input-label">
+            Items to give
+            <HelpIcon onToggle={(isActive) => setShowItemsGivenInputHelp(isActive)} />
+          </label>
           {/* help text */}
-          <p className="create-path__form__description">Items that will be given to the player upon successfully issuing this command.</p>
+          {showItemsGivenInputHelp && (
+            <p className="create-path__form__description">Items that will be given to the player upon successfully issuing this command.</p>
+          )}
           {/* input */}
           <AutoSizeTextarea
             id="items-given"
@@ -551,28 +580,40 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
           {/* Limit items given (only visible if anything is entered into `itemsGiven`) */}
           {hasAnyGivenItems && (
-            <div className="checkbox u-margin-top-md">
-              <input type="checkbox" name="limit-items-given"
-                className="checkbox__input u-screen-reader-only"
-                id="limit-items-given"
-                checked={limitItemsGivenInput}
-                onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
-                disabled={isSubmitting}
-              />
-              <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
-                <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
-                Item Restriction: Do not give these items to the player if they already have them
-              </label>
-            </div>
+            <>
+              <div className="checkbox u-margin-top-md">
+                <input type="checkbox" name="limit-items-given"
+                  className="checkbox__input u-screen-reader-only"
+                  id="limit-items-given"
+                  checked={limitItemsGivenInput}
+                  onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
+                  disabled={isSubmitting}
+                />
+                <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
+                  Item Restriction
+                  <HelpIcon onToggle={(isActive) => setShowLimitItemsGivenInputHelp(isActive)} />
+                </label>
+              </div>
+              {/* help text */}
+              {showLimitItemsGivenInputHelp && (
+                <p className="create-path__form__description u-margin-left-md">Do not give these items to the player if they already have them</p>
+              )}
+            </>
           )}
         </div>
 
         {/* Items required */}
         <div className="form__input">
           {/* label */}
-          <label htmlFor="items-required" className="form__input-label">Required items <span className="create-path__form__specifier">(optional)</span></label>
+          <label htmlFor="items-required" className="form__input-label">
+            Required items
+            <HelpIcon onToggle={(isActive) => setShowItemsRequiredInputHelp(isActive)} />
+          </label>
           {/* help text */}
-          <p className="create-path__form__description">Items that the player is required to have in their inventory in order to issue this command. These items will not be removed from the player&apos;s inventory when doing this. If the player does not have these items, they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
+          {showItemsRequiredInputHelp && (
+            <p className="create-path__form__description">Items that the player is required to have in their inventory in order to issue this command. These items will not be removed from the player&apos;s inventory when doing this. If the player does not have these items, they will be shown a generic error message (the player will not be shown what items they are missing). The names of items are not case or space sensitive.</p>
+          )}
           {/* input */}
           <AutoSizeTextarea
             id="items-required"
@@ -597,8 +638,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
         {/* Action type */}
         <div className="form__input">
           {/* Action type */}
-          <label className="form__input-label">Action <span className="create-path__form__specifier">(required)</span></label>
-          <p className="create-path__form__description">What happens when a player issues this command?</p>
+          <label className="form__input-label">
+            Action
+            <span className="create-path__form__required-symbol">*</span>
+            <HelpIcon onToggle={(isActive) => setShowActionTypeInputHelp(isActive)} />
+          </label>
+          {/* help text */}
+          {showActionTypeInputHelp && (
+            <p className="create-path__form__description">What happens when a player issues this command?</p>
+          )}
 
           {/* Option: Navigate */}
           <div className="radio">
@@ -645,9 +693,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             {/* Print a message */}
             <div className="form__input">
               {/* label */}
-              <label htmlFor="print-message-contents" className="form__input-label">Message <span className="create-path__form__specifier">(required)</span></label>
+              <label htmlFor="print-message-contents" className="form__input-label">
+                Message
+                <span className="create-path__form__required-symbol">*</span>
+                <HelpIcon onToggle={(isActive) => setShowPrintMessageInputHelp(isActive)} />
+              </label>
               {/* help text */}
-              <p className="create-path__form__description">@TODO What message to print?</p>
+              {showPrintMessageInputHelp && (
+                <p className="create-path__form__description">@TODO What message to print?</p>
+              )}
               {/* input */}
               <AutoSizeTextarea
                 id="print-message-contents"
@@ -677,8 +731,14 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             {/* Destination type */}
             <div className="form__input">
               {/* Destination type */}
-              <label className="form__input-label">Destination <span className="create-path__form__specifier">(required)</span></label>
-              <p className="create-path__form__description">Where will this command take the player?</p>
+              <label className="form__input-label">
+                Destination
+                <span className="create-path__form__required-symbol">*</span>
+                <HelpIcon onToggle={(isActive) => setShowDestinationTypeInputHelp(isActive)} />
+              </label>
+              {showDestinationTypeInputHelp && (
+                <p className="create-path__form__description">Where will this command take the player?</p>
+              )}
 
               {/* Option: New screen */}
               <div className="radio">
@@ -692,8 +752,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 />
                 <label htmlFor={`destination-type_${DestinationType.New}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
                   <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
-                    Create a new screen
-                  </label>
+                  Create a new screen
+                </label>
               </div>
 
               {/* Option: Existing screen */}
@@ -708,8 +768,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 />
                 <label htmlFor={`destination-type_${DestinationType.Existing}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
                   <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
-                    An existing screen
-                  </label>
+                  An existing screen
+                </label>
               </div>
 
               {/* error */}
@@ -725,9 +785,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 {/* New screen body */}
                 <div className="form__input">
                   {/* label */}
-                  <label htmlFor="new-destination-screen-body" className="form__input-label">New screen body <span className="create-path__form__specifier">(required)</span></label>
+                  <label htmlFor="new-destination-screen-body" className="form__input-label">
+                    New screen
+                    <span className="create-path__form__required-symbol">*</span>
+                    <HelpIcon onToggle={(isActive) => setShowNewScreenBodyInputHelp(isActive)} />
+                  </label>
                   {/* help text */}
-                  <p className="create-path__form__description">@TODO write the body of a new screen</p>
+                  {showNewScreenBodyInputHelp && (
+                    <p className="create-path__form__description">@TODO write the body of a new screen</p>
+                  )}
                   {/* input */}
                   <AutoSizeTextarea
                     id="new-destination-screen-body"
@@ -757,9 +823,15 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                 {/* Existing screen ID */}
                 <div className="form__input">
                   {/* label */}
-                  <label htmlFor="existing-destination-screen-id" className="form__input-label">Destination screen ID <span className="create-path__form__specifier">(required)</span></label>
+                  <label htmlFor="existing-destination-screen-id" className="form__input-label">
+                    Screen id
+                    <span className="create-path__form__required-symbol">*</span>
+                    <HelpIcon onToggle={(isActive) => setShowExistingDestinationIdInputHelp(isActive)} />
+                  </label>
                   {/* help text */}
-                  <p className="create-path__form__description">Paste the ID of an existing screen as the destination. You can get the ID from the URL or something, I&apos;m not quite sure yet.</p>
+                  {showExistingDestinationIdInputHelp && (
+                    <p className="create-path__form__description">Paste the ID of an existing screen as the destination. You can get the ID from the URL or something, I&apos;m not quite sure yet.</p>
+                  )}
                   {/* input */}
                   <input type="text" name="existing-destination-screen-id" id="existing-destination-screen-id"
                     className={classnames("input input--text", {
@@ -786,7 +858,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           <button type="submit"
             className={classnames("button form__button u-margin-bottom-md u-md-margin-bottom-0", { 'is-disabled': isSubmitting })}
             disabled={isSubmitting}
-          >Create pathway</button>
+          >Create Command</button>
           <button type="button"
             className={classnames("button form__button u-md-margin-left-md", { 'is-disabled': isSubmitting })}
             onClick={onCancel}

@@ -25,12 +25,12 @@
 .checkbox__input {
   &:checked + .checkbox__indicator::before,
   &:checked + .checkbox__label > .checkbox__indicator::before {
-    content: '[x]';
+    content: '[X]';
   }
 
   &:focus + .checkbox__indicator,
   &:focus + .checkbox__label > .checkbox__indicator {
-    outline: 1px solid $focus;
+    @extend %phosphor--focus;
   }
 }
 

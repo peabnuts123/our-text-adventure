@@ -1,3 +1,6 @@
+// Colors
+$bright-red: #CB0000;
+
 // Phosphors
 $phosphor-0: #FFB700;
 $phosphor-1: #CB5D00;
@@ -14,7 +17,7 @@ $primary: $phosphor-0;
 $link: $phosphor-1;
 $selection: rgba($phosphor-1, 0.8);
 $focus: $white;
-$error: $phosphor-2; // @TODO error color
+$error: $bright-red;
 $background: $phosphor-4;
 
 // Breakpoints

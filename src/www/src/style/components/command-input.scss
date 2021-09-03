@@ -24,7 +24,7 @@
 .command-input__input-prompt {
   @extend %terminal-text;
   @extend %font-terminal;
-  @extend %phosphor--primary;
+  @extend %phosphor-0;
   font-style: italic;
   height: 100%;
   display: flex;
@@ -35,6 +35,7 @@
 .command-input__input {
   @extend %terminal-text;
   @extend %font-terminal;
+  @extend %phosphor-0;
   font-style: italic;
   border: 0 none;
   height: 100%;
@@ -44,9 +45,20 @@
   padding: 0;
   line-break: anywhere;
 
+  /* @NOTE magic numbers, sorry. */
+  padding-top: calc(#{$responsive-text-height} * 0.75);
+  min-height: calc(#{$responsive-text-height} * 2.15);
+
+  @media (min-width: $breakpoint-max-terminal-text-size) {
+    padding-top: calc(#{$responsive-text-max-height} * 0.75);
+    min-height: calc(#{$responsive-text-max-height} * 2.15);
+  }
+
   &:focus {
+    @extend %phosphor-0;
     outline: none;
     border: none;
+    box-shadow: none;
   }
 }
 

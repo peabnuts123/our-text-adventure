@@ -1,7 +1,7 @@
 $button-height: 40px;
 
 .button {
-  @extend %font-body;
+  @extend %font-paragraph;
   background-color: unset;
   color: $primary;
   border-radius: $radius;
@@ -18,10 +18,7 @@ $button-height: 40px;
   }
 
   &:focus {
-    @include phosphor--outline(white);
-    outline: 1px solid white;
-    border-color: $focus;
-    color: $focus;
+    @extend %phosphor--focus;
   }
 
   &.is-disabled {

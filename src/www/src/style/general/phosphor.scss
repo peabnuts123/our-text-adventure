@@ -12,7 +12,7 @@
 }
 
 @mixin phosphor--svg($color) {
-  filter: drop-shadow(0 0 2px rgba($color, 50%)) drop-shadow(0 0 6px rgba($color, 50%));
+  filter: drop-shadow(0 0 2px rgba($color, 50%)) drop-shadow(0 0 4px rgba($color, 25%));
 
   * {
     stroke: $color;
@@ -26,19 +26,46 @@
     @include phosphor--text($color);
   }
 
-  &.button,.button,
-  &.input,.input {
+  &.button, .button,
+  &.input, .input {
     @include phosphor--outline($color);
   }
 
-  ::placeholder {
+  &::placeholder {
     @include phosphor--text($placeholder);
   }
 
-  & svg {
+  svg {
     @include phosphor--svg($color);
   }
 }
+
+%phosphor--has-error {
+  $error-dark: darken($error, 20%);
+  @include phosphor($error, $error-dark);
+  @include phosphor--outline($error);
+
+  border-color: transparent;
+  outline: 1px solid $error;
+  outline-offset: -1px;
+}
+
+%phosphor--focus {
+  $focus-dark: darken($focus, 65%);
+  @include phosphor($focus, $focus-dark);
+  @include phosphor--outline($focus);
+
+  border-color: transparent;
+  outline: 1px solid $focus;
+  outline-offset: -1px;
+
+  &::selection { background: $focus-dark; }
+  &::-moz-selection { background: $focus-dark; }
+}
+
+%phosphor--error { @include phosphor($error); }
+%phosphor--white { @include phosphor($white); }
+%phosphor--link { @include phosphor($link); }
 
 %phosphor-0 { @include phosphor($phosphor-0, $placeholder: $phosphor-2); }
 %phosphor-1 { @include phosphor($phosphor-1, $placeholder: $phosphor-2); }
@@ -46,29 +73,9 @@
 %phosphor-3 { @include phosphor($phosphor-3, $placeholder: $phosphor-3); }
 %phosphor-4 { @include phosphor($phosphor-4, $placeholder: $phosphor-4); }
 
-%phosphor--white { @include phosphor($white); }
-%phosphor--link { @include phosphor($link); }
-%phosphor--primary { @include phosphor($primary); }
-
 .phosphor--white { @extend %phosphor--white; }
 .phosphor-0 { @extend %phosphor-0; }
 .phosphor-1 { @extend %phosphor-1; }
 .phosphor-2 { @extend %phosphor-2; }
 .phosphor-3 { @extend %phosphor-3; }
 .phosphor-4 { @extend %phosphor-4; }
-
-/* DEBUG */
-// %phosphor--fuchsia { @include phosphor(fuchsia); }
-// .phosphor--fuchsia { @extend %phosphor--fuchsia; }
-
-
-// svg.icon {
-//   width: 32px;
-//   height: 32px;
-//   cursor: pointer;
-
-//   &:focus {
-//     // @include phosphor--svg(white);
-//     outline: 1px solid white;
-//   }
-// }

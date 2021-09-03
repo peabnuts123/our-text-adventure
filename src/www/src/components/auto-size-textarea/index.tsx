@@ -31,7 +31,12 @@ const AutoSizeTextarea: FunctionComponent<Props> = ({
     // 1. Collapse the textarea to automatic size / reflow text
     textareaEl.style['height'] = ``;
     // 2. Update height of textarea to fit content. `rows` attribute will beat this
-    textareaEl.style['height'] = `${textareaEl.scrollHeight}px`;
+    /* @NOTE
+      magic number is based on CSS ($m / 2) + 1px
+      This is the padding of the element as defined in src/www/src/style/components/auto-size-textarea.scss
+      TBH it's actually not quite but this is what works. Sorry!
+     */
+    textareaEl.style['height'] = `${textareaEl.scrollHeight + ((10 / 2) + 1)}px`;
   };
 
   /** Update height of textarea to fit content */

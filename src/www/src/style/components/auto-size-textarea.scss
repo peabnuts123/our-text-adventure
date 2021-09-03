@@ -4,13 +4,10 @@
 // @note: Textarea that automatically resizes to accommodate the text in it
 // ========================
 .auto-size-textarea {
-  min-height: calc(#{$responsive-text-height} * 1.25);
+  min-height: 1px;
   overflow-y: hidden;
   resize: none;
-
-  @media (min-width: $breakpoint-max-terminal-text-size) {
-    min-height: calc(#{$responsive-text-max-height} * 1.25);
-  }
+  padding-top: #{($m / 2) + 5px}; // @NOTE magic number to align text vertically the same as .input--text
 }
 
 // ========================

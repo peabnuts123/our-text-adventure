@@ -173,7 +173,11 @@ const Terminal: FunctionComponent = () => {
         // CREATE PATH
         case 'path':
         case 'create-path':
-          appendItemToTerminal(TerminalItemType.Response, ['Creating a new pathway...']);
+        case 'add-command':
+          appendItemToTerminal(TerminalItemType.Response, heredocToStringArray(`
+                                                            Adding a new command to the
+                                                            current screen...
+                                                          `));
           setIsCreatingNewPath(true);
           break;
 

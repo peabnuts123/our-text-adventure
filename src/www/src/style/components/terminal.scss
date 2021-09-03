@@ -34,10 +34,14 @@
 // ========================
 %terminal-item--response {
   @extend %phosphor-1;
-  margin-bottom: $responsive-text-height !important;
+  margin-bottom: $responsive-text-height;
+
+  &:last-child {
+    margin-bottom: calc(#{$responsive-text-height} / 2);
+  }
 
   @media (min-width: $breakpoint-max-terminal-text-size) {
-    margin-bottom: $responsive-text-max-height !important;
+    margin-bottom: $responsive-text-max-height;
   }
 }
 

@@ -8,35 +8,39 @@ $font-weight-regular: normal;
 $font-weight-bold: bold;
 
 // Font names
-$font-style-heading: 'Zilla Slab', serif;
-$font-style-body: 'Zilla Slab', serif;
-$font-style-terminal: 'Space Mono', monospace;
+$font-family-heading: 'Zilla Slab', serif;
+$font-family-paragraph: 'Zilla Slab', serif;
+$font-family-terminal: 'Space Mono', monospace;
 
 // Font style placeholders
 %font-heading {
-  font-family: $font-style-heading;
+  font-family: $font-family-heading;
   font-weight: $font-weight-regular;
   line-height: 1;
 }
 
-%font-body {
-  font-family: $font-style-body;
+%font-paragraph {
+  font-family: $font-family-paragraph;
   font-weight: $font-weight-regular;
+  line-height: 1.1;
 }
 
 %font-terminal {
-  font-family: $font-style-terminal;
-  line-height: 1;
+  font-family: $font-family-terminal;
   font-weight: normal;
+  line-height: 1;
 }
 
-
-// Headings
+// Font sizes
 $font-size-h1: 36px;
 $font-size-h2: 28px;
 $font-size-h3: 24px;
-$font-size-body: 16px;
-%h1, %h2, %h3, %h4, %h5 {
+$font-size-paragraph: 20px;
+$font-size-terminal: 20px;
+$font-size-terminal-small: 18px;
+
+// Headings
+%h1, %h2, %h3 {
   @extend %font-heading;
   margin-top: 0;
   margin-bottom: 24px;
@@ -58,7 +62,7 @@ h3, .h3 { @extend %h3; }
 
 
 p, .p {
-  font-size: $font-size-body;
+  font-size: $font-size-paragraph;
 }
 
 strong, .strong {
@@ -83,8 +87,7 @@ a, .link {
 
 // General / default
 html {
-  @extend %font-body;
-  line-height: 1.5;
+  @extend %font-paragraph;
 
   // Better Font Rendering
   font-feature-settings: "kern" 1;

@@ -1,30 +1,21 @@
 .textarea {
   @extend %font-terminal;
+  @extend %phosphor-0;
   display: block;
-  color: $primary;
   width: 100%;
-  background-color: unset;
-  border: 1px solid $primary;
+  background-color: transparent;
+  border: 1px solid;
   border-radius: $radius;
-  padding: $m $m / 2 ;
+  padding: $m / 2;
   min-height: 100px;
-  font-size: $font-size-body;
-
-  &:focus {
-    outline: none;
-    border: 1px solid $focus;
-  }
-
-  &::placeholder {
-    color: rgba($primary, 0.35);
-  }
-
-  @include media-query('tablet') {
-    font-size: 20px;
-  }
+  font-size: $font-size-paragraph;
 
   &.has-error {
-    border: 1px solid $error;
+    @extend %phosphor--has-error;
+  }
+
+  &:focus {
+    @extend %phosphor--focus;
   }
 
   &.is-disabled {

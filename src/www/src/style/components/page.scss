@@ -23,4 +23,8 @@
 
 .page__content {
   padding: $m;
+
+  @include media-query('laptop') {
+    margin-bottom: 100px;
+  }
 }

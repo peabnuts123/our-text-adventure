@@ -4,34 +4,24 @@
 
 .input--text {
   @extend %font-terminal;
-  color: $primary;
+  @extend %phosphor-0;
   display: block;
-  background-color: unset;
+  background-color: transparent;
   border-radius: $radius;
   padding: $m / 2;
   border: 1px solid;
-  font-size: $font-size-body;
-
-  &:focus {
-    @include phosphor--outline(white);
-    outline: 1px solid white;
-    border-color: white;
-  }
-
-  &::placeholder {
-    color: rgba($primary, 0.35);
-  }
+  font-size: $font-size-paragraph;
 
   &.has-error {
-    border: 1px solid $error;
+    @extend %phosphor--has-error;
+  }
+
+  &:focus {
+    @extend %phosphor--focus;
   }
 
   &.is-disabled {
     opacity: 50%;
     cursor: not-allowed;
-  }
-
-  @include media-query('tablet') {
-    font-size: 20px;
   }
 }

@@ -3,24 +3,37 @@
 // ========================
 // @note: Form for creating a new path
 // ========================
-.create-path {
-  // margin-top: $m * 2;
-
-  // @include media-query('tablet') {
-  //   margin-top: $m * 3;
-  // }
-}
+// .create-path {}
 
 // ========================
 // ELEMENTS
 // ========================
-.create-path__form__description {
-  margin: 0;
+.create-path__title {
   margin-bottom: $m;
 }
 
-.create-path__form__specifier {
-  color: $phosphor-2;
+.create-path__form__required-symbol {
+  @extend %phosphor-1;
+}
+
+.create-path__form__help-icon {
+  @extend %phosphor-1;
+  margin-left: $m;
+  cursor: pointer;
+
+  &:focus:focus { /* Specificity hack 🥲 */
+    @extend %phosphor--focus;
+  }
+
+  &.is-active {
+    @extend %phosphor-0;
+  }
+}
+
+.create-path__form__description {
+  @extend %phosphor-1;
+  margin: 0;
+  margin-bottom: $m;
 }
 
 // ========================
