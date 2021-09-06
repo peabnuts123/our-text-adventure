@@ -1,21 +1,19 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
-import Config from '../../config';
-
-import Db from '../../db';
-import IDatabase from '../../db/IDatabase';
-
-import Logger from '../../util/Logger';
-import errorResponse from '../../util/response/error';
-import badRequestResponse from '../../util/response/bad-request';
-import notFoundResponse from "../../util/response/not-found";
-import ApiError from "../../errors/ApiError";
-import GenericError from "../../errors/GenericError";
-import ErrorId from "../../errors/ErrorId";
-import okResponse from "../../util/response/ok";
-import ErrorModel from "../../errors/ErrorModel";
-import UnknownError from "../../errors/UnknownError";
-import RequestValidationError from "../../errors/RequestValidationError";
+import Config from '@app/config';
+import Db from '@app/db';
+import IDatabase from '@app/db/IDatabase';
+import Logger from '@app/util/Logger';
+import errorResponse from '@app/util/response/error';
+import badRequestResponse from '@app/util/response/bad-request';
+import notFoundResponse from "@app/util/response/not-found";
+import ApiError from "@app/errors/ApiError";
+import GenericError from "@app/errors/GenericError";
+import ErrorId from "@app/errors/ErrorId";
+import okResponse from "@app/util/response/ok";
+import ErrorModel from "@app/errors/ErrorModel";
+import UnknownError from "@app/errors/UnknownError";
+import RequestValidationError from "@app/errors/RequestValidationError";
 
 Logger.setLogLevel(Config.logLevel);
 

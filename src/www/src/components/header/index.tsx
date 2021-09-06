@@ -1,20 +1,29 @@
-import classNames from "classnames";
-import { Link } from "gatsby";
-import React, { FunctionComponent, useState } from "react";
+import classNames, { Argument as ClassNamesArgument } from "classnames";
+import { useRouter } from "next/router";
+import React, { FunctionComponent, useState, useEffect } from "react";
 import {
   Menu as MenuIcon,
 } from 'react-feather';
+import Link from "next/link";
 
-import useRouteChange from "@app/hooks/use-route-change";
 
 const Index: FunctionComponent = () => {
+  const Router = useRouter();
+
   // State
   const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
-  // Close menus on route change (i.e. when you navigate using on the of the menus)
-  useRouteChange((_args) => {
-    setIsMobileNavOpen(false);
-  });
+  // Lifecycle
+  useEffect(() => {
+    // Close menus on route change (i.e. when you navigate using on the of the menus)
+    Router.events.on('routeChangeComplete', () => {
+      setIsMobileNavOpen(false);
+    });
+  }, []);
+
+  // Functions
+  const isCurrentRoute = (route: string): boolean => Router.route === route;
+  const hasActiveClassName = (route: string): ClassNamesArgument  => ({ 'is-active': isCurrentRoute(route) });
 
   return (
     <>
@@ -27,18 +36,26 @@ const Index: FunctionComponent = () => {
         <div className="header__content">
 
           {/* Brand */}
-          <Link to="/" className="header__title">
-            Our Text<br />
-            Adventure
+          <Link href="/">
+            <a className="header__title" >
+              Our Text<br />
+              Adventure
+            </a>
           </Link>
 
           {/* Desktop nav */}
           <nav className="header-desktop">
             <div className="header-desktop__nav-items">
               {/* Links */}
-              <Link className="header-desktop__nav-item" activeClassName="is-active" to="/new-game">Start new game</Link>
-              <Link className="header-desktop__nav-item" activeClassName="is-active" to="/">Home</Link>
-              <Link className="header-desktop__nav-item" activeClassName="is-active" to="/about">About</Link>
+              <Link href="/new-game">
+                <a className={classNames("header-desktop__nav-item", hasActiveClassName('/new-game'))}>Start new game</a>
+              </Link>
+              <Link href="/">
+                <a className={classNames("header-desktop__nav-item", hasActiveClassName('/'))}>Home</a>
+              </Link>
+              <Link href="/about">
+                <a className={classNames("header-desktop__nav-item", hasActiveClassName('/about'))}>About</a>
+              </Link>
             </div>
           </nav> {/* .header-desktop */}
 
@@ -54,9 +71,15 @@ const Index: FunctionComponent = () => {
 
             <div className={classNames("header-mobile__container", { 'is-open': isMobileNavOpen })}>
               {/* Links */}
-              <Link className="header-mobile__nav-item" activeClassName="is-active" to="/new-game">Start new game</Link>
-              <Link className="header-mobile__nav-item" activeClassName="is-active" to="/">Home</Link>
-              <Link className="header-mobile__nav-item" activeClassName="is-active" to="/about">About</Link>
+              <Link href="/new-game">
+                <a className={classNames("header-mobile__nav-item", hasActiveClassName('/new-game'))}>Start new game</a>
+              </Link>
+              <Link href="/">
+                <a className={classNames("header-mobile__nav-item", hasActiveClassName('/'))}>Home</a>
+              </Link>
+              <Link href="/about">
+                <a className={classNames("header-mobile__nav-item", hasActiveClassName('/about'))}>About</a>
+              </Link>
             </div>
           </nav> {/* .header-mobile */}
 

@@ -25,7 +25,6 @@ resource "aws_iam_policy" "lambda" {
   name        = "${var.project_id}_${var.environment_id}_api_lambda"
   description = "Allow Lambda workers access to create logs and read DynamoDB"
 
-  # @TODO remove `dynamodb:Scan`
   policy = <<-POLICY
   {
     "Version": "2012-10-17",

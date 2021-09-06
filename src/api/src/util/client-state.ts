@@ -1,7 +1,7 @@
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 
-import Command from '../db/models/Command';
-import Messaging from '../constants/Messaging';
+import Command from '@app/db/models/Command';
+import Messaging from '@app/constants/Messaging';
 
 export interface ClientGameState {
   inventory: string[];

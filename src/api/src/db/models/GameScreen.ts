@@ -37,7 +37,7 @@ export default class GameScreen {
     if (!isArray<string>(body, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `body` must be an array of all strings (type 'L')");
 
     if (commands === undefined) throw new Error("Cannot parse attribute map. Field `commands` is empty");
-    if (!isArray<Record<string, unknown>>(commands, (command) => typeof command === 'object' && !Array.isArray(command))) throw new Error("Cannot parse attribute map. Field `commands` must be an object (type 'M')");
+    if (!isArray<Record<string, unknown>>(commands, (command) => typeof command === 'object' && !Array.isArray(command))) throw new Error("Cannot parse attribute map. Field `commands` must be an array of objects (type 'M')");
 
     // Construct object
     return new GameScreen({

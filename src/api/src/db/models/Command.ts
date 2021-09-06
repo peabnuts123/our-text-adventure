@@ -87,7 +87,7 @@ export default class Command {
     if (itemsGiven === undefined) throw new Error("Cannot parse attribute map. Field `itemsGiven` is empty");
     if (!isArray<string>(itemsGiven, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `itemsGiven` must be an array of all strings (type 'L')");
 
-    if (limitItemsGiven !== undefined && typeof limitItemsGiven !== 'boolean') throw new Error("Cannot parse attribute map. Field `itemsGiven` must be an array of all strings (type 'BOOL')");
+    if (limitItemsGiven !== undefined && typeof limitItemsGiven !== 'boolean') throw new Error("Cannot parse attribute map. Field `limitItemsGiven` must be a boolean (type 'BOOL')");
 
     if (itemsRequired === undefined) throw new Error("Cannot parse attribute map. Field `itemsRequired` is empty");
     if (!isArray<string>(itemsRequired, (item) => typeof item === 'string')) throw new Error("Cannot parse attribute map. Field `itemsRequired` must be an array of all strings (type 'L')");

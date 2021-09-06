@@ -1,5 +1,5 @@
-import { PathDestinationType } from "../../constants/PathDestinationType";
-import { CommandActionType } from "../../constants/CommandActionType";
+import { PathDestinationType } from "@app/constants/PathDestinationType";
+import { CommandActionType } from "@app/constants/CommandActionType";
 
 export interface AddPathDto {
   /** Screen that this command will be added to */

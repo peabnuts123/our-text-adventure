@@ -1,11 +1,11 @@
-import AWS from 'aws-sdk';
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
+import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, ScanCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuid } from 'uuid';
 
-import Config from '../config';
-import Logger, { LogLevel } from '../util/Logger';
-import { PathDestinationType } from '../constants/PathDestinationType';
-import { CommandActionType } from '../constants/CommandActionType';
+import Config from '@app/config';
+import Logger, { LogLevel } from '@app/util/Logger';
+import { PathDestinationType } from '@app/constants/PathDestinationType';
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 import IDatabase, { AddPathArgs } from './IDatabase';
 import GameScreen from './models/GameScreen';
@@ -13,23 +13,25 @@ import Command from './models/Command';
 
 
 class Db implements IDatabase {
-  // private dbClient: AWS.DynamoDB;
-  private docClient: AWS.DynamoDB.DocumentClient;
+  private docClient: DynamoDBDocumentClient;
 
   public constructor() {
-    // this.dbClient = new AWS.DynamoDB({
-    //   ...this.baseOptions,
-    // });
-    this.docClient = new AWS.DynamoDB.DocumentClient({
-      ...this.baseOptions,
+    const dynamoDbClient = new DynamoDBClient(this.baseOptions);
+    this.docClient = DynamoDBDocumentClient.from(dynamoDbClient, {
+      marshallOptions: {
+        convertClassInstanceToMap: true,
+        removeUndefinedValues: true,
+      },
     });
   }
 
-  private get baseOptions(): ServiceConfigurationOptions {
-    const options: ServiceConfigurationOptions = {
+  private get baseOptions(): DynamoDBClientConfig {
+    const options: DynamoDBClientConfig = {
       region: 'us-east-1',
     };
 
+    // @NOTE assumption: Any configuration for `Config.awsEndpoint` implies
+    //  the use of Localstack
     if (Config.awsEndpoint) {
       options.endpoint = Config.awsEndpoint;
       Logger.log(LogLevel.debug, "Setting AWS endpoint to localstack");
@@ -39,12 +41,12 @@ class Db implements IDatabase {
   }
 
   public async getAllScreens(): Promise<GameScreen[]> {
-    const result = await this.docClient.scan({
+    const result = await this.docClient.send(new ScanCommand({
       TableName: Config.screensTableName,
-    }).promise();
+    }));
 
     if (result.Items === undefined) {
-      Logger.logError("Failed to fetch all screens, response was empty.", result.$response);
+      Logger.logError("Failed to fetch all screens, response was empty.", result);
       throw new Error("Failed to fetch all screens, response was empty. See logs for more details.");
     }
 
@@ -52,10 +54,10 @@ class Db implements IDatabase {
   }
 
   public async getScreenById(id: string): Promise<GameScreen | undefined> {
-    const result = await this.docClient.get({
+    const result = await this.docClient.send(new GetCommand({
       TableName: Config.screensTableName,
       Key: { id },
-    }).promise();
+    }));
 
     if (result.Item === undefined) {
       return undefined;
@@ -65,10 +67,11 @@ class Db implements IDatabase {
   }
 
   public async saveScreen(screen: GameScreen): Promise<GameScreen> {
-    await this.docClient.put({
+    Logger.log(LogLevel.debug, "Saving: ", JSON.stringify(screen));
+    await this.docClient.send(new PutCommand({
       TableName: Config.screensTableName,
       Item: screen,
-    }).promise();
+    }));
 
     return screen;
   }

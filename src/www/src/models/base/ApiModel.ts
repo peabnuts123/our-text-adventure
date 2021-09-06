@@ -1,3 +1,5 @@
-export default abstract class ApiModel<TDto> {
-  public abstract toDto(): TDto;
+interface ApiModel<TDto> {
+  toDto(): TDto;
 }
+
+export default ApiModel;

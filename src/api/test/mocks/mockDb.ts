@@ -6,6 +6,7 @@ import Command from '@app/db/models/Command';
 import { PathDestinationType } from '@app/constants/PathDestinationType';
 import { CommandActionType } from '@app/constants/CommandActionType';
 
+// Simple in-memory implementation of IDatabase, for testing
 export default class MockDb implements IDatabase {
   public static screens: GameScreen[] = [];
 
@@ -14,16 +15,10 @@ export default class MockDb implements IDatabase {
   }
 
   public getScreenById(id: string): Promise<GameScreen | undefined> {
-    const screen = MockDb.screens.find((screen) => screen.id === id);
-    if (screen === undefined) {
-      return Promise.resolve(undefined);
-    } else {
-      return Promise.resolve(screen);
-    }
+    return Promise.resolve(MockDb.screens.find((screen) => screen.id === id));
   }
 
   public saveScreen(screen: GameScreen): Promise<GameScreen> {
-    // MockDb.screens.push(screen);
     const existingScreenIndex = MockDb.screens.findIndex((existingScreen) => existingScreen.id === screen.id);
 
     if (existingScreenIndex !== -1) {

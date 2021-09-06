@@ -1,0 +1,29 @@
+@use "sass:math";
+
+.input {
+  width: 100%;
+}
+
+.input--text {
+  @extend %font-terminal;
+  @extend %phosphor-0;
+  display: block;
+  background-color: transparent;
+  border-radius: $radius;
+  padding: math.div($m, 2);
+  border: 1px solid;
+  font-size: $font-size-paragraph;
+
+  &.has-error {
+    @extend %phosphor--has-error;
+  }
+
+  &:focus {
+    @extend %phosphor--focus;
+  }
+
+  &.is-disabled {
+    opacity: 50%;
+    cursor: not-allowed;
+  }
+}

@@ -1,8 +1,9 @@
 # PROVIDERS
 provider "aws" {
   region     = var.aws_region
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
+  # @NOTE hard-coded localstack credentials because localstack will accept anything
+  access_key = "local_access_key"
+  secret_key = "local_acces_key"
 
   # Overrides for localstack
   s3_force_path_style         = true
@@ -12,11 +13,11 @@ provider "aws" {
 
   # @NOTE don't forget to add these to docker-compose too
   endpoints {
-    apigateway      = "http://localhost:4566"
-    cloudwatchlogs  = "http://localhost:4566"
-    iam             = "http://localhost:4566"
-    dynamodb        = "http://localhost:4566"
-    lambda          = "http://localhost:4566"
-    sts             = "http://localhost:4566"
+    apigateway      = "http://localhost:4581"
+    cloudwatchlogs  = "http://localhost:4581"
+    iam             = "http://localhost:4581"
+    dynamodb        = "http://localhost:4581"
+    lambda          = "http://localhost:4581"
+    sts             = "http://localhost:4581"
   }
 }

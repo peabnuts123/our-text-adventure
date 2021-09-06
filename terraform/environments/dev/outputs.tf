@@ -1,9 +1,12 @@
 # OUTPUTS - all passthrough from app module
+output "aws_region" {
+  value = var.aws_region
+}
 output "api_url" {
   value = module.app.api_url
 }
-output "lambda_function_names" {
-  value = module.app.lambda_function_names
+output "all_lambda_functions" {
+  value = module.app.all_lambda_functions
 }
 output "www_bucket_name" {
   value = module.app.www_bucket_name

@@ -1,24 +1,22 @@
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 
-import Config from '../../config';
-
-import Db from '../../db';
-import IDatabase from '../../db/IDatabase';
-
-import Logger from '../../util/Logger';
-import errorResponse from '../../util/response/error';
-import okResponse from '../../util/response/ok';
-import ApiError from '../../errors/ApiError';
-import ErrorModel from '../../errors/ErrorModel';
-import UnknownError from '../../errors/UnknownError';
-import badRequestResponse from '../../util/response/bad-request';
-import RequestValidationError from '../../errors/RequestValidationError';
-import GameScreen from '../../db/models/GameScreen';
-import { applyCommandToClientState, ClientStateHandlingError, ClientStateParsingError } from '../../util/client-state';
-import ErrorId from '../../errors/ErrorId';
-import GenericError from '../../errors/GenericError';
-import Messaging from '../../constants/Messaging';
-import { CommandActionType } from '../../constants/CommandActionType';
+import Config from '@app/config';
+import Db from '@app/db';
+import IDatabase from '@app/db/IDatabase';
+import Logger from '@app/util/Logger';
+import errorResponse from '@app/util/response/error';
+import okResponse from '@app/util/response/ok';
+import ApiError from '@app/errors/ApiError';
+import ErrorModel from '@app/errors/ErrorModel';
+import UnknownError from '@app/errors/UnknownError';
+import badRequestResponse from '@app/util/response/bad-request';
+import RequestValidationError from '@app/errors/RequestValidationError';
+import GameScreen from '@app/db/models/GameScreen';
+import { applyCommandToClientState, ClientStateHandlingError, ClientStateParsingError } from '@app/util/client-state';
+import ErrorId from '@app/errors/ErrorId';
+import GenericError from '@app/errors/GenericError';
+import Messaging from '@app/constants/Messaging';
+import { CommandActionType } from '@app/constants/CommandActionType';
 
 import { SubmitCommandDto, SubmitCommandNavigationSuccessDto, SubmitCommandFailureDto, SubmitCommandPrintMessageSuccessDto } from './dto';
 

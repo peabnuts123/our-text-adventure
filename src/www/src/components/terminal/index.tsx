@@ -4,7 +4,8 @@ import { v4 as uuid } from 'uuid';
 import Logger from "@app/util/Logger";
 import heredocToStringArray from "@app/util/heredoc-to-string-array";
 import { useStores } from "@app/stores";
-import { CommandActionType } from "@app/stores/command";
+import CommandService, { CommandActionType } from "@app/services/command";
+import ScreenService from '@app/services/screen';
 
 import CommandInput from "../command-input";
 import Spinner from "../spinner";
@@ -36,7 +37,7 @@ interface TerminalItemState {
 
 const Terminal: FunctionComponent = () => {
   // Stores
-  const { CommandStore, StateStore, ScreenStore } = useStores();
+  const { StateStore } = useStores();
 
   // State
   const [terminalItemState, setTerminalItemState] = useState<TerminalItemState>({
@@ -61,7 +62,7 @@ const Terminal: FunctionComponent = () => {
       setHasLoaded(false);
 
       try {
-        const initialScreen = await ScreenStore.getScreenById(StateStore.currentScreenId);
+        const initialScreen = await ScreenService.getScreenById(StateStore.currentScreenId);
         StateStore.setCurrentScreen(initialScreen);
 
         // Print preamble to terminal
@@ -231,7 +232,7 @@ const Terminal: FunctionComponent = () => {
       setIsProcessingCommand(true);
 
       // Send command to the API
-      const response = await CommandStore.submitCommand(StateStore.currentScreenId, command, StateStore.getStateAsString());
+      const response = await CommandService.submitCommand(StateStore.currentScreenId, command, StateStore.getStateAsString());
 
       setIsProcessingCommand(false);
 

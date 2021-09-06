@@ -1,5 +1,5 @@
-import { CommandActionType } from "../constants/CommandActionType";
-import { PathDestinationType } from "../constants/PathDestinationType";
+import { CommandActionType } from "@app/constants/CommandActionType";
+import { PathDestinationType } from "@app/constants/PathDestinationType";
 
 import Command from "./models/Command";
 import GameScreen from "./models/GameScreen";

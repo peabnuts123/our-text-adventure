@@ -1,12 +1,7 @@
 # API Gateway
 resource "aws_apigatewayv2_api" "api" {
-  name          = "Our Text Adventure - api (${var.environment_id})"
+  name          = "${var.project_id} (${var.environment_id})"
   protocol_type = "HTTP"
-
-  tags = {
-    project = var.project_id
-    environment = var.environment_id
-  }
 }
 
 # Default stage, auto-deploy
@@ -18,78 +13,26 @@ resource "aws_apigatewayv2_stage" "default" {
   auto_deploy = true
 }
 
-# Integrations
-# Function - Test
-resource "aws_apigatewayv2_integration" "test" {
+
+# Lambda integrations
+resource "aws_apigatewayv2_integration" "lambda" {
+  for_each = local.all_lambda_functions
+
   api_id      = aws_apigatewayv2_api.api.id
-  description = "Proxy to Test Lambda"
+  description = "Proxy to Lambda: ${each.key}"
 
   integration_type       = "AWS_PROXY"
-  # @TODO VPC probably
+  # @TODO VPC, probably
   connection_type        = "INTERNET"
   integration_method     = "POST"
-  integration_uri        = aws_lambda_function.test.invoke_arn
+  integration_uri        = aws_lambda_function.lambda[each.key].invoke_arn
   payload_format_version = "2.0"
 }
-# Function - GetScreenById
-resource "aws_apigatewayv2_integration" "get_screen_by_id" {
-  api_id      = aws_apigatewayv2_api.api.id
-  description = "Proxy to GetScreenById Lambda"
+# Lambda routes
+resource "aws_apigatewayv2_route" "lambda" {
+  for_each = local.all_lambda_functions
 
-  integration_type       = "AWS_PROXY"
-  # @TODO VPC probably
-  connection_type        = "INTERNET"
-  integration_method     = "POST"
-  integration_uri        = aws_lambda_function.get_screen_by_id.invoke_arn
-  payload_format_version = "2.0"
-}
-# Function - AddPath
-resource "aws_apigatewayv2_integration" "add_path" {
-  api_id      = aws_apigatewayv2_api.api.id
-  description = "Proxy to AddPath Lambda"
-
-  integration_type       = "AWS_PROXY"
-  # @TODO VPC probably
-  connection_type        = "INTERNET"
-  integration_method     = "POST"
-  integration_uri        = aws_lambda_function.add_path.invoke_arn
-  payload_format_version = "2.0"
-}
-# Function - Command
-resource "aws_apigatewayv2_integration" "command" {
-  api_id      = aws_apigatewayv2_api.api.id
-  description = "Proxy to Command Lambda"
-
-  integration_type       = "AWS_PROXY"
-  # @TODO VPC probably
-  connection_type        = "INTERNET"
-  integration_method     = "POST"
-  integration_uri        = aws_lambda_function.command.invoke_arn
-  payload_format_version = "2.0"
-}
-
-# Routes
-# GET /api/test/*
-resource "aws_apigatewayv2_route" "test" {
   api_id    = aws_apigatewayv2_api.api.id
-  route_key = "GET /api/test/{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.test.id}"
-}
-# GET /api/screen/:id
-resource "aws_apigatewayv2_route" "get_screen_by_id" {
-  api_id    = aws_apigatewayv2_api.api.id
-  route_key = "GET /api/screen/{id}"
-  target    = "integrations/${aws_apigatewayv2_integration.get_screen_by_id.id}"
-}
-# POST /api/path
-resource "aws_apigatewayv2_route" "add_path" {
-  api_id    = aws_apigatewayv2_api.api.id
-  route_key = "POST /api/path"
-  target    = "integrations/${aws_apigatewayv2_integration.add_path.id}"
-}
-# POST /api/command
-resource "aws_apigatewayv2_route" "command" {
-  api_id    = aws_apigatewayv2_api.api.id
-  route_key = "POST /api/command"
-  target    = "integrations/${aws_apigatewayv2_integration.command.id}"
+  route_key = each.value.route_key
+  target    = "integrations/${aws_apigatewayv2_integration.lambda[each.key].id}"
 }

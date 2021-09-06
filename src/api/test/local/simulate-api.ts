@@ -7,11 +7,19 @@ import getMockContext from '@test/local/util/get-mock-context';
 import getMockProxyRequest from '@test/local/util/get-mock-proxy-request';
 
 import Logger, { LogLevel } from '@app/util/Logger';
+
+// GLOBAL CONFIG (this MUST be configured before imports below)
+// @NOTE must match the table name configured in terraform/modules/db/locals.tf
+process.env.ENVIRONMENT_ID = process.env.ENVIRONMENT_ID || 'local';
+process.env.PROJECT_ID = process.env.PROJECT_ID || 'our-text-adventure';
+
 import { handler as testHandler } from '@app/handlers/test';
 import { handler as getScreenByIdHandler } from '@app/handlers/get-screen-by-id';
 import { handler as addPathHandler } from '@app/handlers/add-path';
-import { handler as mockDataHandler } from '@app/handlers/mock-data';
 import { handler as commandHandler } from '@app/handlers/command';
+
+// DEBUG
+import { handler as SeedMockDataHandler } from '@app/handlers/seed-mock-data';
 
 // EXPRESS APP
 const app = express();
@@ -29,7 +37,7 @@ app.listen(SERVER_PORT, () => {
 
 
 // ROUTES
-// These need to match the definitions in `terraform/modules/api/api-gateway.tf`
+// These need to match the definitions in `terraform/modules/api/locals.tf`
 const router = Router();
 router.get('/screen/:id', proxyHandler(getScreenByIdHandler));
 router.post('/path', proxyHandler(addPathHandler));
@@ -37,7 +45,7 @@ router.post('/command', proxyHandler(commandHandler));
 
 // DEBUG ROUTES
 router.get('/test/*', proxyHandler(testHandler));
-router.get('/mock-data', proxyHandler(mockDataHandler));
+router.post('/debug/seed-mock-data', proxyHandler(SeedMockDataHandler));
 
 app.use('/api', router);
 

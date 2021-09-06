@@ -3,12 +3,13 @@
 
 const { _: args, '$0': processName } = require('yargs').argv;
 const { execSync } = require('child_process');
+const { performance } = require('perf_hooks');
 const fs = require('fs');
-const path = require('path');
+const { LambdaClient, UpdateFunctionCodeCommand } = require('@aws-sdk/client-lambda');
+const archiver = require('archiver');
 
 // Config
 const buildDirectory = 'build';
-const zipFileName = "api.zip";
 
 // Validation
 const environmentName = args[0];
@@ -36,8 +37,10 @@ const rawTerraformOutput = exec('terraform output --json', {
   stdio: 'pipe',
 });
 const terraformOutput = JSON.parse(rawTerraformOutput);
-/** @type {string[]} */
-const lambdaFunctionNames = terraformOutput['lambda_function_names'].value;
+/** @type {string} */
+const awsRegion = terraformOutput['aws_region'].value;
+/** @type {Record<string, Record<string,string>>} */
+const allLambdaFunctions = terraformOutput['all_lambda_functions'].value;
 
 // Build project
 exec('npm install && npm run build');
@@ -46,27 +49,46 @@ if (!fs.existsSync(buildDirectory)) {
   console.error("Cannot find build directory");
   process.exit(3);
 }
-// Copy package*.json files into build directory and enter
-fs.copyFileSync('package.json', path.join(buildDirectory, 'package.json'));
-fs.copyFileSync('package-lock.json', path.join(buildDirectory, 'package-lock.json'));
+// Enter the build directory
 process.chdir(buildDirectory);
 
-// Install node_modules needed by build
-exec('npm ci --only production');
-// Zip build artifact
-exec(`zip -r '${zipFileName}' .`);
-
-// Deploy build artifact to lambda functions
-lambdaFunctionNames.forEach((functionName) => {
-  console.log(`Deploying function: ${functionName}...`);
-  const result = exec(`aws lambda update-function-code --function-name "${functionName}" --zip-file "fileb://${zipFileName}" --profile 'our-text-adventure'`, {
-    stdio: 'pipe',
+void (async () => {
+  const lambdaClient = new LambdaClient({
+    region: awsRegion,
   });
-  console.log("Finished deploying. Result:");
-  console.log(result);
-});
 
-console.log(`Successfully deployed code to ${lambdaFunctionNames.length} lambda functions.`);
+  // Deploy lambda functions
+  const startTimeAll = performance.now();
+  for (const lambdaFunctionId in allLambdaFunctions) {
+    // 0. Get metadata from Terraform output
+    const lambdaFunction = allLambdaFunctions[lambdaFunctionId];
+    const functionName = lambdaFunction.name;
+    const handlerRoot = lambdaFunction.handler.replace(/\.\w+$/, '');
+
+    // 1. Archive Handler's code into zip file
+    const archiveName = `handler_${lambdaFunctionId}.zip`;
+    console.log(`Creating archive: ${archiveName}...`);
+    await createZipArchive(archiveName, `${handlerRoot}/*`);
+
+
+    // 2. Deploy handler's code archive
+    console.log(`Deploying function: ${functionName}...`);
+    const startTime = performance.now();
+
+    const response = await lambdaClient.send(new UpdateFunctionCodeCommand({
+      FunctionName: functionName,
+      ZipFile: fs.readFileSync(archiveName),
+    }));
+    const endTime = performance.now();
+
+    console.log(JSON.stringify(response, null, 2));
+    console.log(`Finished deploying function '${functionName}' after ${((endTime - startTime) / 1000).toFixed(1)}s`);
+  }
+  const endTimeAll = performance.now();
+
+  console.log(`Finished deploying code to ${Object.keys(allLambdaFunctions).length} lambda functions after ${((endTimeAll - startTimeAll) / 1000).toFixed(1)}s`);
+})();
+
 
 /**
  *
@@ -81,4 +103,25 @@ function exec(command, options = {}) {
     encoding: 'utf-8',
     ...options,
   });
+}
+
+async function createZipArchive(outputFile, filesGlob) {
+  const output = fs.createWriteStream(outputFile);
+  const archive = archiver('zip', {
+    zlib: { level: 9 },
+  });
+  archive.pipe(output);
+
+  // Throw errors
+  archive.on('error', function (err) {
+    throw err;
+  });
+
+  // Add files to archive
+  archive.glob(filesGlob);
+
+  // Write archive
+  await archive.finalize();
+
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 }

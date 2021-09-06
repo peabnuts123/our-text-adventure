@@ -1,5 +1,5 @@
-import { CommandActionType } from "../../constants/CommandActionType";
-import { GameScreenDto } from "../../db/models/GameScreen";
+import { CommandActionType } from "@app/constants/CommandActionType";
+import { GameScreenDto } from "@app/db/models/GameScreen";
 
 export interface SubmitCommandDto {
   /** The screen the player is currently on */

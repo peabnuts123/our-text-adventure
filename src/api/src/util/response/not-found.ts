@@ -1,15 +1,15 @@
 import { APIGatewayProxyResultV2 } from 'aws-lambda';
 
-import Logger from '../Logger';
-import ApiError from '../../errors/ApiError';
+import Logger from '@app/util/Logger';
+import ApiError from '@app/errors/ApiError';
 
 /**
- * Create a generic not-found response that returns HTTP 404
+ * Create a not-found response that returns HTTP 404
  *
  * @param errors Error to include in the response
  */
 export default function notFoundResponse(error: ApiError): APIGatewayProxyResultV2 {
-  Logger.log("Not-found response: ", error);
+  Logger.log("Not-found response: ", JSON.stringify(error));
 
   return {
     statusCode: 404,

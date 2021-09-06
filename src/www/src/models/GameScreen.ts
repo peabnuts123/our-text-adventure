@@ -5,12 +5,11 @@ export interface GameScreenDto {
   body: string[];
 }
 
-class GameScreen extends ApiModel<GameScreenDto> {
+class GameScreen implements ApiModel<GameScreenDto> {
   public readonly id: string;
   public readonly body: string[];
 
   public constructor(dto: GameScreenDto) {
-    super();
     this.id = dto.id;
     this.body = dto.body;
   }

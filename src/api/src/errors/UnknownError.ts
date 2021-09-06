@@ -1,4 +1,4 @@
-import Logger from "../util/Logger";
+import Logger from "@app/util/Logger";
 
 import ErrorModel from "./ErrorModel";
 

@@ -91,6 +91,18 @@ class Api {
   }
 
   /**
+   * Make a DELETE request to the API.
+   *
+   * @param path URL path to request to, relative to API base
+   * @param options Fetch options
+   */
+  public async delete<T>(path: string, options: RequestInit = {}): Promise<T> {
+    return this.request(path, Object.assign({}, options, {
+      method: 'DELETE',
+    } as RequestInit)) as Promise<T>;
+  }
+
+  /**
    * Make a POST request to the API, where the body is assumed to be an object
    * that should be JSON-encoded (do not call `JSON.stringify()` yourself, this
    * function does it for you).
@@ -113,6 +125,32 @@ class Api {
   public async post<T>(path: string, options: RequestInit & { body: BodyInit }): Promise<T> {
     return this.request(path, Object.assign({}, options, {
       method: 'POST',
+    } as RequestInit)) as Promise<T>;
+  }
+
+  /**
+   * Make a PUT request to the API, where the body is assumed to be an object
+   * that should be JSON-encoded (do not call `JSON.stringify()` yourself, this
+   * function does it for you).
+   *
+   * @param path URL path to request to, relative to API base
+   * @param options Fetch options. Body is required but can be any arbitrary JSON (NOT-stringified)
+   */
+  public async putJson<T>(path: string, options: JsonRequestInit): Promise<T> {
+    return this.requestJson(path, Object.assign({}, options, {
+      method: 'PUT',
+    } as JsonRequestInit)) as Promise<T>;
+  }
+
+  /**
+   * Make a PUT request to the API.
+   *
+   * @param path URL path to request to, relative to API base
+   * @param options Fetch options. Body is required
+   */
+  public async put<T>(path: string, options: RequestInit & { body: BodyInit }): Promise<T> {
+    return this.request(path, Object.assign({}, options, {
+      method: 'PUT',
     } as RequestInit)) as Promise<T>;
   }
 

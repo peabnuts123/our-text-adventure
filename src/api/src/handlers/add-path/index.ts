@@ -1,24 +1,24 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
-import Config from '../../config';
-import Db from '../../db';
-import IDatabase from '../../db/IDatabase';
-import GameScreen from "../../db/models/GameScreen";
-import Logger from '../../util/Logger';
-import errorResponse from '../../util/response/error';
-import badRequestResponse from "../../util/response/bad-request";
-import isArray from "../../util/is-array";
-import ApiError from "../../errors/ApiError";
-import RequestValidationError from "../../errors/RequestValidationError";
-import UnknownError from "../../errors/UnknownError";
-import ErrorModel from "../../errors/ErrorModel";
-import ErrorId from "../../errors/ErrorId";
-import GenericError from "../../errors/GenericError";
-import { PathDestinationType } from "../../constants/PathDestinationType";
-import { ITEM_NAME_MAX_LENGTH, TERMINAL_MAX_LINE_LENGTH } from "../../constants";
-import { CommandActionType } from "../../constants/CommandActionType";
-import Command from "../../db/models/Command";
-import { areItemsEquivalent } from "../../util/client-state";
+import Config from '@app/config';
+import Db from '@app/db';
+import IDatabase from '@app/db/IDatabase';
+import GameScreen from "@app/db/models/GameScreen";
+import Logger from '@app/util/Logger';
+import errorResponse from '@app/util/response/error';
+import badRequestResponse from "@app/util/response/bad-request";
+import isArray from "@app/util/is-array";
+import ApiError from "@app/errors/ApiError";
+import RequestValidationError from "@app/errors/RequestValidationError";
+import UnknownError from "@app/errors/UnknownError";
+import ErrorModel from "@app/errors/ErrorModel";
+import ErrorId from "@app/errors/ErrorId";
+import GenericError from "@app/errors/GenericError";
+import { PathDestinationType } from "@app/constants/PathDestinationType";
+import { ITEM_NAME_MAX_LENGTH, TERMINAL_MAX_LINE_LENGTH } from "@app/constants";
+import { CommandActionType } from "@app/constants/CommandActionType";
+import Command from "@app/db/models/Command";
+import { areItemsEquivalent } from "@app/util/client-state";
 
 import { AddPathDto } from "./dto";
 

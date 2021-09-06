@@ -1,10 +1,12 @@
 import React, { FunctionComponent } from "react";
+import { useRouter } from "next/router";
 
-import { navigate } from 'gatsby';
 import { useStores } from "@app/stores";
 
 
 const NewGame: FunctionComponent = () => {
+  const Router = useRouter();
+
   // Stores
   const { StateStore } = useStores();
 
@@ -12,7 +14,7 @@ const NewGame: FunctionComponent = () => {
   StateStore.resetState();
   // @NOTE safeguard for server-side rendering
   if (typeof window !== 'undefined') {
-    void navigate('/');
+    void Router.replace('/');
   }
 
   return (
@@ -21,5 +23,3 @@ const NewGame: FunctionComponent = () => {
 };
 
 export default NewGame;
-
-

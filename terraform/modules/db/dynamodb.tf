@@ -12,9 +12,4 @@ resource "aws_dynamodb_table" "table" {
     name = "id"
     type = "S"
   }
-
-  tags = {
-    project = var.project_id
-    environment = var.environment_id
-  }
 }

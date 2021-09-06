@@ -1,0 +1,25 @@
+@use "sass:math";
+
+// ========================
+// AUTO SIZE TEXTAREA
+// ========================
+// @note: Textarea that automatically resizes to accommodate the text in it
+// ========================
+.auto-size-textarea {
+  min-height: 1px;
+  overflow-y: hidden;
+  resize: none;
+  padding-top: #{math.div($m, 2) + 5px}; // @NOTE magic number to align text vertically the same as .input--text
+}
+
+// ========================
+// ELEMENTS
+// ========================
+
+// ========================
+// MODIFIERS
+// ========================
+
+// ========================
+// UI STATES
+// ========================

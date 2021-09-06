@@ -1,5 +1,7 @@
 // Set ENVIRONMENT_ID to test
+// @NOTE must match the table name configured in terraform/modules/db/locals.tf
 process.env.ENVIRONMENT_ID = 'test';
+process.env.PROJECT_ID = 'our-text-adventure';
 
 // See jest docs for config options: https://jestjs.io/docs/en/configuration
 module.exports = {
@@ -18,7 +20,7 @@ module.exports = {
     '<rootDir>/test/setup/mock-fetch.ts',
   ],
   testRegex: [
-    "test/.*\\.test.[jt]s?$",
+    "test/.*\\.test.[jt]s$",
   ],
   moduleNameMapper: {
     // DB - @NOTE make sure you don't call any mother modules 'db'...

@@ -5,20 +5,15 @@ services:
     container_name: "ota_localstack"
     image: localstack/localstack
     ports:
-      - "4566:4566"
-      # - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
+      - "4581:4566"
     environment:
       - SERVICES=apigateway,cloudwatchlogs,iam,dynamodb,lambda,sts
-      # - DEBUG=${DEBUG- }
-      # - DATA_DIR=${DATA_DIR- }
-      # - PORT_WEB_UI=${PORT_WEB_UI- }
-      # - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
-      # - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=${TMPDIR:-}
     volumes:
       - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+
   api:
     image: "ota-api:latest"
     build: ./src/api
@@ -27,14 +22,24 @@ services:
     restart: unless-stopped
     depends_on:
       - localstack
-    volumes:
-      # Mount local AWS credentials into container
-      # These aren't needed by the container, it just needs
-      #   _any_ credentials to connect to localstack with
-      - "${HOME}/.aws:/home/node/.aws"
     environment:
-      NODE_ENV: Production
+      NODE_ENV: production
       ENVIRONMENT_ID: docker
       PORT: 8080 # Must match container port mounted in `ports`
     ports:
       - '8000:8080/tcp'
+
+  www:
+    container_name: 'ota_www'
+    image: 'node:lts-alpine'
+    restart: unless-stopped
+    volumes:
+      - './src/www:/home/node/www'
+    working_dir: /home/node/www
+    entrypoint: "/bin/sh"
+    command: 'run.docker.sh'
+    environment:
+      NODE_ENV: development
+      ENVIRONMENT_ID: docker
+    ports:
+      - '3000:3000/tcp'

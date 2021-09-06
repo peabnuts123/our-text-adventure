@@ -1,8 +1,8 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2021-01-05T21:51:09.004Z",
-  "__export_source": "insomnia.desktop.app:v2020.5.2",
+  "__export_date": "2021-09-04T22:19:51.571Z",
+  "__export_source": "insomnia.desktop.app:v2021.5.0",
   "resources": [
     {
       "_id": "req_50fc7cc801e34ee583739a6c92a009e0",
@@ -73,7 +73,7 @@
       "created": 1607244667061,
       "name": "Our Text Adventure",
       "description": "",
-      "scope": null,
+      "scope": "collection",
       "_type": "workspace"
     },
     {
@@ -580,12 +580,12 @@
     {
       "_id": "req_379ee3657bc445f585370c44b8962528",
       "parentId": "fld_1a6f0c8283ac4bc195b740ea042402bc",
-      "modified": 1609883385563,
+      "modified": 1630787219128,
       "created": 1609883385563,
       "url": "{{ REQUEST_URL }}",
       "name": "default",
       "description": "",
-      "method": "GET",
+      "method": "POST",
       "body": {},
       "parameters": [],
       "headers": [],
@@ -603,12 +603,12 @@
     {
       "_id": "fld_1a6f0c8283ac4bc195b740ea042402bc",
       "parentId": "wrk_0fb80d6f9a1b47818f564bed0bbbe742",
-      "modified": 1609883392537,
+      "modified": 1630787557626,
       "created": 1609883385555,
-      "name": "Mock Data",
+      "name": "Seed Mock Data",
       "description": "",
       "environment": {
-        "REQUEST_URL": "{{ API_BASE }}/mock-data"
+        "REQUEST_URL": "{{ API_BASE }}/debug/seed-mock-data"
       },
       "environmentPropertyOrder": {
         "&": [

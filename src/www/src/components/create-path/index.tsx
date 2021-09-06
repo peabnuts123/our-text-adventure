@@ -1,11 +1,11 @@
 import React, { ChangeEvent, FormEventHandler, FunctionComponent, useState } from "react";
-import classnames from 'classnames';
+import classNames from 'classnames';
 
 import { ITEM_NAME_MAX_LENGTH, TERMINAL_CHARACTER_WIDTH } from '@app/constants';
 import { useStores } from "@app/stores";
 import { ApiError, GenericApiError } from "@app/services/errors";
 import ErrorId from "@app/constants/ErrorId";
-import { CommandActionType, DestinationType } from "@app/stores/command";
+import CommandService, { CommandActionType, DestinationType } from "@app/services/command";
 
 import AutoSizeTextarea from "../auto-size-textarea";
 import Spinner from "../spinner";
@@ -42,7 +42,7 @@ function areItemsEquivalent(itemA: string, itemB: string): boolean {
 
 const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) => {
   // Stores
-  const { CommandStore, StateStore } = useStores();
+  const { StateStore } = useStores();
 
   // State
   const [commandInput, setCommandInput] = useState<string>("");
@@ -419,7 +419,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           printMessage,
         };
 
-        await CommandStore.createPath({
+        await CommandService.createPath({
           sourceScreenId: StateStore.currentScreenId,
           ...payload,
         });
@@ -499,7 +499,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
           )}
           {/* input */}
           <input type="text" name="command" id="command"
-            className={classnames("input input--text", {
+            className={classNames("input input--text", {
               'has-error': showValidationErrors && commandInputError,
               'is-disabled': isSubmitting,
             })}
@@ -531,7 +531,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-taken"
             name="items-taken"
             minRows={1}
-            className={classnames("input input--text", {
+            className={classNames("input input--text", {
               'has-error': showValidationErrors && itemsTakenInputError,
               'is-disabled': isSubmitting,
             })}
@@ -563,7 +563,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-given"
             name="items-given"
             minRows={1}
-            className={classnames("input input--text", {
+            className={classNames("input input--text", {
               'has-error': showValidationErrors && itemsGivenInputError,
               'is-disabled': isSubmitting,
             })}
@@ -589,8 +589,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   onChange={(e) => setLimitItemsGivenInput(e.target.checked)}
                   disabled={isSubmitting}
                 />
-                <label htmlFor="limit-items-given" className={classnames("checkbox__label", { 'is-disabled': isSubmitting })}>
-                  <span className={classnames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
+                <label htmlFor="limit-items-given" className={classNames("checkbox__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classNames("checkbox__indicator", { 'is-disabled': isSubmitting })} />
                   Item Restriction
                   <HelpIcon onToggle={(isActive) => setShowLimitItemsGivenInputHelp(isActive)} />
                 </label>
@@ -619,7 +619,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
             id="items-required"
             name="items-required"
             minRows={1}
-            className={classnames("input input--text", {
+            className={classNames("input input--text", {
               'has-error': showValidationErrors && itemsRequiredInputError,
               'is-disabled': isSubmitting,
             })}
@@ -658,8 +658,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               onChange={(e) => validateAndSetActionTypeInput(e.target.value as CommandActionType)}
               disabled={isSubmitting}
             />
-            <label htmlFor={`action-type_${CommandActionType.Navigate}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
-              <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+            <label htmlFor={`action-type_${CommandActionType.Navigate}`} className={classNames("radio__label", { 'is-disabled': isSubmitting })}>
+              <span className={classNames("radio__indicator", { 'is-disabled': isSubmitting })} />
               Navigate to another screen
             </label>
           </div>
@@ -674,8 +674,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               onChange={(e) => validateAndSetActionTypeInput(e.target.value as CommandActionType)}
               disabled={isSubmitting}
             />
-            <label htmlFor={`action-type_${CommandActionType.PrintMessage}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
-              <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+            <label htmlFor={`action-type_${CommandActionType.PrintMessage}`} className={classNames("radio__label", { 'is-disabled': isSubmitting })}>
+              <span className={classNames("radio__indicator", { 'is-disabled': isSubmitting })} />
               Print a message
             </label>
           </div>
@@ -706,7 +706,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
               <AutoSizeTextarea
                 id="print-message-contents"
                 name="print-message-contents"
-                className={classnames({
+                className={classNames({
                   'has-error': showValidationErrors && printMessageInputError,
                   'is-disabled': isSubmitting,
                 })}
@@ -750,8 +750,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
                   disabled={isSubmitting}
                 />
-                <label htmlFor={`destination-type_${DestinationType.New}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
-                  <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+                <label htmlFor={`destination-type_${DestinationType.New}`} className={classNames("radio__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classNames("radio__indicator", { 'is-disabled': isSubmitting })} />
                   Create a new screen
                 </label>
               </div>
@@ -766,8 +766,8 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   onChange={(e) => validateAndSetDestinationTypeInput(e.target.value as DestinationType)}
                   disabled={isSubmitting}
                 />
-                <label htmlFor={`destination-type_${DestinationType.Existing}`} className={classnames("radio__label", { 'is-disabled': isSubmitting })}>
-                  <span className={classnames("radio__indicator", { 'is-disabled': isSubmitting })} />
+                <label htmlFor={`destination-type_${DestinationType.Existing}`} className={classNames("radio__label", { 'is-disabled': isSubmitting })}>
+                  <span className={classNames("radio__indicator", { 'is-disabled': isSubmitting })} />
                   An existing screen
                 </label>
               </div>
@@ -798,7 +798,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   <AutoSizeTextarea
                     id="new-destination-screen-body"
                     name="new-destination-screen-body"
-                    className={classnames({
+                    className={classNames({
                       'has-error': showValidationErrors && newScreenBodyError,
                       'is-disabled': isSubmitting,
                     })}
@@ -834,7 +834,7 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
                   )}
                   {/* input */}
                   <input type="text" name="existing-destination-screen-id" id="existing-destination-screen-id"
-                    className={classnames("input input--text", {
+                    className={classNames("input input--text", {
                       'has-error': showValidationErrors && existingDestinationIdInputError,
                       'is-disabled': isSubmitting,
                     })}
@@ -856,11 +856,11 @@ const CreatePath: FunctionComponent<Props> = ({ onCancel, onSuccessfulCreate }) 
 
         <div className="form__input">
           <button type="submit"
-            className={classnames("button form__button u-margin-bottom-md u-md-margin-bottom-0", { 'is-disabled': isSubmitting })}
+            className={classNames("button form__button u-margin-bottom-md u-md-margin-bottom-0", { 'is-disabled': isSubmitting })}
             disabled={isSubmitting}
           >Create Command</button>
           <button type="button"
-            className={classnames("button form__button u-md-margin-left-md", { 'is-disabled': isSubmitting })}
+            className={classNames("button form__button u-md-margin-left-md", { 'is-disabled': isSubmitting })}
             onClick={onCancel}
             disabled={isSubmitting}
           >Cancel</button>

@@ -4,11 +4,6 @@ output "invoke_url" {
   description = "URL for invoking / accessing the API through API gateway"
 }
 
-output "lambda_function_names" {
-  value = [
-    aws_lambda_function.test.function_name,
-    aws_lambda_function.get_screen_by_id.function_name,
-    aws_lambda_function.add_path.function_name,
-    aws_lambda_function.command.function_name
-  ]
+output "all_lambda_functions" {
+  value = local.all_lambda_functions
 }

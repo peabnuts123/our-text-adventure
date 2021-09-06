@@ -11,11 +11,11 @@ export default function getMockContext(overrides: ContextOverrides = {}): Contex
   return {
     "callbackWaitsForEmptyEventLoop": true,
     "functionVersion": "$LATEST",
-    "functionName": overrides.functionName || "our-text-adventure_dev_test",
+    "functionName": overrides.functionName || "my-project_local_test-function",
     "memoryLimitInMB": overrides.memoryLimitInMB || "256",
-    "logGroupName": `/aws/lambda/${overrides.functionName || "our-text-adventure_dev_test"}`,
+    "logGroupName": `/aws/lambda/${overrides.functionName || "my-project_local_test-function"}`,
     "logStreamName": "2020/12/06/[$LATEST]41e19aea1e6c442e90036499465ea5d4",
-    "invokedFunctionArn": `arn:aws:lambda:us-east-1:115233234257:function:${overrides.functionName || "our-text-adventure_dev_test"}`,
+    "invokedFunctionArn": `arn:aws:lambda:us-east-1:115233234257:function:${overrides.functionName || "my-project_local_test-function"}`,
     "awsRequestId": "76b27f23-a2cc-4b9e-891c-a8fead0f2893",
     getRemainingTimeInMillis: () => overrides.remainingTimeMillis || 2500,
 

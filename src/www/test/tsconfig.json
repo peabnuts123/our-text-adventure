@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",                           /* Base directory to resolve non-absolute module names. */
+    "paths": {                                /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+      "@app/*": [
+        "../src/*"
+      ],
+      "@test/*": [
+        "./*"
+      ],
+    },
+  },
+  "include": [
+    "./**/*",
+  ]
+}

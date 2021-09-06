@@ -9,30 +9,42 @@ export interface Config {
   awsEndpoint?: string;
 }
 
+// Environment variable validation
+if (PROJECT_ID === undefined || PROJECT_ID.trim() === "") {
+  throw new Error("Environment variable `PROJECT_ID` not set");
+}
+if (ENVIRONMENT_ID === undefined || ENVIRONMENT_ID.trim() === "") {
+  throw new Error("Environment variable `ENVIRONMENT_ID` not set");
+}
+
 const baseConfig = {
-  // @NOTE defaults to "our-text-adventure" if not specified (e.g. when running locally)
-  screensTableName: `${PROJECT_ID || 'our-text-adventure'}_${ENVIRONMENT_ID}_screens`,
-  environmentId: ENVIRONMENT_ID!,
+  screensTableName: getScreensTableName(PROJECT_ID, ENVIRONMENT_ID),
+  environmentId: ENVIRONMENT_ID,
 };
 
 let config: Config;
-
 switch (ENVIRONMENT_ID) {
   case 'local':
-    process.env['AWS_PROFILE'] = 'our-text-adventure';
+    // Set dummy credentials for localstack
+    process.env['AWS_ACCESS_KEY_ID'] = 'local';
+    process.env['AWS_SECRET_ACCESS_KEY'] = 'local';
 
     config = {
       ...baseConfig,
-      awsEndpoint: 'http://localhost:4566',
+      awsEndpoint: 'http://localhost:4581',
       logLevel: LogLevel.debug,
     };
     break;
   case 'docker':
-    process.env['AWS_PROFILE'] = 'our-text-adventure';
+    // Set dummy credentials for localstack
+    process.env['AWS_ACCESS_KEY_ID'] = 'docker';
+    process.env['AWS_SECRET_ACCESS_KEY'] = 'docker';
 
     config = {
       ...baseConfig,
-      awsEndpoint: 'http://localstack:4566',
+      // @NOTE override docker table name to match `local` environment
+      screensTableName: getScreensTableName(PROJECT_ID, 'local'),
+      awsEndpoint: 'http://localstack:4581',
       logLevel: LogLevel.normal,
     };
     break;
@@ -49,11 +61,11 @@ switch (ENVIRONMENT_ID) {
     };
     break;
   default:
-    if (ENVIRONMENT_ID === undefined || ENVIRONMENT_ID.trim() === "") {
-      throw new Error("Environment variable `ENVIRONMENT_ID` not set");
-    } else {
-      throw new Error("Unknown environment id: " + ENVIRONMENT_ID);
-    }
+    throw new Error("Unknown environment id: " + ENVIRONMENT_ID);
 }
 
 export default config;
+
+function getScreensTableName(projectId: string, environmentId: string): string {
+  return `${projectId}_${environmentId}_screens`;
+}

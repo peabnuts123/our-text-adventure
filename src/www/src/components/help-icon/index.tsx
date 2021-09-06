@@ -1,5 +1,5 @@
 import React, { FunctionComponent, KeyboardEventHandler, MouseEventHandler, useState } from "react";
-import classnames from "classnames";
+import classNames from "classnames";
 import {
   HelpCircle as HelpIcon,
 } from 'react-feather';
@@ -33,7 +33,7 @@ const Index: FunctionComponent<Props> = ({ onToggle }) => {
 
   return (
     <span
-      className={classnames("create-path__form__help-icon", {
+      className={classNames("create-path__form__help-icon", {
         'is-active': isActive,
       })}
       tabIndex={0}
